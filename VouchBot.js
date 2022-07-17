@@ -1,5 +1,6 @@
 const { Client, Intents } = require('discord.js');
-const { discord_token } = require('./config.json');
+const { discord_token } = require('./json/config.json');
+const { Scorer } = require('./Scorer');
 
 class VouchBot{
   constructor(){
@@ -17,9 +18,12 @@ class VouchBot{
 
     this.client.on('messageCreate',  message => {  // recent change yung messageCreate
       if( message.author.id === this.client.user.id ) return; // if bot sent the message, ignore
-
+      console.log(message.author.id);
       message.channel.send('henlo');
     });
+
+    this.scorer = new Scorer();
+    this.scorer.addPoint("144788912991240193", );
 
     this.client.login(discord_token);
   }
