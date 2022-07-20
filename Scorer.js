@@ -4,38 +4,51 @@ const { scores } = require(fileName);
 
 class Scorer {
   constructor(){
-    console.log(scores);
+
   }
 
-  addPoint(id1, id2){
-    try{
-      scores[id1.toString()].points +=1;
-    }
-    catch(err){
-      createNewEntry(id1)
-    }
-    this.updateScoreFile();
+  createNewEntry(id1, id1_name, id2){
+    scores[id1] = JSON.parse(`{"username":"${id1_name}","points" : 1,"transactions":{"${id2}":0}}`);
   }
 
-  getScore(id){
-    return scores[id.toString()];
-  }
-  
   // from https://www.codegrepper.com/code-examples/javascript/frameworks/react/how+to+update+a+json+file+javascript
   // above included
   updateScoreFile(){
-    fs.writeFile(fileName, JSON.stringify(scores), function writeJSON(err) {
+    let dataStr = {"scores": scores}
+    fs.writeFile(fileName, JSON.stringify(dataStr), function writeJSON(err) {
       if (err) return console.log(err);
       console.log('Updated scores');
     });
   }
 
-  createNewEntry(id){
-    newdata = `{
-      ${id.toString()}:{"points" : 1,"transactions":[{}]}
-    }`
+  addPoint(id1, id1_name, id2){
+    try{
+      scores[id1].points +=1;
+      scores[id1].username = id1_name; // to keep username updated (discord users can change usernames anytime)
+    }
+    catch(err){
+      this.createNewEntry(id1, id1_name, id2);
+    }
+    if(scores[id1]['transactions'][id2] == null)
+      scores[id1]['transactions'][id2] = 0;
+    scores[id1]['transactions'][id2] += 1;
+
+    this.updateScoreFile();
+  }
+
+  getStats(id){
+    let str = '';
+    if(scores[id] == null) str = 'No records yet!';
+    else {
+      str = `${scores[id].username}\nTransaction count: ${scores[id].points}\n\nWith:\n`;
+
+      Object.keys(scores[id]['transactions']).forEach(key => {
+        str += `${key}: ${scores[id]['transactions'][key]}\n`;
+      });
+    }
+
+    return '```' + str + '```';
   }
 }
-
 
 module.exports = { Scorer }
