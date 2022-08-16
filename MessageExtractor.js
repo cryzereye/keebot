@@ -5,6 +5,7 @@ class MessageExtractor {
     let count = 0;
     let hasMoreMessages = true;
     let lastMessageID = channel.lastMessageId;
+    scorer.clearScores();
     while(hasMoreMessages) {
       await channel.messages.fetch({ limit: 100, before: lastMessageID }).then(msglist => {
         let owner;

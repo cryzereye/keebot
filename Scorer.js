@@ -49,6 +49,11 @@ class Scorer {
 
     return '```' + str + '```';
   }
+
+  clearScores(){
+    scores = {};
+    updateScoreFile();
+  }
 }
 
 module.exports = { Scorer }
