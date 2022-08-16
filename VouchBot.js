@@ -25,8 +25,17 @@ class VouchBot{
       let messageCHID = message.channel.id;
       if( authorID === this.client.user.id ) return; // if bot sent the message, ignore
       if( message.content.startsWith(command_sign + 'stats') && messageCHID == botCHID) {
-        msg = this.scorer.getStats(authorID);
-        message.reply(msg);
+        let count = 0;
+        message.mentions.users.map(x => {
+          msg = this.scorer.getStats(x.id);
+          message.reply(msg);
+
+          count++;
+        });
+        if(count == 0){
+          msg = this.scorer.getStats(authorID);
+          message.reply(msg);
+        }
       }
       else if( message.content.startsWith(command_sign + 'extract')){
         console.log('Checking if admin...');
@@ -43,9 +52,7 @@ class VouchBot{
         // id1 sender, id2 mentioned
 
         // initial send
-        let mentions = message.mentions.users; // mentioned by initial vouch
-
-        mentions.map(x => {
+        message.mentions.users.map(x => {
           this.scorer.addPoint(authorID, authorName, x.username + '#' + x.discriminator);
         });
 
