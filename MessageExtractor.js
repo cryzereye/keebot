@@ -1,7 +1,7 @@
 class MessageExtractor {
   constructor(){}
 
-  async extractAllMessages(channel, scorer){
+  async extractAllMessages(channel, scorer, rolegiver, nonkb_filter, role){
     let count = 0;
     let hasMoreMessages = true;
     let lastMessageID = channel.lastMessageId;
@@ -17,6 +17,8 @@ class MessageExtractor {
             console.log('Extracting data for ' + owner);
             mentions.map(x => {
               scorer.addPoint(msg.author.id.toString(), msg.author.username + '#' + msg.author.discriminator, x.username + '#' + x.discriminator);
+              if(scorer.getScore(msg.author.id.toString()) > nonkb_filter)
+                rolegiver.addRoleToUser(msg.author, msg.guild, role);
             });
           }
           catch(e){

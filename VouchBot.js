@@ -1,7 +1,8 @@
-const { Client, Intents, TextChannel } = require('discord.js');
-const { discord_token, command_sign, me_id, targetCHID, botCHID } = require('./json/config.json');
+const { Client, Intents } = require('discord.js');
+const { discord_token, command_sign, me_id, targetCHID, botCHID, nonkb_rolename, nonkb_filter } = require('./json/config.json');
 const { Scorer } = require('./Scorer');
 const { MessageExtractor } = require('./MessageExtractor');
+const { RoleGiver } = require('./RoleGiver');
 
 class VouchBot{
   constructor(){
@@ -12,6 +13,7 @@ class VouchBot{
         Intents.FLAGS.GUILD_MESSAGES, // required daw
       ]
     });
+    this.rolegiver = new RoleGiver(this.client);
 
     // events detection
     this.client.on('ready', () => {
@@ -37,12 +39,13 @@ class VouchBot{
           message.reply(msg);
         }
       }
-      else if( message.content.startsWith(command_sign + 'extract')){
+      else if(message.content.startsWith(command_sign + 'extract')){
         console.log('Checking if admin...');
         if(authorID == me_id){ // commands from admin/me
           console.log('Data extraction from #verify-transactions starting...');
           let extractor = new MessageExtractor();
-          extractor.extractAllMessages(message.channel, this.scorer);
+          extractor.extractAllMessages(message.channel, this.scorer, this.rolegiver, nonkb_filter, this.getRole(message, 'nonkb'));
+          message.delete();
         }
       }
       else {
@@ -51,19 +54,33 @@ class VouchBot{
         // process all verifications
         // id1 sender, id2 mentioned
 
-        // initial send
-        message.mentions.users.map(x => {
-          this.scorer.addPoint(authorID, authorName, x.username + '#' + x.discriminator);
-        });
-
         // possible reply back, 1 instance
         if(message.type == 'REPLY'){
           let replyto = message.mentions.repliedUser.username + '#' + message.mentions.repliedUser.discriminator;
           this.scorer.addPoint(authorID, replyto);
+          //if(this.scorer.getScore(authorID) > nonkb_filter)
+          //  this.rolegiver.addRoleToUser(message.author, this.getRole(message, 'nonkb'));
         }
+        else {
+          // initial send
+          message.mentions.users.map(x => {
+            this.scorer.addPoint(authorID, authorName, x.username + '#' + x.discriminator);
+          //  if(this.scorer.getScore(authorID) > nonkb_filter)
+          //    this.rolegiver.addRoleToUser(message.author, this.getRole(message, 'nonkb'));
+          });
+        }
+        if(this.scorer.getScore(authorID) > nonkb_filter)
+          this.rolegiver.addRoleToUser(message.author, message.guild, this.getRole(message, 'nonkb'));
       }
     });
     this.client.login(discord_token);
+    
+  }
+
+  getRole(message, type){
+    switch(type){
+      case 'nonkb': return message.guild.roles.cache.find((r) => r.name == nonkb_rolename);
+    }
   }
 }
 

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const fileName = './json/scores.json';
-const { scores } = require(fileName);
+let { scores } = require(fileName);
 
 class Scorer {
   constructor(){
@@ -52,7 +52,12 @@ class Scorer {
 
   clearScores(){
     scores = {};
-    updateScoreFile();
+    this.updateScoreFile();
+  }
+
+  getScore(id){
+    if(scores[id] == null) return 0;
+    else return scores[id].points;
   }
 }
 
