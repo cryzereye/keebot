@@ -57,7 +57,7 @@ class VouchBot{
         // possible reply back, 1 instance
         if(message.type == 'REPLY'){
           let replyto = message.mentions.repliedUser.username + '#' + message.mentions.repliedUser.discriminator;
-          this.scorer.addPoint(authorID, replyto);
+          this.scorer.addPoint(authorID, authorName, replyto);
           //if(this.scorer.getScore(authorID) > nonkb_filter)
           //  this.rolegiver.addRoleToUser(message.author, this.getRole(message, 'nonkb'));
         }
