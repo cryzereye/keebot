@@ -1,5 +1,5 @@
 const { Client, Intents } = require('discord.js');
-const { discord_token, command_sign, me_id, targetCHID, botCHID, nonkb_rolename, nonkb_filter } = require('./json/config.json');
+const { discord_token, command_sign, me_id, verifyCHID, botCHID, nonkb_rolename, nonkb_filter } = require('./json/config.json');
 const { Scorer } = require('./Scorer');
 const { MessageExtractor } = require('./MessageExtractor');
 const { RoleGiver } = require('./RoleGiver');
@@ -48,7 +48,7 @@ class VouchBot{
           message.delete();
         }
       }
-      else if(messageCHID == targetCHID){ // only for vouch channel
+      else if(messageCHID == verifyCHID){ // only for vouch channel
         // process all verifications
         // id1 sender, id2 mentioned
 
