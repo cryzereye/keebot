@@ -48,9 +48,7 @@ class VouchBot{
           message.delete();
         }
       }
-      else {
-        // only for vouch channel
-        if(messageCHID != targetCHID) return;
+      else if(messageCHID == targetCHID){ // only for vouch channel
         // process all verifications
         // id1 sender, id2 mentioned
 
@@ -58,15 +56,11 @@ class VouchBot{
         if(message.type == 'REPLY'){
           let replyto = message.mentions.repliedUser.username + '#' + message.mentions.repliedUser.discriminator;
           this.scorer.addPoint(authorID, authorName, replyto);
-          //if(this.scorer.getScore(authorID) > nonkb_filter)
-          //  this.rolegiver.addRoleToUser(message.author, this.getRole(message, 'nonkb'));
         }
         else {
           // initial send
           message.mentions.users.map(x => {
             this.scorer.addPoint(authorID, authorName, x.username + '#' + x.discriminator);
-          //  if(this.scorer.getScore(authorID) > nonkb_filter)
-          //    this.rolegiver.addRoleToUser(message.author, this.getRole(message, 'nonkb'));
           });
         }
         if(this.scorer.getScore(authorID) > nonkb_filter)
