@@ -16,6 +16,7 @@ jobs:
         branch: [nonkb-filter, mongodb, registry, main-refactor, vouch-checker]
     steps:
     - name: Switch to branch then rebase from main
-      run: |
+    - uses: actions/checkout@v3
+    - run: |
         - git switch ${{ matrix.branch }}
         - git rebase main
