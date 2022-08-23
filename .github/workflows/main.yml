@@ -31,3 +31,4 @@ jobs:
     - run: |
         git fetch
         git rebase origin/main
+        git push origin ${{ matrix.branch }}
