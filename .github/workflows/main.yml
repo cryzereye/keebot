@@ -28,7 +28,6 @@ jobs:
       with:
         fetch-depth: 0
         ref: ${{ matrix.branch }}
-    - run: |
-        git fetch
-        git rebase origin/main
-        git push origin ${{ matrix.branch }}
+    - run: git fetch
+    - run: git rebase origin/main
+    - run: git push origin ${{ matrix.branch }}
