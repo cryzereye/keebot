@@ -9,7 +9,15 @@ on:
   workflow_dispatch:
   
 jobs:
+  get-branches:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Prints all branches
+      - uses: actions/checkout@v3
+      - run: git branch
+
   git-rebase:
+    needs: get-branches
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -18,5 +26,5 @@ jobs:
     - name: Switch to branch then rebase from main
     - uses: actions/checkout@v3
     - run: |
-        - git switch ${{ matrix.branch }}
-        - git rebase main
+        git switch ${{ matrix.branch }}
+        git rebase main
