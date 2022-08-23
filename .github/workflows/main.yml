@@ -26,7 +26,7 @@ jobs:
     - name: Switch to branch then rebase from main
       uses: actions/checkout@v3
       with:
-        branch: ${{ matrix.branch }}
+        ref: ${{ matrix.branch }}
     - run: |
         git switch ${{ matrix.branch }}
         git rebase main
