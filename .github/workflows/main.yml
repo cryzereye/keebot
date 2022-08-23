@@ -13,7 +13,7 @@ jobs:
       runs-on: ubuntu-latest
       steps:
       - name: Prints all branches
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
       - run: git branch
 
   #git-rebase:
