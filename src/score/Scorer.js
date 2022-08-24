@@ -1,10 +1,13 @@
+const { DBManager } = require('../util/DBManager');
 const fs = require('fs');
 const fileName = '../json/scores.json';
 const osFile = './src/json/scores.json';
 let { scores } = require(fileName);
 
 class Scorer {
-  constructor(){}
+  constructor(dbmngr){
+    this.dbmngr = dbmngr;
+  }
 
   createNewEntry(id1, id1_name, id2){
     scores[id1] = JSON.parse(`{"username":"${id1_name}","points" : 1,"transactions":{"${id2}":0}}`);
@@ -33,6 +36,7 @@ class Scorer {
     scores[id1]['transactions'][id2] += 1;
 
     this.updateScoreFile();
+    this.dbmngr.addScore(id1, id1_name, id2);
   }
 
   getStats(id){
