@@ -1,5 +1,5 @@
 const { Client, Intents } = require('discord.js');
-const { discord_token, command_sign, me_id, targetCHID, botCHID, dev } = require('../json/config.json');
+const { discord_token, command_sign, me_id, verifyCHID, botCHID, dev } = require('../json/config.json');
 const { Scorer } = require('../score/Scorer');
 const { MessageExtractor } = require('../util/MessageExtractor');
 const { RoleGiverManager } = require('../role/RoleGiverManager');
@@ -59,7 +59,8 @@ class VouchBot{
           this.rolegivermngr.roleCheck(10, message);
         }
       }
-      else if(messageCHID == targetCHID && !dev ){ // only for vouch channel
+      else if(messageCHID == verifyCHID && !dev){ // only for vouch channel
+        console.log("Processing vouch msg from " + authorName);
         // process all verifications
         // id1 sender, id2 mentioned
 
