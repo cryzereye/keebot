@@ -26,7 +26,7 @@ class DBManager {
    * @param {string} [target] username of targer discord user
    */
   addScore(id, username, target) {
-    this.score.addpoint(this.score, id, username, target);
+    this.score.addPoint(this.score, id, username, target);
   }
 
   getScore(id) {
