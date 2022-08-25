@@ -1,4 +1,4 @@
-name: rebase-branches
+name: update-branches
 on:
   push:
     branches: [ "main" ]
@@ -10,24 +10,29 @@ on:
   
 jobs:
   get-branches:
-      runs-on: ubuntu-latest
-      steps:
-      - name: Prints all branches
-        uses: actions/checkout@v3
-      - run: git branch
+    runs-on: ubuntu-latest
+    steps:
+    - name: Prints all branches
+      uses: actions/checkout@v3
+    - run: git branch
 
-  git-rebase:
+  merge-main:
     needs: get-branches
     runs-on: ubuntu-latest
     strategy:
       matrix:
         branch: [nonkb-filter, mongodb, registry, main-refactor, vouch-checker]
     steps:
+    - name: Prepare the Git credentials
+      uses: actions/checkout@v3
+    - run: |
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "<>"
     - name: Switch to branch then rebase from main
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
         ref: ${{ matrix.branch }}
     - run: git fetch
-    - run: git rebase origin/main
+    - run: git merge -Xours origin/main
     - run: git push origin ${{ matrix.branch }}
