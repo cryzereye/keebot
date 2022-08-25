@@ -12,58 +12,49 @@ class Score {
    * @param {string} [target] username of targer discord user
    */
   async addPoint(db, id, name, target) {
-    let record = await db.findOne({ discordID : id});
+    let record = await db.findOne({ discordID: id });
 
-    if(record != undefined){
-      db.updateOne(
-        { discordID : id },
-        {$set : { points : record.points + 1 }}
+    if (record != undefined) {
+      let trans = record.transactions;
+
+      if(trans[target] == null) {
+        console.log("New transaction for " + name + " with " + target);
+        trans[target] = 0;
+      }
+      trans[target]++;
+
+      await db.updateOne(
+        { discordID: id },
+        {
+          $set: {
+            username: name,
+            points: record.points + 1,
+            transactions: trans
+          }
+        }
       );
-      let trans = await db.findOne({ 
-        discordID : id,
-        "transactions.username" : target 
-      });
-      if(trans != undefined){
-        db.updateOne(
-          { 
-            discordID : id,
-            "transactions.username" : target 
-          },
-          { $set: { "transactions.points" : trans.points + 1 }}
-        );
-      }
-      else {
-        let newTrans = {username : target, points : 1};
-        db.updateOne(
-          { discordID : id},
-          { $push: { transactions : newTrans }}
-        );
-      }
     }
     else
-      db.insertOne(this.newRecord(id, name, target));
+      await db.insertOne(this.newRecord(id, name, target));
   }
 
   /**
    * will return a JSON object for a new insert
-   * @param {Collection} [db] collection instance
    * @param {string} [id] discord ID
    * @param {string} [name] discord username
    * @param {string} [target] username of targer discord user
    */
   newRecord(id, name, target) {
     console.log("New record for " + name + " with " + target);
-    console.log(id);
     let str = `{
       "discordID": "${id}",
       "username": "${name}",
       "points": 1,
-      "transactions": [{
-        "username": "${target}",
-        "points": 1
-      }]}`;
+      "transactions": {
+        "${target}" : 1
+      }}`;
 
-      return JSON.parse(str);
+    return JSON.parse(str);
   }
 
   /**
@@ -74,7 +65,7 @@ class Score {
    */
   getScore(db, id) {
     let record = db.find({ discordID: id });
-    if(record != null){
+    if (record != null) {
       return record.points;
     }
     return null;
@@ -86,7 +77,7 @@ class Score {
    * @param {number} [id] discord ID
    * @returns {Object{}}
    */
-  findRecord(db, id){
+  findRecord(db, id) {
     return db.find({ discordID: id });
   }
 }
