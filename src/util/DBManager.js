@@ -31,6 +31,10 @@ class DBManager {
   getScore(id) {
     this.score.getScore(this.scoredb, id.toString());
   }
+
+  clearScores(){
+    this.score.clearScores();
+  }
 }
 
 module.exports = { DBManager }

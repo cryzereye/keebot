@@ -56,6 +56,7 @@ class Scorer {
   clearScores(){
     scores = {};
     this.updateScoreFile();
+    this.dbmngr.clearScores();
   }
 
   getScore(id){

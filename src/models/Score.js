@@ -77,8 +77,15 @@ class Score {
    * @param {number} [id] discord ID
    * @returns {Object{}}
    */
-  findRecord(db, id) {
-    return db.find({ discordID: id });
+  async findRecord(db, id) {
+    return await db.find({ discordID: id });
+  }
+
+  /**
+   * clears all documents within Score
+   */
+  async clearScores(){
+    await db.remove({ discordID: { $ne: "0" } });
   }
 }
 
