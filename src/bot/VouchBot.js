@@ -78,7 +78,8 @@ class VouchBot {
             this.scorer.addPoint(authorID, authorName, x.username + '#' + x.discriminator);
           });
         }
-        this.rolegivermngr.roleCheck(this.scorer.getScore(authorID), message);
+        if(!dev)
+          this.rolegivermngr.roleCheck(this.scorer.getScore(authorID), message);
       }
     });
     this.client.login(discord_token);
