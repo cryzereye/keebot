@@ -15,8 +15,8 @@ jobs:
       - name: Set runner Git credentials
         uses: actions/checkout@v3
       - run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "<>"
   
   get-branches:
     needs: prep-creds
