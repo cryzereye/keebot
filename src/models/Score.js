@@ -13,9 +13,10 @@ class Score {
    */
   addPoint(db, id, name, target) {
     let record = db.find({ _id : id});
-    if(record != null){
+
+    if(record.count() > 0){
       let trans = record.transactions.find({username : target});
-      if(trans != null){
+      if(trans != undefined){
         record.transactions.updateOne(
           {username : target},
           {points : trans.points + 1}
@@ -40,12 +41,12 @@ class Score {
   newRecord(id, name, target) {
     let str = `{
       "_id": ${id},
-      "username": ${name},
+      "username": "${name}",
       "points": 1,
       "transactions": [{
-        "username": ${target},
+        "username": "${target}",
         "points": 1
-      }]`;
+      }]}`;
 
       return JSON.parse(str);
   }

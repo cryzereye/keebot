@@ -10,11 +10,10 @@ class DBManager {
     console.log("Connecting to database...");
     dbclient.connect((err, db) => {
       this.scoredb = db.db(dbname).collection(collnames[0]);
-      if(this.scoredb !== undefined)
+      if(this.scoredb != undefined)
         this.score = new Score();
 
       console.log("Connected to database!");
-      dbclient.close();
     });
   }
 
@@ -26,11 +25,11 @@ class DBManager {
    * @param {string} [target] username of targer discord user
    */
   addScore(id, username, target) {
-    this.score.addPoint(this.score, id, username, target);
+    this.score.addPoint(this.scoredb, id, username, target);
   }
 
   getScore(id) {
-    this.score.getScore(this.score, id);
+    this.score.getScore(this.scoredb, id);
   }
 }
 
