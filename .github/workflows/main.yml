@@ -1,4 +1,4 @@
-name: rebase-branches
+name: update-branches
 on:
   push:
     branches: [ "main" ]
@@ -39,5 +39,5 @@ jobs:
         fetch-depth: 0
         ref: ${{ matrix.branch }}
     - run: git fetch
-    - run: git rebase origin/main
+    - run: git merge -Xours origin/main
     - run: git push origin ${{ matrix.branch }}
