@@ -9,6 +9,15 @@ on:
   workflow_dispatch:
   
 jobs:
+  prep-creds:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set runner Git credentials
+        uses: actions/checkout@v3
+      - run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+  
   get-branches:
       runs-on: ubuntu-latest
       steps:
