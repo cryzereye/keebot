@@ -9,30 +9,25 @@ on:
   workflow_dispatch:
   
 jobs:
-  prep-creds:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set runner Git credentials
-        uses: actions/checkout@v3
-      - run: |
-          git config --global user.name "GitHub Actions Bot"
-          git config --global user.email "<>"
-  
   get-branches:
-    needs: prep-creds
     runs-on: ubuntu-latest
     steps:
     - name: Prints all branches
       uses: actions/checkout@v3
     - run: git branch
 
-  git-rebase:
+  merge-main:
     needs: get-branches
     runs-on: ubuntu-latest
     strategy:
       matrix:
         branch: [nonkb-filter, mongodb, registry, main-refactor, vouch-checker]
     steps:
+    - name: Prepare the Git credentials
+      uses: actions/checkout@v3
+    - run: |
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "<>"
     - name: Switch to branch then rebase from main
       uses: actions/checkout@v3
       with:
