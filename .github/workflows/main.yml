@@ -19,11 +19,12 @@ jobs:
           git config user.email "<>"
   
   get-branches:
-      runs-on: ubuntu-latest
-      steps:
-      - name: Prints all branches
-        uses: actions/checkout@v3
-      - run: git branch
+    needs: prep-creds
+    runs-on: ubuntu-latest
+    steps:
+    - name: Prints all branches
+      uses: actions/checkout@v3
+    - run: git branch
 
   git-rebase:
     needs: get-branches
