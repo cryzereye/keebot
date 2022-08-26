@@ -35,6 +35,10 @@ class DBManager {
   clearScores(){
     this.score.clearScores(this.scoredb);
   }
+
+  async findRecord(id){
+    return await this.score.findRecord(this.scoredb, id.toString()); 
+  }
 }
 
 module.exports = { DBManager }

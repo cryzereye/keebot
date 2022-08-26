@@ -29,17 +29,23 @@ class VouchBot {
       let authorName = message.author.username + '#' + message.author.discriminator;
       let messageCHID = message.channel.id;
       if (authorID === this.client.user.id) return; // if bot sent the message, ignore
-      if (message.content.startsWith(command_sign + 'stats') && messageCHID == botCHID) {
+      if (message.content.startsWith(command_sign + 'stats') && (messageCHID == botCHID || messageCHID == testCHID && dev)) {
         let count = 0;
         message.mentions.users.map(x => {
-          msg = this.scorer.getStats(x.id);
-          message.reply(msg);
+          if(!dev)
+            message.reply(this.scorer.getStats(x.id));
+          else
+            message.reply({ embeds: [this.scorer.getStatsEmbed(x)]});
+
 
           count++;
         });
+
         if (count == 0) {
-          msg = this.scorer.getStats(authorID);
-          message.reply(msg);
+          if(!dev)
+            message.reply(this.scorer.getStats(authorID));
+          else
+            message.reply({ embeds: [this.scorer.getStatsEmbed(message.author)]});
         }
       }
       else if (message.content.startsWith(command_sign + 'extract')) {

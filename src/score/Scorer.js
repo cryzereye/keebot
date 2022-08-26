@@ -1,3 +1,4 @@
+const { MessageEmbed, ColorResolvable } = require('discord.js');
 const { DBManager } = require('../util/DBManager');
 const fs = require('fs');
 const fileName = '../json/scores.json';
@@ -51,6 +52,39 @@ class Scorer {
     }
 
     return '```' + str + '```';
+  }
+
+  /**
+   * returns the user's stats built into an EmbedBuilder instance
+   * @param {discordjs.User} user 
+   * @returns {discordjs.EmbedBuilder}
+   */
+  getStatsEmbed(user){
+    let record;
+    this.dbmngr.findRecord(user.id).then( r => record = r);
+
+    let fullName = `${user.username}#${user.discriminator}`;
+    if(record == undefined) {
+      console.log("No record found for " + fullName);
+      return ("No record found for " + fullName);
+    }
+    let transStr = "asdas";
+    //record.transactions.map(x => {
+    //  transStr += `${x.username} : ${x.points}\n`;
+    //});
+
+    const embedBuilder = new MessageEmbed()
+      .setColor(ColorResolvable.DEFAULT)
+      .setTitle(`${record.points} Points`)
+      .setAuthor({
+        name: fullName,
+        iconUrl: `${user.avatarURL}`
+      })
+      .setDescription('asdasd')
+      .setThumbnail(`${user.avatarURL}`)
+      .addFields({ name: 'Transactions:', value: transStr });
+    
+    return embedBuilder;
   }
 
   clearScores(){
