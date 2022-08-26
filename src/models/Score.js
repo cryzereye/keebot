@@ -84,7 +84,7 @@ class Score {
   /**
    * clears all documents within Score
    */
-  async clearScores(){
+  async clearScores(db){
     await db.remove({ discordID: { $ne: "0" } });
   }
 }

@@ -33,7 +33,7 @@ class DBManager {
   }
 
   clearScores(){
-    this.score.clearScores();
+    this.score.clearScores(this.scoredb);
   }
 }
 
