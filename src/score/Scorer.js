@@ -1,4 +1,4 @@
-const { MessageEmbed, ColorResolvable } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const { DBManager } = require('../util/DBManager');
 const fs = require('fs');
 const fileName = '../json/scores.json';
@@ -59,32 +59,35 @@ class Scorer {
    * @param {discordjs.User} user 
    * @returns {discordjs.EmbedBuilder}
    */
-  getStatsEmbed(user){
-    let record;
-    this.dbmngr.findRecord(user.id).then( r => record = r);
+  getStatsEmbed(message, user){
+    (async () => {
+      let record = await this.dbmngr.findRecord(user.id);
+      let fullName = `${user.username}#${user.discriminator}`;
+      let transStr = "";
 
-    let fullName = `${user.username}#${user.discriminator}`;
-    if(record == undefined) {
-      console.log("No record found for " + fullName);
-      return ("No record found for " + fullName);
-    }
-    let transStr = "asdas";
-    //record.transactions.map(x => {
-    //  transStr += `${x.username} : ${x.points}\n`;
-    //});
+      if(typeof record !== 'undefined' && record) {
+        Object.keys(record.transactions).forEach(key => {
+          transStr += `${key} : ${record.transactions[key]}\n`;
+        });
+      }
+      else {
+        record = {}
+        record["points"] = "ZERO";
+        transStr = "NO TRANSACTIONS YET!";
+      }
 
-    const embedBuilder = new MessageEmbed()
-      .setColor(ColorResolvable.DEFAULT)
-      .setTitle(`${record.points} Points`)
-      .setAuthor({
-        name: fullName,
-        iconUrl: `${user.avatarURL}`
-      })
-      .setDescription('asdasd')
-      .setThumbnail(`${user.avatarURL}`)
-      .addFields({ name: 'Transactions:', value: transStr });
-    
-    return embedBuilder;
+      const embedBuilder = new MessageEmbed()
+        .setColor("DEFAULT")
+        .setTitle(`${record.points} Points`)
+        .setAuthor({
+          name: fullName,
+          iconUrl: `${user.avatarURL()}`
+        })
+        .setThumbnail(`${user.avatarURL()}`)
+        .addFields({ name: 'Transactions:', value: transStr });
+        
+      message.reply({ embeds: [embedBuilder]});
+    })();
   }
 
   clearScores(){

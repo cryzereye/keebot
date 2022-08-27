@@ -35,7 +35,7 @@ class VouchBot {
           if(!dev)
             message.reply(this.scorer.getStats(x.id));
           else
-            message.reply({ embeds: [this.scorer.getStatsEmbed(x)]});
+            this.scorer.getStatsEmbed(message, x);
 
 
           count++;
@@ -45,7 +45,7 @@ class VouchBot {
           if(!dev)
             message.reply(this.scorer.getStats(authorID));
           else
-            message.reply({ embeds: [this.scorer.getStatsEmbed(message.author)]});
+            this.scorer.getStatsEmbed(message, message.author);
         }
       }
       else if (message.content.startsWith(command_sign + 'extract')) {

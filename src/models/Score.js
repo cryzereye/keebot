@@ -78,9 +78,7 @@ class Score {
    * @returns {Object{}}
    */
   async findRecord(db, id) {
-    let record = await db.findOne({ discordID: id });
-    console.log(record);
-    return record;
+    return await db.findOne({ discordID: id });
   }
 
   /**
