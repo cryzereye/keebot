@@ -1,5 +1,6 @@
 const { MessageEmbed } = require('discord.js');
 const { DBManager } = require('../util/DBManager');
+const { RoleGiver } = require('../role/RoleGiver');
 const fs = require('fs');
 const fileName = '../json/scores.json';
 const osFile = './src/json/scores.json';
@@ -61,9 +62,17 @@ class Scorer {
    */
   getStatsEmbed(message, user){
     (async () => {
+      let rg = new RoleGiver();
       let record = await this.dbmngr.findRecord(user.id);
       let fullName = `${user.username}#${user.discriminator}`;
       let transStr = "";
+      let roles = "";
+
+      let gm = await rg.fetchUser(user, message.guild);
+      gm.roles.cache.map( (r) => {
+        if(r.name != "@everyone")
+          roles += `<@&${r.id}> `;
+      });
 
       if(typeof record !== 'undefined' && record) {
         Object.keys(record.transactions).forEach(key => {
@@ -83,6 +92,7 @@ class Scorer {
           name: fullName,
           iconUrl: `${user.avatarURL()}`
         })
+        .setDescription(roles)
         .setThumbnail(`${user.avatarURL()}`)
         .addFields({ name: 'Transactions:', value: transStr });
         
