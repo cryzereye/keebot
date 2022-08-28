@@ -5,10 +5,10 @@ const { connURI, dbname, collnames } = require('../json/config.json');
 
 class DBManager {
   constructor() {
-    const dbclient = new MongoClient(connURI);
+    this.dbclient = new MongoClient(connURI);
 
     console.log("Connecting to database...");
-    dbclient.connect((err, db) => {
+    this.dbclient.connect((err, db) => {
       this.scoredb = db.db(dbname).collection(collnames[0]);
       if(this.scoredb != undefined)
         this.score = new Score();
@@ -25,7 +25,7 @@ class DBManager {
    * @param {string} [target] username of targer discord user
    */
   addScore(id, username, target) {
-    this.score.addPoint(this.scoredb, id.toString(), username, target);
+    this.score.addPoint(this.dbclient, this.scoredb, id.toString(), username, target);
   }
 
   getScore(id) {

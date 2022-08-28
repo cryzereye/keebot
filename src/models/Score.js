@@ -11,31 +11,56 @@ class Score {
    * @param {string} [username] discord username
    * @param {string} [target] username of targer discord user
    */
-  async addPoint(db, id, name, target) {
-    let record = await db.findOne({ discordID: id }).catch(console.error);
+  async addPoint(client, coll, id, name, target) {
+    // from: https://www.mongodb.com/blog/post/quick-start-nodejs--mongodb--how-to-implement-transactions
+    // from: https://www.mongodb.com/docs/drivers/node/current/fundamentals/transactions/
+    const session = client.startSession();
+    const transactionOptions = {
+      readPreference: 'primary',
+      readConcern: { level: 'local' },
+      writeConcern: { w: 'majority' }
+    };
 
-    if (record != undefined) {
-      let trans = record.transactions;
+    let record;
 
-      if(trans[target] == null && name == "bepis#7964") {
-        console.log("New transaction for " + name + " with " + target);
-        trans[target] = 0;
-      }
-      trans[target]++;
-
-      await db.updateOne(
-        { discordID: id },
-        {
-          $set: {
-            username: name,
-            points: record.points + 1,
-            transactions: trans
+    try{
+      await session.withTransaction(async () => {
+        session.startTransaction(transactionOptions);
+        record = await coll.findOne({ discordID: id }, { session }).catch(console.error);
+        if (record != undefined) {
+          let trans = record.transactions;
+    
+          if(trans[target] == null) {
+            console.log("New transaction for " + name + " with " + target);
+            trans[target] = 0;
           }
+          trans[target]++;
+    
+          await coll.updateOne(
+            { discordID: id },
+            {
+              $set: {
+                username: name,
+                points: record.points + 1,
+                transactions: trans
+              }
+            },
+            { session }
+          ).catch(console.error);
         }
-      ).catch(console.error);
+        else
+          await coll.insertOne(this.newRecord(id, name, target), { session }).catch(console.error);
+        await session.commitTransaction();
+      }, transactionOptions);
     }
-    else
-      await db.insertOne(this.newRecord(id, name, target)).catch(console.error);
+    catch(err) {
+      console.log(err);
+      console.log(`Error inserting/updating record for ${name}`);
+      await session.abortTransaction();
+    }
+    finally{
+      await session.endSession();
+    }
   }
 
   /**
@@ -45,8 +70,7 @@ class Score {
    * @param {string} [target] username of targer discord user
    */
   newRecord(id, name, target) {
-    if(name == "bepis#7964")
-      console.log("New record for " + name + " with " + target);
+    console.log("New record for " + name + " with " + target);
     let str = `{
       "discordID": "${id}",
       "username": "${name}",

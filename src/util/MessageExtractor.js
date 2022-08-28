@@ -15,9 +15,8 @@ class MessageExtractor {
             let mentions = msg.mentions.users; // mentioned by initial vouch
             mentions.map(x => {
               //added async sequence here
-              scorer.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator).then(
-                rolegivermngr.roleCheck(scorer.getScore(msg.author.id.toString()), msg)
-              );
+              scorer.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator);
+              rolegivermngr.roleCheck(scorer.getScore(msg.author.id.toString()), msg);
             });
           }
           catch(e){
