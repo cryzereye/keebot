@@ -20,6 +20,7 @@ class VouchBot {
 
     // events detection
     this.client.on('ready', () => {
+      this.sendMessageTo(botCHID);
       console.log(`Logged in as ${this.client.user.tag}!`);
     });
 
@@ -86,6 +87,14 @@ class VouchBot {
     });
     this.client.login(discord_token);
 
+  }
+
+  sendMessageTo(chid){
+    let server = this.client.guilds.resolve(chid);
+    let ch = await server.channels.fetch( (c) => c.id === chid);
+    ch.send("**BOT IS ALIVE!!!**").then(
+      console.log("**BOT IS ALIVE!!!** send to #vouch-bot")
+    ).catch(console.error);
   }
 
 
