@@ -19,11 +19,10 @@ class Scorer {
     let dataStr = {"scores": scores}
     fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err) {
       if (err) return console.log(err);
-      console.log('Updated scores');
     });
   }
 
-  addPoint(id1, id1_name, id2){
+  async addPoint(id1, id1_name, id2){
     try{
       scores[id1].points +=1;
       scores[id1].username = id1_name; // to keep username updated (discord users can change usernames anytime)

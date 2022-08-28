@@ -13,10 +13,11 @@ class MessageExtractor {
           try {
             owner = msg.author.username + '#' + msg.author.discriminator;
             let mentions = msg.mentions.users; // mentioned by initial vouch
-            console.log('Extracting data for ' + owner);
             mentions.map(x => {
-              scorer.addPoint(msg.author.id.toString(), msg.author.username + '#' + msg.author.discriminator, x.username + '#' + x.discriminator);
-              rolegivermngr.roleCheck(scorer.getScore(msg.author.id.toString()), msg);
+              //added async sequence here
+              scorer.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator).then(
+                rolegivermngr.roleCheck(scorer.getScore(msg.author.id.toString()), msg)
+              );
             });
           }
           catch(e){

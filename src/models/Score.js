@@ -12,12 +12,12 @@ class Score {
    * @param {string} [target] username of targer discord user
    */
   async addPoint(db, id, name, target) {
-    let record = await db.findOne({ discordID: id });
+    let record = await db.findOne({ discordID: id }).catch(console.error);
 
     if (record != undefined) {
       let trans = record.transactions;
 
-      if(trans[target] == null) {
+      if(trans[target] == null && name == "bepis#7964") {
         console.log("New transaction for " + name + " with " + target);
         trans[target] = 0;
       }
@@ -32,10 +32,10 @@ class Score {
             transactions: trans
           }
         }
-      );
+      ).catch(console.error);
     }
     else
-      await db.insertOne(this.newRecord(id, name, target));
+      await db.insertOne(this.newRecord(id, name, target)).catch(console.error);
   }
 
   /**
@@ -45,7 +45,8 @@ class Score {
    * @param {string} [target] username of targer discord user
    */
   newRecord(id, name, target) {
-    console.log("New record for " + name + " with " + target);
+    if(name == "bepis#7964")
+      console.log("New record for " + name + " with " + target);
     let str = `{
       "discordID": "${id}",
       "username": "${name}",
@@ -64,7 +65,7 @@ class Score {
    * @returns {number}
    */
   getScore(db, id) {
-    let record = db.find({ discordID: id });
+    let record = db.find({ discordID: id }).catch(console.error);
     if (record != null) {
       return record.points;
     }
@@ -78,14 +79,14 @@ class Score {
    * @returns {Object{}}
    */
   async findRecord(db, id) {
-    return await db.find({ discordID: id });
+    return await db.find({ discordID: id }).catch(console.error);
   }
 
   /**
    * clears all documents within Score
    */
   async clearScores(db){
-    await db.remove({ discordID: { $ne: "0" } });
+    await db.remove({ discordID: { $ne: "0" } }).catch(console.error);
   }
 }
 

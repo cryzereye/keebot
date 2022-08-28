@@ -28,8 +28,10 @@ class VouchBot {
       let authorID = message.author.id.toString();
       let authorName = message.author.username + '#' + message.author.discriminator;
       let messageCHID = message.channel.id;
+      let currentlyTesting = (messageCHID == testCHID && dev);
+      
       if (authorID === this.client.user.id) return; // if bot sent the message, ignore
-      if (message.content.startsWith(command_sign + 'stats') && messageCHID == botCHID) {
+      if (message.content.startsWith(command_sign + 'stats') && (messageCHID == botCHID && !dev || currentlyTesting)) {
         let count = 0;
         message.mentions.users.map(x => {
           msg = this.scorer.getStats(x.id);
@@ -62,7 +64,7 @@ class VouchBot {
           this.rolegivermngr.roleCheck(10, message);
         }
       }
-      else if (messageCHID == verifyCHID && !dev || messageCHID == testCHID && dev) { // only for vouch channel
+      else if (messageCHID == verifyCHID && !dev || currentlyTesting) { // only for vouch channel
         console.log("Processing vouch msg from " + authorName);
         // process all verifications
         // id1 sender, id2 mentioned

@@ -28,11 +28,11 @@ class RoleGiverManager {
   }
 
   // checks the user if valid for any role
-  roleCheck(userScore, message){
+  async roleCheck(userScore, message){
     let len = roles.length;
     for(let i = 0; i < len; i++){
       if(userScore >= roles[i].filter){
-        this.rolegiver.addRoleToUser(message.author, message.guild, this.getRoleInst(message, roles[i].role));
+        await this.rolegiver.addRoleToUser(message.author, message.guild, this.getRoleInst(message, roles[i].role));
       }
     }
   }
