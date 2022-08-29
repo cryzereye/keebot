@@ -37,14 +37,20 @@ class VouchBot {
       if (message.content.startsWith(command_sign + 'stats') && (messageCHID == botCHID && !dev || currentlyTesting)) {
         let count = 0;
         message.mentions.users.map(x => {
-          msg = this.scorer.getStats(x.id);
-          message.reply(msg);
+          if(!dev)
+            message.reply(this.scorer.getStats(x.id));
+          else
+            this.scorer.getStatsEmbed(message, x);
+
 
           count++;
         });
+
         if (count == 0) {
-          msg = this.scorer.getStats(authorID);
-          message.reply(msg);
+          if(!dev)
+            message.reply(this.scorer.getStats(authorID));
+          else
+            this.scorer.getStatsEmbed(message, message.author);
         }
       }
       else if (message.content.startsWith(command_sign + 'extract')) {
