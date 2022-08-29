@@ -2,6 +2,7 @@ const { MessageEmbed } = require('discord.js');
 const { DBManager } = require('../util/DBManager');
 const { RoleGiver } = require('../role/RoleGiver');
 const { Utilities } = require('../util/Utilities');
+const { relevant_roles } = require('../json/config.json');
 const fs = require('fs');
 const fileName = '../json/scores.json';
 const osFile = './src/json/scores.json';
@@ -84,7 +85,7 @@ class Scorer {
 
       let gm = await rg.fetchUser(user, message.guild);
       gm.roles.cache.map( (r) => {
-        if(r.name != "@everyone")
+        if(r.name in relevant_roles)
           roles += `<@&${r.id}> `;
       });
 
@@ -141,7 +142,7 @@ class Scorer {
 
       let roleCache = await this.getUserRoles(user, message.guild, rg);
       roleCache.map( (r) => {
-        if(r.name != "@everyone")
+        if(relevant_roles.includes(r.name))
           roles += `<@&${r.id}> `;
       });
 
