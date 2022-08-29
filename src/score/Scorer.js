@@ -60,7 +60,7 @@ class Scorer {
    * @param {discordjs.User} user 
    * @returns {discordjs.EmbedBuilder}
    */
-  getStatsEmbed(message, user){
+  getStatsEmbedDB(message, user){
     (async () => {
       let rg = new RoleGiver();
       let record = await this.dbmngr.findRecord(user.id);
@@ -84,19 +84,48 @@ class Scorer {
         record["points"] = "ZERO";
         transStr = "NO TRANSACTIONS YET!";
       }
+      
+      message.reply({ embeds: [this.generateScoreCard(
+        fullName,
+        record.points,
+        user.avatarURL(),
+        roles,
+        transStr
+      )]});
+    })();
+  }
 
-      const embedBuilder = new MessageEmbed()
-        .setColor("DEFAULT")
-        .setTitle(`${record.points} Points`)
-        .setAuthor({
-          name: fullName,
-          iconUrl: `${user.avatarURL()}`
-        })
-        .setDescription(roles)
-        .setThumbnail(`${user.avatarURL()}`)
-        .addFields({ name: 'Transactions:', value: transStr });
-        
-      message.reply({ embeds: [embedBuilder]});
+  getStatsEmbed(message, user){
+    (async () => {
+      let record = scores[user.id];
+      let fullName = `${user.username}#${user.discriminator}`;
+      let transStr = "";
+      let roles = "";
+
+      let roleCache = await this.getUserRoles(user, message.guild);
+      roleCache.map( (r) => {
+        if(r.name != "@everyone")
+          roles += `<@&${r.id}> `;
+      });
+
+      if (record == null){
+        record = {}
+        record["points"] = "ZERO";
+        transStr = "NO TRANSACTIONS YET!";
+      }
+      else {
+        Object.keys(record.transactions).forEach(key => {
+          transStr += `${key} : ${record.transactions[key]}\n`;
+        });
+      }
+      
+      message.reply({ embeds: [this.generateScoreCard(
+        fullName,
+        record.points,
+        user.avatarURL(),
+        roles,
+        transStr
+      )]});
     })();
   }
 
@@ -109,6 +138,27 @@ class Scorer {
   getScore(id){
     if(scores[id] == null) return 0;
     else return scores[id].points;
+  }
+
+  async getUserRoles(user, guild){
+    let rg = new RoleGiver();
+    let gm = await rg.fetchUser(user, guild);
+    return gm.roles.cache;
+  }
+  
+  generateScoreCard(fullName, points, avatarURL, roles, transStr){
+    const embedBuilder = new MessageEmbed()
+        .setColor("DEFAULT")
+        .setTitle(`${points} Points`)
+        .setAuthor({
+          name: fullName,
+          iconUrl: `${avatarURL}`
+        })
+        .setDescription(roles)
+        .setThumbnail(`${avatarURL}`)
+        .addFields({ name: 'Transactions:', value: transStr });
+
+    return embedBuilder;
   }
 }
 
