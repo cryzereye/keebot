@@ -17,7 +17,7 @@ class Score {
     if (record != undefined) {
       let trans = record.transactions;
 
-      if(trans[target] == null && name == "bepis#7964") {
+      if(trans[target] == null) {
         console.log("New transaction for " + name + " with " + target);
         trans[target] = 0;
       }
@@ -45,8 +45,7 @@ class Score {
    * @param {string} [target] username of targer discord user
    */
   newRecord(id, name, target) {
-    if(name == "bepis#7964")
-      console.log("New record for " + name + " with " + target);
+    console.log("New record for " + name + " with " + target);
     let str = `{
       "discordID": "${id}",
       "username": "${name}",
