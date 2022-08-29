@@ -36,13 +36,16 @@ class Score {
           }
           trans[target]++;
     
-          await coll.updateOne(
+          await coll.findOneAndUpdate(
             { discordID: id },
             {
               $set: {
                 username: name,
-                points: record.points + 1,
                 transactions: trans
+              },
+              $inc: {
+                points: 1,
+                // TODO:`transactions.${target}`:1 --- increment target by 1
               }
             },
             { session }
