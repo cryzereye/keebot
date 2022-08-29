@@ -1,5 +1,5 @@
 const { Client, Intents } = require('discord.js');
-const { discord_token, command_sign, me_id, verifyCHID, botCHID, testCHID, dev } = require('../json/config.json');
+const { discord_token, command_sign, me_id, verifyCHID, botCHID, testCHID, dev, serverID } = require('../json/config.json');
 const { Scorer } = require('../score/Scorer');
 const { MessageExtractor } = require('../util/MessageExtractor');
 const { RoleGiverManager } = require('../role/RoleGiverManager');
@@ -20,8 +20,10 @@ class VouchBot {
 
     // events detection
     this.client.on('ready', () => {
-      this.sendMessageTo(botCHID);
-      console.log(`Logged in as ${this.client.user.tag}!`);
+      if(dev)
+        this.sendMessageTo(testCHID, "**BOT IS ALIVE!!!**");
+      else
+        this.sendMessageTo(botCHID, "**BOT IS ALIVE!!!**");
     });
 
     this.client.on('messageCreate', message => {  // recent change yung messageCreate
@@ -89,15 +91,14 @@ class VouchBot {
 
   }
 
-  sendMessageTo(chid){
-    let server = this.client.guilds.resolve(chid);
-    let ch = await server.channels.fetch( (c) => c.id === chid);
-    ch.send("**BOT IS ALIVE!!!**").then(
-      console.log("**BOT IS ALIVE!!!** send to #vouch-bot")
-    ).catch(console.error);
+  sendMessageTo(chid, message){
+    let server = this.client.guilds.cache.find((g) => g.id == serverID);
+    server.channels.fetch(chid).then( (ch) => {
+      ch.send(message).then(
+        console.log(`${message} sent to #${ch.name}`)
+      ).catch(console.error);
+    }).catch(console.error);
   }
-
-
 }
 
 module.exports = { VouchBot }
