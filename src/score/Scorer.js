@@ -118,6 +118,7 @@ class Scorer {
   getStatsEmbed(message, user){
     (async () => {
       let util = new Utilities();
+      let rg = new RoleGiver();
       let record = scores[user.id];
       let fullName = `${user.username}#${user.discriminator}`;
       let transStr = "";
@@ -125,12 +126,21 @@ class Scorer {
       let creaStr = user.createdAt.toString();
       let dateData = util.getTimeDiff(user.createdAt);
       let creaDur = "";
+      let gm = await rg.fetchUser(user, message.guild);
+      let joinStr = gm.joinedAt.toString();
+      let joinDur = ""
 
       Object.keys(dateData).forEach( (x) => {
         creaDur += `${dateData[x]} `;
       });
 
-      let roleCache = await this.getUserRoles(user, message.guild);
+      dateData = util.getTimeDiff(gm.joinedAt);
+
+      Object.keys(dateData).forEach( (x) => {
+        joinDur += `${dateData[x]} `;
+      });
+
+      let roleCache = await this.getUserRoles(user, message.guild, rg);
       roleCache.map( (r) => {
         if(r.name != "@everyone")
           roles += `<@&${r.id}> `;
@@ -146,7 +156,7 @@ class Scorer {
           transStr += `${key} : ${record.transactions[key]}\n`;
         });
       }
-      
+
       message.reply({ embeds: [this.generateScoreCard(
         fullName,
         record.points,
@@ -155,6 +165,8 @@ class Scorer {
         transStr,
         creaStr,
         creaDur,
+        joinStr,
+        joinDur
       )]});
     })();
   }
@@ -184,8 +196,8 @@ class Scorer {
    * @param {Guild} guild 
    * @returns {Collection <discordjs.Roles>}
    */
-  async getUserRoles(user, guild){
-    let rg = new RoleGiver();
+  async getUserRoles(user, guild, rg){
+    if(rg == null || rg == undefined) rg = new RoleGiver();
     let gm = await rg.fetchUser(user, guild);
     return gm.roles.cache;
   }
@@ -199,7 +211,7 @@ class Scorer {
    * @param {Object} transStr 
    * @returns {discordjs.MessageEmbed}
    */
-  generateScoreCard(fullName, points, avatarURL, roles, transStr, creationStr, creationDuration){
+  generateScoreCard(fullName, points, avatarURL, roles, transStr, creationStr, creationDuration, joinStr, joinDuration){
     const embedBuilder = new MessageEmbed()
         .setColor("DEFAULT")
         .setTitle(`${points} Points`)
@@ -210,7 +222,8 @@ class Scorer {
         .setDescription(roles)
         .setThumbnail(`${avatarURL}`)
         .addFields({ name: 'Transactions:', value: transStr })
-        .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` });
+        .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
+        .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
 
     return embedBuilder;
   }
