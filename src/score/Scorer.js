@@ -1,6 +1,7 @@
 const { MessageEmbed } = require('discord.js');
 const { DBManager } = require('../util/DBManager');
 const { RoleGiver } = require('../role/RoleGiver');
+const { Utilities } = require('../util/Utilities');
 const fs = require('fs');
 const fileName = '../json/scores.json';
 const osFile = './src/json/scores.json';
@@ -15,8 +16,11 @@ class Scorer {
     scores[id1] = JSON.parse(`{"username":"${id1_name}","points" : 1,"transactions":{"${id2}":0}}`);
   }
 
-  // from https://www.codegrepper.com/code-examples/javascript/frameworks/react/how+to+update+a+json+file+javascript
-  // above included
+  /**
+   * from https://www.codegrepper.com/code-examples/javascript/frameworks/react/how+to+update+a+json+file+javascript
+   * above included
+   * handles the file write-update of the JSON record for scores
+   */
   updateScoreFile(){
     let dataStr = {"scores": scores}
     fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err) {
@@ -25,6 +29,12 @@ class Scorer {
     });
   }
 
+  /**
+   * adds point to id1 and updates its username. Adds a transaction with id2
+   * @param {String} id1 
+   * @param {String} id1_name 
+   * @param {String} id2 
+   */
   addPoint(id1, id1_name, id2){
     try{
       scores[id1].points +=1;
@@ -41,6 +51,11 @@ class Scorer {
     this.dbmngr.addScore(id1, id1_name, id2);
   }
 
+  /**
+   * legacy stats UI. returns stats from JSON records given the ID
+   * @param {String} id 
+   * @returns 
+   */
   getStats(id){
     let str = '';
     if(scores[id] == null) str = 'No records yet!';
@@ -56,7 +71,7 @@ class Scorer {
   }
 
   /**
-   * returns the user's stats built into an EmbedBuilder instance
+   * returns the user's stats from DB built into an EmbedBuilder instance
    * @param {discordjs.User} user 
    * @returns {discordjs.EmbedBuilder}
    */
@@ -95,12 +110,25 @@ class Scorer {
     })();
   }
 
+    /**
+   * returns the user's stats from JSON records built into an EmbedBuilder instance
+   * @param {discordjs.User} user 
+   * @returns {discordjs.EmbedBuilder}
+   */
   getStatsEmbed(message, user){
     (async () => {
+      let util = new Utilities();
       let record = scores[user.id];
       let fullName = `${user.username}#${user.discriminator}`;
       let transStr = "";
       let roles = "";
+      let creaStr = user.createdAt.toString();
+      let dateData = util.getTimeDiff(user.createdAt);
+      let creaDur = "";
+
+      Object.keys(dateData).forEach( (x) => {
+        creaDur += `${dateData[x]} `;
+      });
 
       let roleCache = await this.getUserRoles(user, message.guild);
       roleCache.map( (r) => {
@@ -124,29 +152,54 @@ class Scorer {
         record.points,
         user.avatarURL(),
         roles,
-        transStr
+        transStr,
+        creaStr,
+        creaDur,
       )]});
     })();
   }
 
+  /**
+   * clears all scores from both JSON data and DB
+   */
   clearScores(){
     scores = {};
     this.updateScoreFile();
     this.dbmngr.clearScores();
   }
 
+  /**
+   * returns score of given ID from the JSON data
+   * @param {String} id 
+   * @returns {Number}
+   */
   getScore(id){
     if(scores[id] == null) return 0;
     else return scores[id].points;
   }
 
+  /**
+   * returns user roles given the User and Guild instances
+   * @param {User} user 
+   * @param {Guild} guild 
+   * @returns {Collection <discordjs.Roles>}
+   */
   async getUserRoles(user, guild){
     let rg = new RoleGiver();
     let gm = await rg.fetchUser(user, guild);
     return gm.roles.cache;
   }
   
-  generateScoreCard(fullName, points, avatarURL, roles, transStr){
+  /**
+   * generates and send the score card from the given data
+   * @param {String} fullName 
+   * @param {Number} points 
+   * @param {String} avatarURL 
+   * @param {String} roles 
+   * @param {Object} transStr 
+   * @returns {discordjs.MessageEmbed}
+   */
+  generateScoreCard(fullName, points, avatarURL, roles, transStr, creationStr, creationDuration){
     const embedBuilder = new MessageEmbed()
         .setColor("DEFAULT")
         .setTitle(`${points} Points`)
@@ -156,7 +209,8 @@ class Scorer {
         })
         .setDescription(roles)
         .setThumbnail(`${avatarURL}`)
-        .addFields({ name: 'Transactions:', value: transStr });
+        .addFields({ name: 'Transactions:', value: transStr })
+        .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` });
 
     return embedBuilder;
   }
