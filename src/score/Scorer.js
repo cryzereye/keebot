@@ -128,7 +128,18 @@ class Scorer {
       let creaDur = "";
       let gm = await rg.fetchUser(user, message.guild);
       let joinStr = gm.joinedAt.toString();
-      let joinDur = ""
+      let joinDur = "";
+
+      // https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
+      let sortedTrans = [];
+      for( let t in record.transactions){
+        sortedTrans.push([t, record.transactions[t]]);
+      }
+
+      sortedTrans.sort(function(a, b) {
+        return b[1] - a[1];
+      });
+
 
       Object.keys(dateData).forEach( (x) => {
         creaDur += `${dateData[x]} `;
@@ -152,9 +163,8 @@ class Scorer {
         transStr = "NO TRANSACTIONS YET!";
       }
       else {
-        Object.keys(record.transactions).forEach(key => {
-          transStr += `${key} : ${record.transactions[key]}\n`;
-        });
+        for(let i = 0; i < sortedTrans.length; i++)
+          transStr += `${sortedTrans[i][0]} : ${sortedTrans[i][1]}\n`;
       }
 
       message.reply({ embeds: [this.generateScoreCard(
