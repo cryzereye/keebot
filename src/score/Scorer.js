@@ -170,7 +170,7 @@ class Scorer {
       message.reply({ embeds: [this.generateScoreCard(
         fullName,
         record.points,
-        user.avatarURL(),
+        user.displayAvatarURL(),
         roles,
         transStr,
         creaStr,
