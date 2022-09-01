@@ -130,17 +130,6 @@ class Scorer {
       let joinStr = gm.joinedAt.toString();
       let joinDur = "";
 
-      // https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
-      let sortedTrans = [];
-      for( let t in record.transactions){
-        sortedTrans.push([t, record.transactions[t]]);
-      }
-
-      sortedTrans.sort(function(a, b) {
-        return b[1] - a[1];
-      });
-
-
       Object.keys(dateData).forEach( (x) => {
         creaDur += `${dateData[x]} `;
       });
@@ -163,6 +152,16 @@ class Scorer {
         transStr = "NO TRANSACTIONS YET!";
       }
       else {
+        // https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
+        let sortedTrans = [];
+        for( let t in record.transactions){
+          sortedTrans.push([t, record.transactions[t]]);
+        }
+
+        sortedTrans.sort(function(a, b) {
+          return b[1] - a[1];
+        });
+
         for(let i = 0; i < sortedTrans.length; i++)
           transStr += `${sortedTrans[i][0]} : ${sortedTrans[i][1]}\n`;
       }
