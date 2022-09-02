@@ -1,23 +1,18 @@
-const { Client, Intents } = require('discord.js');
-const { discord_token, command_sign, me_id, verifyCHID, botCHID, testCHID, dev, serverID } = require('../json/config.json');
+const { Client, Intents, Routes } = require('discord.js');
+const { REST } = require('@discordjs/rest');
+const { discord_id, discord_token, command_sign, me_id, verifyCHID, botCHID, testCHID, dev, serverID } = require('../json/config.json');
 const { Scorer } = require('../score/Scorer');
 const { MessageExtractor } = require('../util/MessageExtractor');
 const { RoleGiverManager } = require('../role/RoleGiverManager');
 const { DBManager } = require('../util/DBManager');
+const { SlashCommandManager } = require('./SlashCommandManager');
+const fs = require('node:fs');
 
 class VouchBot {
   constructor() {
-
-    this.client = new Client({
-      intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES, // required daw
-      ]
-    });
-    this.dbmngr = new DBManager();
-    this.rolegivermngr = new RoleGiverManager(this.client);
-    this.scorer = new Scorer(this.dbmngr);
-
+    this.buildDependencies();
+    this.buildSlashCommands();
+    
     // events detection
     this.client.on('ready', () => {
       if (dev)
@@ -85,8 +80,27 @@ class VouchBot {
           this.rolegivermngr.roleCheck(this.scorer.getScore(authorID), message);
       }
     });
-    this.client.login(discord_token);
 
+    // handles usage of slash commands
+    this.client.on('interactionCreate', async interaction => {
+      if (!interaction.isChatInputCommand()) return;
+    
+      const { commandName } = interaction;
+    
+      switch (commandName) {
+        case "stats": {
+          console.log("stats");
+          break;
+        }
+        case "extract": {
+          console.log("extract");
+          break;
+        }
+      }
+
+    });
+    
+    this.client.login(discord_token);
   }
 
   sendMessageTo(chid, message) {
@@ -96,6 +110,29 @@ class VouchBot {
         console.log(`${message} sent to #${ch.name}`)
       ).catch(console.error);
     }).catch(console.error);
+  }
+
+  /**
+   * builds all classes that would do the jobs for the bot
+   */
+  buildDependencies(){
+    this.client = new Client({
+      intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MESSAGES, // required daw
+      ]
+    });
+    this.dbmngr = new DBManager();
+    this.rolegivermngr = new RoleGiverManager(this.client);
+    this.scorer = new Scorer(this.dbmngr);
+    this.commandmngr = new SlashCommandManager();
+  }
+
+  /**
+   * builds the commands to be avaialble in the guild. mostly based on the discordjs guides
+   */
+  buildSlashCommands(){
+    this.commandmngr.loadCommands(this.client, serverID);
   }
 }
 
