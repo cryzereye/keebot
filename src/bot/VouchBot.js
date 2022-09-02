@@ -1,20 +1,22 @@
-const { Client, Intents, Routes } = require('discord.js');
+const { Client, Intents} = require('discord.js');
+const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
-const { discord_id, discord_token, command_sign, me_id, verifyCHID, botCHID, testCHID, dev, serverID } = require('../json/config.json');
+const { discord_id, discord_token, command_sign, me_id, verifyCHID, botCHID, testCHID, dev, serverID, commands } = require('../json/config.json');
 const { Scorer } = require('../score/Scorer');
 const { MessageExtractor } = require('../util/MessageExtractor');
 const { RoleGiverManager } = require('../role/RoleGiverManager');
 const { DBManager } = require('../util/DBManager');
 const { SlashCommandManager } = require('./SlashCommandManager');
+
 const fs = require('node:fs');
 
 class VouchBot {
   constructor() {
     this.buildDependencies();
-    this.buildSlashCommands();
-    
+  
     // events detection
     this.client.on('ready', () => {
+      this.buildSlashCommands(); // client.application is null until client is ready
       if (dev)
         this.sendMessageTo(testCHID, "**BOT IS ALIVE!!!**");
       else
@@ -60,7 +62,7 @@ class VouchBot {
           this.rolegivermngr.roleCheck(10, message);
         }
       }
-      else if (messageCHID == verifyCHID && !dev || currentlyTesting) { // only for vouch channel
+      else if (messageCHID == verifyCHID && !dev || !currentlyTesting) { // only for vouch channel
         console.log("Processing vouch msg from " + authorName);
         // process all verifications
         // id1 sender, id2 mentioned
@@ -83,21 +85,8 @@ class VouchBot {
 
     // handles usage of slash commands
     this.client.on('interactionCreate', async interaction => {
-      if (!interaction.isChatInputCommand()) return;
-    
-      const { commandName } = interaction;
-    
-      switch (commandName) {
-        case "stats": {
-          console.log("stats");
-          break;
-        }
-        case "extract": {
-          console.log("extract");
-          break;
-        }
-      }
-
+      if (!interaction.isCommand()) return;
+      this.commandmngr.processCommand(interaction, this.scorer, this.rolegivermngr);
     });
     
     this.client.login(discord_token);
@@ -131,8 +120,12 @@ class VouchBot {
   /**
    * builds the commands to be avaialble in the guild. mostly based on the discordjs guides
    */
-  buildSlashCommands(){
-    this.commandmngr.loadCommands(this.client, serverID);
+  async buildSlashCommands(){
+    const rest = new REST({ version: '10' }).setToken(discord_token);
+
+    await rest.put(Routes.applicationGuildCommands(discord_id, serverID), { body: commands })
+      .then((data) => console.log(`Successfully registered ${data.length} application commands.`))
+      .catch(console.error);
   }
 }
 
