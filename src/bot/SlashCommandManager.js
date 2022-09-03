@@ -13,14 +13,11 @@ class SlashCommandManager {
           const target = interaction.options.getUser('user');
           if(target){
             let targetName = `${target.username}#${target.discriminator}`;
-            //this.scorer.getStatsEmbed(message, target);
-            result = `stats for ${targetName}`;
+            return scorer.getStatsEmbed(interaction, target);
           }
           else {
-            //this.scorer.getStatsEmbed(message, user);
-            result = `stats for ${fullName}`;
+            return scorer.getStatsEmbed(interaction, user);
           }
-          break;
         }
         case commands[1].name: {
           console.log('Checking if admin...');

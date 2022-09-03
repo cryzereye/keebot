@@ -31,18 +31,7 @@ class VouchBot {
       let currentlyTesting = (messageCHID == testCHID && dev);
 
       if (authorID === this.client.user.id) return; // if bot sent the message, ignore
-      if (message.content.startsWith(command_sign + 'stats') && (messageCHID == botCHID && !dev || currentlyTesting)) {
-        let count = 0;
-        message.mentions.users.map(x => {
-          this.scorer.getStatsEmbed(message, x);
-          count++;
-        });
-
-        if (count == 0) {
-          this.scorer.getStatsEmbed(message, message.author);
-        }
-      }
-      else if (message.content.startsWith(command_sign + 'extract')) {
+      if (message.content.startsWith(command_sign + 'extract')) {
         console.log('Checking if admin...');
         if (authorID == me_id) { // commands from admin/me
           console.log('Data extraction from #verify-transactions starting...');

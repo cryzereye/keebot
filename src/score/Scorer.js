@@ -115,7 +115,7 @@ class Scorer {
    * @param {discordjs.User} user 
    * @returns {discordjs.EmbedBuilder}
    */
-  getStatsEmbed(message, user){
+  getStatsEmbed(interaction, user){
     (async () => {
       let util = new Utilities();
       let rg = new RoleGiver();
@@ -126,7 +126,7 @@ class Scorer {
       let creaStr = user.createdAt.toString();
       let dateData = util.getTimeDiff(user.createdAt);
       let creaDur = "";
-      let gm = await rg.fetchUser(user, message.guild);
+      let gm = await rg.fetchUser(user, interaction.guild);
       let joinStr = gm.joinedAt.toString();
       let joinDur = "";
 
@@ -140,7 +140,7 @@ class Scorer {
         joinDur += `${dateData[x]} `;
       });
 
-      let roleCache = await this.getUserRoles(user, message.guild, rg);
+      let roleCache = await this.getUserRoles(user, interaction.guild, rg);
       roleCache.map( (r) => {
         if(relevant_roles.includes(r.name))
           roles += `<@&${r.id}> `;
@@ -166,7 +166,7 @@ class Scorer {
           transStr += `${sortedTrans[i][0]} : ${sortedTrans[i][1]}\n`;
       }
 
-      message.reply({ embeds: [this.generateScoreCard(
+      interaction.reply({ embeds: [this.generateScoreCard(
         fullName,
         record.points,
         user.displayAvatarURL(),
