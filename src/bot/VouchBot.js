@@ -34,15 +34,6 @@ class VouchBot {
     this.client.login(discord_token);
   }
 
-  sendMessageTo(chid, message) {
-    let server = this.client.guilds.cache.find((g) => g.id == serverID);
-    server.channels.fetch(chid).then((ch) => {
-      ch.send(message).then(
-        console.log(`${message} sent to #${ch.name}`)
-      ).catch(console.error);
-    }).catch(console.error);
-  }
-
   /**
    * builds all classes that would do the jobs for the bot
    */
