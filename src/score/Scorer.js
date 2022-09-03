@@ -1,12 +1,12 @@
 const { MessageEmbed } = require('discord.js');
 const { DBManager } = require('../util/DBManager');
 const { RoleGiver } = require('../role/RoleGiver');
-const { Utilities } = require('../util/Utilities');
 const { relevant_roles } = require('../json/config.json');
 const fs = require('fs');
 const fileName = '../json/scores.json';
 const osFile = './src/json/scores.json';
 let { scores } = require(fileName);
+const util = require('../util/Utilities');
 
 class Scorer {
   constructor(dbmngr){
@@ -117,7 +117,6 @@ class Scorer {
    */
   getStatsEmbed(interaction, user){
     (async () => {
-      let util = new Utilities();
       let rg = new RoleGiver();
       let record = scores[user.id];
       let fullName = `${user.username}#${user.discriminator}`;
