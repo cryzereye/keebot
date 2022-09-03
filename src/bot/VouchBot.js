@@ -3,10 +3,10 @@ const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
 const { discord_id, discord_token, command_sign, me_id, verifyCHID, botCHID, testCHID, dev, serverID, commands } = require('../json/config.json');
 const { Scorer } = require('../score/Scorer');
-const { MessageExtractor } = require('../util/MessageExtractor');
 const { RoleGiverManager } = require('../role/RoleGiverManager');
 const { DBManager } = require('../util/DBManager');
 const { SlashCommandManager } = require('./SlashCommandManager');
+const { MessageProcessor } = require('./MessageProcessor');
 
 const fs = require('node:fs');
 
@@ -14,42 +14,15 @@ class VouchBot {
   constructor() {
     this.buildDependencies();
   
-    // events detection
+    // client application ready up
     this.client.on('ready', () => {
       this.buildSlashCommands(); // client.application is null until client is ready
-      if (dev)
-        this.sendMessageTo(testCHID, "**BOT IS ALIVE!!!**");
-      else
-        this.sendMessageTo(botCHID, "**BOT IS ALIVE!!!**");
+      console.log("bot is ready");  
     });
 
+    // handles incoming messages
     this.client.on('messageCreate', message => {  // recent change yung messageCreate
-      let msg = '';
-      let authorID = message.author.id.toString();
-      let authorName = message.author.username + '#' + message.author.discriminator;
-      let messageCHID = message.channel.id;
-      let currentlyTesting = (messageCHID == testCHID && dev);
-
-      if (authorID === this.client.user.id) return; // if bot sent the message, ignore
-      if (messageCHID == verifyCHID && !dev || !currentlyTesting) { // only for vouch channel
-        console.log("Processing vouch msg from " + authorName);
-        // process all verifications
-        // id1 sender, id2 mentioned
-
-        // possible reply back, 1 instance
-        if (message.type == 'REPLY') {
-          let replyto = message.mentions.repliedUser.username + '#' + message.mentions.repliedUser.discriminator;
-          this.scorer.addPoint(authorID, authorName, replyto);
-        }
-        else {
-          // initial send
-          message.mentions.users.map(x => {
-            this.scorer.addPoint(authorID, authorName, x.username + '#' + x.discriminator);
-          });
-        }
-        if (!dev)
-          this.rolegivermngr.roleCheck(this.scorer.getScore(authorID), message);
-      }
+      this.msgproc.processMessage(message, this.scorer);
     });
 
     // handles usage of slash commands
@@ -84,6 +57,7 @@ class VouchBot {
     this.rolegivermngr = new RoleGiverManager(this.client);
     this.scorer = new Scorer(this.dbmngr);
     this.commandmngr = new SlashCommandManager();
+    this.msgproc = new MessageProcessor();
   }
 
   /**
