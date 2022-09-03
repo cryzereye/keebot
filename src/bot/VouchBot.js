@@ -22,7 +22,7 @@ class VouchBot {
 
     // handles incoming messages
     this.client.on('messageCreate', message => {  // recent change yung messageCreate
-      this.msgproc.processMessage(message, this.scorer);
+      this.msgproc.processMessage(message, this.client.user.id, this.scorer);
     });
 
     // handles usage of slash commands

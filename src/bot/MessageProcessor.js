@@ -2,13 +2,13 @@ const { dev, testCHID } = require('../json/config.json');
 class MessageProcessor {
   constructor() { }
 
-  async processMessage(message, scorer) {
+  async processMessage(message, clientID, scorer) {
     let authorID = message.author.id.toString();
     let authorName = message.author.username + '#' + message.author.discriminator;
     let messageCHID = message.channel.id;
     let currentlyTesting = (messageCHID == testCHID && dev);
 
-    if (authorID === this.client.user.id) return; // if bot sent the message, ignore
+    if (authorID === clientID) return; // if bot sent the message, ignore
     if (messageCHID == verifyCHID && !dev || !currentlyTesting) { // only for vouch channel
       console.log("Processing vouch msg from " + authorName);
       // process all verifications
