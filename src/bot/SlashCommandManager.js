@@ -11,13 +11,9 @@ class SlashCommandManager {
       switch(commandName){
         case commands[0].name: {
           const target = interaction.options.getUser('user');
-          if(target){
-            let targetName = `${target.username}#${target.discriminator}`;
+          if(target)
             return scorer.getStatsEmbed(interaction, target);
-          }
-          else {
-            return scorer.getStatsEmbed(interaction, user);
-          }
+          return scorer.getStatsEmbed(interaction, user);
         }
         case commands[1].name: {
           console.log('Checking if admin...');
@@ -31,6 +27,7 @@ class SlashCommandManager {
           break;
         }
         case commands[2].name: {
+          result = ``;
           break;
         }
       }
