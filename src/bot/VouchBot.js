@@ -1,11 +1,11 @@
 const { Client, Intents} = require('discord.js');
 const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
-const { discord_id, discord_token, command_sign, me_id, verifyCHID, botCHID, testCHID, dev, serverID, commands } = require('../json/config.json');
+const { discord_id, discord_token, serverID, commands } = require('../json/config.json');
 const { Scorer } = require('../score/Scorer');
 const { RoleGiverManager } = require('../role/RoleGiverManager');
 const { DBManager } = require('../util/DBManager');
-const { SlashCommandManager } = require('./SlashCommandManager');
+const { CommandProcessor } = require('./CommandProcessor');
 const { MessageProcessor } = require('./MessageProcessor');
 
 const fs = require('node:fs');
@@ -28,7 +28,7 @@ class VouchBot {
     // handles usage of slash commands
     this.client.on('interactionCreate', async interaction => {
       if (!interaction.isCommand()) return;
-      this.commandmngr.processCommand(interaction, this.scorer, this.rolegivermngr);
+      this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr);
     });
     
     this.client.login(discord_token);
@@ -47,7 +47,7 @@ class VouchBot {
     this.dbmngr = new DBManager();
     this.rolegivermngr = new RoleGiverManager(this.client);
     this.scorer = new Scorer(this.dbmngr);
-    this.commandmngr = new SlashCommandManager();
+    this.cmdproc = new CommandProcessor();
     this.msgproc = new MessageProcessor();
   }
 

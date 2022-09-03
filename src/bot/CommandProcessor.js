@@ -1,7 +1,7 @@
 const { commands, me_id } = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
 
-class SlashCommandManager {
+class CommandProcessor {
     constructor() {}
 
     async processCommand(interaction, scorer, rolegivermngr){
@@ -37,4 +37,4 @@ class SlashCommandManager {
     }
 }
 
-module.exports = { SlashCommandManager }
+module.exports = { CommandProcessor }
