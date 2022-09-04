@@ -6,8 +6,8 @@
  */
 exports.getGuildMemberfromID = async(id, guild) => {
   return await guild.members.cache.find((gm) => gm.id == id) ||
-          await guild.members.resolveID(id) ||
-          await guild.members.fetch(id);
+          await guild.members.resolveID(id).catch(console.error) ||
+          await guild.members.fetch(id).catch(console.error);
 }
 
 /**
@@ -18,9 +18,9 @@ exports.getGuildMemberfromID = async(id, guild) => {
  * @param {String} message 
  */
 exports.sendMessageToChannel = async(client, guildID, chid, message) => {
-  let guild = getGuildFromID(client, guildID);
-  let channel = getChannelFromID(guild, chid);
-  await channel.sendMessage(message);
+  let guild = await this.getGuildFromID(client, guildID).catch(console.error);
+  let channel = await this.getChannelFromID(guild, chid).catch(console.error);
+  await channel.sendMessage(message).catch(console.error);
 }
 
 /**
@@ -31,8 +31,8 @@ exports.sendMessageToChannel = async(client, guildID, chid, message) => {
  */
 exports.getGuildFromID = async(client, guildID) => {
   return await client.guilds.cache.find((g) => g.id == guildID) ||
-          await client.guilds.resolveID(guildID) ||
-          await client.guilds.fetch(guildID);
+          await client.guilds.resolveID(guildID).catch(console.error) ||
+          await client.guilds.fetch(guildID).catch(console.error);
 }
 
 /**
@@ -43,8 +43,8 @@ exports.getGuildFromID = async(client, guildID) => {
  */
 exports.getChannelFromID = async(guild, channelID) => {
   return await guild.channels.cache.find((ch) => ch.id == channelID) ||
-          await guild.channels.resolveID(channelID) ||
-          await guild.channels.fetch(channelID);
+          await guild.channels.resolveID(channelID).catch(console.error) ||
+          await guild.channels.fetch(channelID).catch(console.error);
 }
 
 /**
@@ -68,8 +68,8 @@ exports.guildMemberHasRole = async(gm, role) => {
  * @param {discord.js.Role} role 
  */
 exports.addRoleToUser = async(user, guild, role) => {
-  let gm = await this.getGuildMemberfromID(user.id, guild);
-  if(gm != undefined && !(await this.guildMemberHasRole(gm, role))){ // if member already has role, then do not put the role
+  let gm = await this.getGuildMemberfromID(user.id, guild).catch(console.error);
+  if(gm != undefined && !(await this.guildMemberHasRole(gm, role).catch(console.error))){ // if member already has role, then do not put the role
     gm.roles.add(role).catch((e) => console.log(e.message));
     console.log(role.name + " added from " + user.username);
   }
@@ -82,8 +82,8 @@ exports.addRoleToUser = async(user, guild, role) => {
  * @param {discord.js.Role} role 
  */
  exports.removeRoleToUser = async(user, guild, role) => {
-  let gm = await this.getGuildMemberfromID(user.id, guild);
-  if(gm != undefined && await this.guildMemberHasRole(gm, role)){ // if member already has role, then do not put the role
+  let gm = await this.getGuildMemberfromID(user.id, guild).catch(console.error);
+  if(gm != undefined && await this.guildMemberHasRole(gm, role).catch(console.error)){ // if member already has role, then do not put the role
     gm.roles.remove(role).catch((e) => console.log(e.message));
     console.log(role.name + " removed from " + user.username);
   }

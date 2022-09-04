@@ -19,7 +19,7 @@ class CommandProcessor {
         case commands[1].name: {
           console.log('Checking if admin...');
           if(user.id != me_id)
-            return await interaction.reply(`Command not available for ${fullName}`);
+            return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
           console.log('Data extraction from #verify-transactions starting...');
           let extractor = new MessageExtractor();
           extractor.extractAllMessages(interaction.channel, scorer, rolegivermngr)
@@ -28,13 +28,12 @@ class CommandProcessor {
           break;
         }
         case commands[2].name: {
-          interaction.reply({embeds: [this.generateHelp(fullName)]});
-          break;
+          return await interaction.reply({embeds: [this.generateHelp(fullName)]}).catch(console.error);
         }
       }
       if(result == "")
         result = `No results for command ${commandName}`;
-      await interaction.reply(result);
+      await interaction.reply(result).catch(console.error);
     }
 
     generateHelp(username){

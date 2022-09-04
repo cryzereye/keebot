@@ -65,7 +65,7 @@ class Scorer {
       let creaStr = user.createdAt.toString();
       let dateData = util.getTimeDiff(user.createdAt);
       let creaDur = "";
-      let gm = await dUtil.getGuildMemberfromID(user.id, interaction.guild);
+      let gm = await dUtil.getGuildMemberfromID(user.id, interaction.guild).catch(console.error);
       let joinStr = gm.joinedAt.toString();
       let joinDur = "";
 
@@ -114,7 +114,7 @@ class Scorer {
         creaDur,
         joinStr,
         joinDur
-      )]});
+      )]}).catch(console.error);
     })();
   }
 
