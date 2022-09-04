@@ -23,9 +23,9 @@ class CommandProcessor {
           console.log('Data extraction from #verify-transactions starting...');
           let extractor = new MessageExtractor();
           extractor.extractAllMessages(interaction.channel, scorer, rolegivermngr)
-            .then(console.log('Extraction complete!!!'))
+            .then(console.log('Extraction started'))
             .catch(console.error);
-          break;
+          return;
         }
         case commands[2].name: {
           return await interaction.reply({embeds: [this.generateHelp(fullName)]}).catch(console.error);

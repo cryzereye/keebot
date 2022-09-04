@@ -6,7 +6,6 @@
  */
 exports.getGuildMemberfromID = async(id, guild) => {
   return await guild.members.cache.find((gm) => gm.id == id) ||
-          await guild.members.resolveID(id).catch(console.error) ||
           await guild.members.fetch(id).catch(console.error);
 }
 
@@ -31,7 +30,6 @@ exports.sendMessageToChannel = async(client, guildID, chid, message) => {
  */
 exports.getGuildFromID = async(client, guildID) => {
   return await client.guilds.cache.find((g) => g.id == guildID) ||
-          await client.guilds.resolveID(guildID).catch(console.error) ||
           await client.guilds.fetch(guildID).catch(console.error);
 }
 
@@ -43,7 +41,6 @@ exports.getGuildFromID = async(client, guildID) => {
  */
 exports.getChannelFromID = async(guild, channelID) => {
   return await guild.channels.cache.find((ch) => ch.id == channelID) ||
-          await guild.channels.resolveID(channelID).catch(console.error) ||
           await guild.channels.fetch(channelID).catch(console.error);
 }
 
