@@ -8,8 +8,6 @@ const { DBManager } = require('../util/DBManager');
 const { CommandProcessor } = require('./CommandProcessor');
 const { MessageProcessor } = require('./MessageProcessor');
 
-const fs = require('node:fs');
-
 class VouchBot {
   constructor() {
     this.buildDependencies();
@@ -22,7 +20,7 @@ class VouchBot {
 
     // handles incoming messages
     this.client.on('messageCreate', message => {  // recent change yung messageCreate
-      this.msgproc.processMessage(message, this.client.user.id, this.scorer);
+      this.msgproc.processMessage(message, this.client.user.id, this.scorer, this.rolegivermngr);
     });
 
     // handles usage of slash commands

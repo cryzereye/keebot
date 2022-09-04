@@ -2,13 +2,14 @@ const { dev, testCHID, verifyCHID, me_id } = require('../json/config.json');
 class MessageProcessor {
   constructor() { }
 
-  async processMessage(message, clientID, scorer) {
+  async processMessage(message, clientID, scorer, rolegivermngr) {
     let authorID = message.author.id.toString();
+    if (authorID === clientID) return; // if bot sent the message, ignore
+
     let authorName = message.author.username + '#' + message.author.discriminator;
     let messageCHID = message.channel.id;
     let currentlyTesting = (messageCHID == testCHID && dev);
 
-    if (authorID === clientID) return; // if bot sent the message, ignore
     if (messageCHID == verifyCHID && !dev || currentlyTesting) { // only for vouch channel
       console.log("Processing vouch msg from " + authorName);
       // process all verifications
@@ -28,8 +29,8 @@ class MessageProcessor {
           else scorer.addPoint(authorID, authorName, mentioned);
         });
       }
-      if (!dev)
-        this.rolegivermngr.roleCheck(scorer.getScore(authorID), message);
+      //if (!dev)
+        rolegivermngr.roleCheck(scorer.getScore(authorID), message);
     }
   }
 }
