@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-const { commands, me_id } = require('../json/config.json');
+const { commands, me_id, botCHID, testCHID } = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
 
 class CommandProcessor {
@@ -8,7 +8,10 @@ class CommandProcessor {
     async processCommand(interaction, scorer, rolegivermngr){
       const { commandName, user } = interaction;
       let fullName = `${user.username}#${user.discriminator}`;
+      let interactionCHID = interaction.channel.id;
+
       let result = "";
+      if(interactionCHID != botCHID && !dev) return await interaction.reply(`Use commands in <#${botCHID}>`);
       switch(commandName){
         case commands[0].name: {
           const target = interaction.options.getUser('user');
