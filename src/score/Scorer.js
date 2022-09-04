@@ -1,6 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-const { DBManager } = require('../util/DBManager');
-const { RoleGiver } = require('../role/RoleGiver');
+//const { DBManager } = require('../util/DBManager');
 const { relevant_roles } = require('../json/config.json');
 const fs = require('fs');
 const fileName = '../json/scores.json';
@@ -59,7 +58,6 @@ class Scorer {
    */
   getStatsEmbed(interaction, user){
     (async () => {
-      let rg = new RoleGiver();
       let record = scores[user.id];
       let fullName = `${user.username}#${user.discriminator}`;
       let transStr = "";

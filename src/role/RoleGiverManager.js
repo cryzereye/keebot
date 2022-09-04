@@ -1,8 +1,7 @@
-const { RoleGiver } = require('./RoleGiver');
 const { roles, serverID } = require('../json/config.json');
+const dUtil = require('../util/DiscordUtil');
 class RoleGiverManager {
   constructor(client){
-    this.rolegiver = new RoleGiver();
     this.client = client;
   }
 
@@ -32,7 +31,7 @@ class RoleGiverManager {
     let len = roles.length;
     for(let i = 0; i < len; i++){
       if(userScore >= roles[i].filter){
-        await this.rolegiver.addRoleToUser(message.author, message.guild, this.getRoleInst(message, roles[i].role));
+        await dUtil.addRoleToUser(message.author, message.guild, this.getRoleInst(message, roles[i].role));
       }
     }
   }

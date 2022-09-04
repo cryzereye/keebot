@@ -60,3 +60,31 @@ exports.guildMemberHasRole = async(gm, role) => {
   }
   return false;
 }
+
+/**
+ * adds the given Role to the given User
+ * @param {discord.js.User} user 
+ * @param {discord.js.Guild} guild 
+ * @param {discord.js.Role} role 
+ */
+exports.addRoleToUser = async(user, guild, role) => {
+  let gm = await this.getGuildMemberfromID(user.id, guild);
+  if(gm != undefined && !(await this.guildMemberHasRole(gm, role))){ // if member already has role, then do not put the role
+    gm.roles.add(role).catch((e) => console.log(e.message));
+    console.log(role.name + " added from " + user.username);
+  }
+}
+
+/**
+ * removes the given Role to the given User
+ * @param {discord.js.User} user 
+ * @param {discord.js.Guild} guild 
+ * @param {discord.js.Role} role 
+ */
+ exports.removeRoleToUser = async(user, guild, role) => {
+  let gm = await this.getGuildMemberfromID(user.id, guild);
+  if(gm != undefined && await this.guildMemberHasRole(gm, role)){ // if member already has role, then do not put the role
+    gm.roles.remove(role).catch((e) => console.log(e.message));
+    console.log(role.name + " removed from " + user.username);
+  }
+}

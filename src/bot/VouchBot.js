@@ -1,7 +1,7 @@
 const { Client, Intents} = require('discord.js');
 const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
-const { discord_id, discord_token, serverID, commands } = require('../json/config.json');
+const { discord_id, discord_token, serverID, commands, dev } = require('../json/config.json');
 const { Scorer } = require('../score/Scorer');
 const { RoleGiverManager } = require('../role/RoleGiverManager');
 const { DBManager } = require('../util/DBManager');
@@ -16,6 +16,18 @@ class VouchBot {
     this.client.on('ready', () => {
       this.buildSlashCommands(); // client.application is null until client is ready
       console.log("bot is ready");  
+      if(dev){
+        this.client.user.setPresence({
+          activities: [{ name: "IN DEVELOPMENT"}],
+          status: "dnd"
+        });
+      }
+      else{
+        this.client.user.setPresence({
+          activities: [{ name: "/help"}], 
+          status: "online"
+        });
+      }
     });
 
     // handles incoming messages
