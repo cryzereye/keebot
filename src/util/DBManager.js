@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
 const { Score } = require('../models/Score');
-const { Config } = require('../models/Config');
+const VouchMsg = require('../models/VouchMsg');
 const { connURI, dbname, collnames } = require('../json/config.json');
 
 class DBManager {
@@ -9,12 +9,18 @@ class DBManager {
 
     console.log("Connecting to database...");
     this.dbclient.connect((err, db) => {
-      this.scoredb = db.db(dbname).collection(collnames[0]);
-      if(this.scoredb != undefined)
+      this.colldb = [];
+      this.colldb[0] = db.db(dbname).collection(collnames[0]);
+      this.colldb[1] = db.db(dbname).collection(collnames[1]);
+      if(this.colldb[0] != undefined) {
         this.score = new Score();
+        console.log(`${collnames[0]} connected`);
+      }
+      if(this.colldb[1] != undefined)
+      console.log(`${collnames[1]} connected`);
 
       console.log("Connected to database!");
-    });
+    }).catch(console.error);
   }
 
   /**
@@ -38,6 +44,10 @@ class DBManager {
 
   async findRecord(id){
     return await this.score.findRecord(this.scoredb, id.toString());
+  }
+
+  async saveVouch(msgid, authorID, authorName, mentioned, content){
+    await VouchMsg.saveVouch(this.vouchmsgdb, msgid, authorID, authorName, mentioned, content);
   }
 }
 
