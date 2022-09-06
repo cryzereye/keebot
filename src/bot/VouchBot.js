@@ -1,73 +1,37 @@
 const { Client, Intents} = require('discord.js');
 const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
-const { discord_id, discord_token, command_sign, me_id, verifyCHID, botCHID, testCHID, dev, serverID, commands } = require('../json/config.json');
+const { discord_id, discord_token, serverID, commands, dev } = require('../json/config.json');
 const { Scorer } = require('../score/Scorer');
-const { MessageExtractor } = require('../util/MessageExtractor');
 const { RoleGiverManager } = require('../role/RoleGiverManager');
 const { DBManager } = require('../util/DBManager');
-const { SlashCommandManager } = require('./SlashCommandManager');
-
-const fs = require('node:fs');
+const { CommandProcessor } = require('./CommandProcessor');
+const { MessageProcessor } = require('./MessageProcessor');
+const dUtil = require('../util/DiscordUtil');
 
 class VouchBot {
   constructor() {
     this.buildDependencies();
   
-    // events detection
+    // client application ready up
     this.client.on('ready', () => {
       this.buildSlashCommands(); // client.application is null until client is ready
-      if (dev)
-        this.sendMessageTo(testCHID, "**BOT IS ALIVE!!!**");
-      else
-        this.sendMessageTo(botCHID, "**BOT IS ALIVE!!!**");
+      this.updatePresence();
+      console.log("bot is ready"); 
     });
 
+    // handles incoming messages
     this.client.on('messageCreate', message => {  // recent change yung messageCreate
-      let msg = '';
-      let authorID = message.author.id.toString();
-      let authorName = message.author.username + '#' + message.author.discriminator;
-      let messageCHID = message.channel.id;
-      let currentlyTesting = (messageCHID == testCHID && dev);
-
-      if (authorID === this.client.user.id) return; // if bot sent the message, ignore
-      if (messageCHID == verifyCHID && !dev || !currentlyTesting) { // only for vouch channel
-        console.log("Processing vouch msg from " + authorName);
-        // process all verifications
-        // id1 sender, id2 mentioned
-
-        // possible reply back, 1 instance
-        if (message.type == 'REPLY') {
-          let replyto = message.mentions.repliedUser.username + '#' + message.mentions.repliedUser.discriminator;
-          this.scorer.addPoint(authorID, authorName, replyto);
-        }
-        else {
-          // initial send
-          message.mentions.users.map(x => {
-            this.scorer.addPoint(authorID, authorName, x.username + '#' + x.discriminator);
-          });
-        }
-        if (!dev)
-          this.rolegivermngr.roleCheck(this.scorer.getScore(authorID), message);
-      }
+      this.msgproc.processMessage(message, this.client.user.id, this.scorer, this.rolegivermngr);
     });
 
     // handles usage of slash commands
     this.client.on('interactionCreate', async interaction => {
       if (!interaction.isCommand()) return;
-      this.commandmngr.processCommand(interaction, this.scorer, this.rolegivermngr);
+      this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr);
     });
     
     this.client.login(discord_token);
-  }
-
-  sendMessageTo(chid, message) {
-    let server = this.client.guilds.cache.find((g) => g.id == serverID);
-    server.channels.fetch(chid).then((ch) => {
-      ch.send(message).then(
-        console.log(`${message} sent to #${ch.name}`)
-      ).catch(console.error);
-    }).catch(console.error);
   }
 
   /**
@@ -83,7 +47,8 @@ class VouchBot {
     this.dbmngr = new DBManager();
     this.rolegivermngr = new RoleGiverManager(this.client);
     this.scorer = new Scorer(this.dbmngr);
-    this.commandmngr = new SlashCommandManager();
+    this.cmdproc = new CommandProcessor();
+    this.msgproc = new MessageProcessor();
   }
 
   /**
@@ -95,6 +60,33 @@ class VouchBot {
     await rest.put(Routes.applicationGuildCommands(discord_id, serverID), { body: commands })
       .then((data) => console.log(`Successfully registered ${data.length} application commands.`))
       .catch(console.error);
+  }
+
+  /**
+   * updates bot presence
+   */
+  async updatePresence(){
+    let presence = {
+      activities:[{
+        type: "PLAYING",
+        platform: "desktop",
+        url: "https://github.com/cryzereye/vouch-bot-js"
+      }],
+      status : "online"
+    }
+    
+    if(dev){
+      presence.activities[0].name = "IN DEVELOPMENT";
+      presence.status = "dnd";
+    }
+    else{
+      presence.activities[0].name = "/help for more details";
+      presence.status = "online";
+    }
+    this.client.user.setPresence({
+      activities: presence.activities,
+      status: presence.status
+    });
   }
 }
 

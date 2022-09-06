@@ -1,8 +1,7 @@
-const { RoleGiver } = require('./RoleGiver');
 const { roles, serverID } = require('../json/config.json');
+const dUtil = require('../util/DiscordUtil');
 class RoleGiverManager {
   constructor(client){
-    this.rolegiver = new RoleGiver();
     this.client = client;
   }
 
@@ -17,7 +16,7 @@ class RoleGiverManager {
       console.log("Cleaning " + roles[i].role + "...");
       role = this.getRoleInst(message, roles[i].role);
       filter = roles[i].filter;
-      await server.members.fetch(mList => mList.roles.cache.has(id));
+      await server.members.fetch(mList => mList.roles.cache.has(id)).catch(console.error);
       guild.roles.cache.get(role.id).members.map(m => {
         console.log(m);
         //if(scorer.getScore(m.id) < filter)
@@ -32,7 +31,7 @@ class RoleGiverManager {
     let len = roles.length;
     for(let i = 0; i < len; i++){
       if(userScore >= roles[i].filter){
-        await this.rolegiver.addRoleToUser(message.author, message.guild, this.getRoleInst(message, roles[i].role));
+        await dUtil.addRoleToUser(message.author, message.guild, this.getRoleInst(message, roles[i].role)).catch(console.error);
       }
     }
   }
