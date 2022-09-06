@@ -7,6 +7,7 @@ const { RoleGiverManager } = require('../role/RoleGiverManager');
 const { DBManager } = require('../util/DBManager');
 const { CommandProcessor } = require('./CommandProcessor');
 const { MessageProcessor } = require('./MessageProcessor');
+const dUtil = require('../util/DiscordUtil');
 
 class VouchBot {
   constructor() {
@@ -16,15 +17,25 @@ class VouchBot {
     this.client.on('ready', () => {
       this.buildSlashCommands(); // client.application is null until client is ready
       console.log("bot is ready");  
+      
       if(dev){
         this.client.user.setPresence({
-          activities: [{ name: "IN DEVELOPMENT"}],
+          activities: [{ 
+            name: "IN DEVELOPMENT",
+            type: "PLAYING",
+            platform: "desktop",
+            url: "https://github.com/cryzereye/vouch-bot-js"
+          }],
           status: "dnd"
         });
       }
       else{
         this.client.user.setPresence({
-          activities: [{ name: "/help"}], 
+          activities: [{ 
+            name: "/help for more details",
+            type: "PLAYING",
+            platform: "desktop",
+            url: "https://github.com/cryzereye/vouch-bot-js"}], 
           status: "online"
         });
       }
