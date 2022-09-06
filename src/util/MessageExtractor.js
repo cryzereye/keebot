@@ -1,7 +1,9 @@
+const { DBManager } = require("./DBManager");
+
 class MessageExtractor {
   constructor(){}
 
-  async extractAllMessages(channel, scorer, rolegivermngr){
+  async extractAllMessages(dbmngr, channel, scorer, rolegivermngr){
     let count = 0;
     let hasMoreMessages = true;
     let lastMessageID = channel.lastMessageId;
@@ -15,6 +17,7 @@ class MessageExtractor {
             let mentions = msg.mentions.users; // mentioned by initial vouch
             mentions.map(x => {
               //added async sequence here
+              dbmngr.saveVouch(msg.id, msg.author.id, owner, x.username + '#' + x.discriminator, msg.content);
               scorer.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator);
               rolegivermngr.roleCheck(scorer.getScore(msg.author.id.toString()), msg);
             });

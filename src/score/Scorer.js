@@ -48,7 +48,7 @@ class Scorer {
     scores[id1]['transactions'][id2] += 1;
 
     this.updateScoreFile();
-    await this.dbmngr.addScore(id1, id1_name, id2);
+    this.dbmngr.addScore(id1, id1_name, id2);
   }
 
   /**

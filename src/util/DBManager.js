@@ -49,6 +49,14 @@ class DBManager {
   async saveVouch(msgid, authorID, authorName, mentioned, content){
     await VouchMsg.saveVouch(this.vouchmsgdb, msgid, authorID, authorName, mentioned, content);
   }
+
+  async deleteVouch(msgid){
+    await VouchMsg.deleteOne(this.vouchmsgdb, msgid);
+  }
+
+  async updateVouch(msgid){
+    await VouchMsg.deleteOne(this.vouchmsgdb, msgid);
+  }
 }
 
 module.exports = { DBManager }

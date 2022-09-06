@@ -50,7 +50,7 @@ class VouchBot {
         if (authorID == me_id) { // commands from admin/me
           console.log('Data extraction from #verify-transactions starting...');
           let extractor = new MessageExtractor();
-          extractor.extractAllMessages(message.channel, this.scorer, this.rolegivermngr);
+          extractor.extractAllMessages(this.dbmngr, message.channel, this.scorer, this.rolegivermngr);
           message.delete();
         }
       }
