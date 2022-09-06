@@ -85,3 +85,17 @@ exports.addRoleToUser = async(user, guild, role) => {
     console.log(role.name + " removed from " + user.username);
   }
 }
+
+/**
+ * returns Emoji instance using its name
+ * @param {String} name: Emoji name
+ * @param {discord.js.Client} client 
+ * @param {Snowflake} guildID 
+ * @returns {discord.js.Emoji}
+ */
+exports.getEmojiInstance = async(name, client, guildID) => {
+  let guild = await this.getGuildFromID(client, guildID).catch(console.error);
+  if(guild != undefined){
+    return guild.emojis.cache.find((e) => e.name == name);
+  }
+}
