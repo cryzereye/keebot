@@ -1,12 +1,21 @@
-const { DBManager } = require("./DBManager");
+const dUtil = require('../util/DiscordUtil');
+const {serverID, verifyCHID } = require('../json/config.json');
 
 class MessageExtractor {
-  constructor(){}
+  constructor(client){
+    this.client = client;
+  }
 
-  async extractAllMessages(dbmngr, channel, scorer, rolegivermngr){
+  async extractAllVouches(dbmngr, scorer, rolegivermngr){
+    let channel = await dUtil.getChannelFromID(
+      await dUtil.getGuildFromID(this.client, serverID).catch(console.error),
+      verifyCHID
+    ).catch(console.error);
+
     let count = 0;
     let hasMoreMessages = true;
     let lastMessageID = channel.lastMessageId;
+
     scorer.clearScores();
     while(hasMoreMessages) {
       await channel.messages.fetch({ limit: 100, before: lastMessageID }).then(msglist => {

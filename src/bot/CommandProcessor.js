@@ -3,7 +3,10 @@ const { commands, me_id, botCHID, testCHID } = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
 
 class CommandProcessor {
-    constructor() {}
+    constructor(client, dbmngr) {
+      this.client = client;
+      this.dbmngr = dbmngr;
+    }
 
     async processCommand(interaction, scorer, rolegivermngr){
       const { commandName, user } = interaction;
@@ -24,8 +27,8 @@ class CommandProcessor {
           if(user.id != me_id)
             return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
           console.log('Data extraction from #verify-transactions starting...');
-          let extractor = new MessageExtractor();
-          extractor.extractAllMessages(interaction.channel, scorer, rolegivermngr)
+          let extractor = new MessageExtractor(this.client);
+          extractor.extractAllVouches(this.dbmngr, scorer, rolegivermngr)
             .then(console.log('Extraction started'))
             .catch(console.error);
           return;

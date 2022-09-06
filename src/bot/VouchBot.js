@@ -57,8 +57,8 @@ class VouchBot {
     this.dbmngr = new DBManager();
     this.rolegivermngr = new RoleGiverManager(this.client);
     this.scorer = new Scorer(this.dbmngr);
-    this.cmdproc = new CommandProcessor();
-    this.msgproc = new MessageProcessor();
+    this.cmdproc = new CommandProcessor(this.client, this.dbmngr);
+    this.msgproc = new MessageProcessor(this.dbmngr);
   }
 
   /**

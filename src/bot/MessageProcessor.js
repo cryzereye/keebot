@@ -1,6 +1,8 @@
 const { dev, testCHID, verifyCHID, me_id } = require('../json/config.json');
 class MessageProcessor {
-  constructor() { }
+  constructor(dbmngr) {
+    this.dbmngr = dbmngr;
+  }
 
   async processMessage(message, clientID, scorer, rolegivermngr) {
     let authorID = message.author.id.toString();

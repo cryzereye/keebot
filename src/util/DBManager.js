@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb');
-const { Score } = require('../models/Score');
+const Score = require('../models/Score');
 const VouchMsg = require('../models/VouchMsg');
 const { connURI, dbname, collnames } = require('../json/config.json');
 
@@ -13,7 +13,6 @@ class DBManager {
       this.colldb[0] = db.db(dbname).collection(collnames[0]);
       this.colldb[1] = db.db(dbname).collection(collnames[1]);
       if(this.colldb[0] != undefined) {
-        this.score = new Score();
         console.log(`${collnames[0]} connected`);
       }
       if(this.colldb[1] != undefined)
@@ -30,20 +29,20 @@ class DBManager {
    * @param {string} [username] discord username
    * @param {string} [target] username of targer discord user
    */
-  addScore(id, username, target) {
-    this.score.addPoint(this.dbclient, this.scoredb, id.toString(), username, target);
+  async addScore(id, username, target) {
+    await Score.addPoint(this.dbclient, this.scoredb, id.toString(), username, target);
   }
 
-  getScore(id) {
-    this.score.getScore(this.scoredb, id.toString());
+  async getScore(id) {
+    return await Score.getScore(this.scoredb, id.toString());
   }
 
-  clearScores(){
-    this.score.clearScores(this.scoredb);
+  async clearScores(){
+    await Score.clearScores(this.scoredb);
   }
 
   async findRecord(id){
-    return await this.score.findRecord(this.scoredb, id.toString()).catch(console.error);
+    return await Score.findRecord(this.scoredb, id.toString()).catch(console.error);
   }
 
   async saveVouch(msgid, authorID, authorName, mentioned, content){
