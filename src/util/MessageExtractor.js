@@ -6,7 +6,12 @@ class MessageExtractor {
     this.client = client;
   }
 
-  async extractAllVouches(dbmngr, scorer, rolegivermngr){
+  /**
+   * extracts all valid vouches from vouch channel
+   * @param {DBManager} dbmngr: DBManager instance
+   * @returns {Boolean}
+   */
+  async extractAllVouches(dbmngr){
     let channel = await dUtil.getChannelFromID(
       await dUtil.getGuildFromID(this.client, serverID).catch(console.error),
       verifyCHID
@@ -28,10 +33,7 @@ class MessageExtractor {
             let mentions = msg.mentions.users; // mentioned by initial vouch
             mentions.map(x => {
               countWithMention++;
-              //added async sequence here
               dbmngr.saveVouch(msg.id, msg.author.id, owner, x.username + '#' + x.discriminator, msg.content);
-              //scorer.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator);
-              //rolegivermngr.roleCheck(scorer.getScore(msg.author.id.toString()), msg);
             });
           }
           catch(e){

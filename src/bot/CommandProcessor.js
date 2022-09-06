@@ -28,7 +28,7 @@ class CommandProcessor {
             return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
           console.log('Data extraction from #verify-transactions starting...');
           let extractor = new MessageExtractor(this.client);
-          extractor.extractAllVouches(this.dbmngr, scorer, rolegivermngr)
+          extractor.extractAllVouches(this.dbmngr)
             .then(console.log('Extraction started'))
             .catch(console.error);
           return;
