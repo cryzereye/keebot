@@ -43,7 +43,7 @@ class DBManager {
   }
 
   async findRecord(id){
-    return await this.score.findRecord(this.scoredb, id.toString());
+    return await this.score.findRecord(this.scoredb, id.toString()).catch(console.error);
   }
 
   async saveVouch(msgid, authorID, authorName, mentioned, content){

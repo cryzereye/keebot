@@ -1,12 +1,12 @@
 const { MessageEmbed } = require('discord.js');
-const { DBManager } = require('../util/DBManager');
-const { RoleGiver } = require('../role/RoleGiver');
-const { Utilities } = require('../util/Utilities');
+//const { DBManager } = require('../util/DBManager');
 const { relevant_roles } = require('../json/config.json');
 const fs = require('fs');
 const fileName = '../json/scores.json';
 const osFile = './src/json/scores.json';
 let { scores } = require(fileName);
+const util = require('../util/Utilities');
+const dUtil = require('../util/DiscordUtil');
 
 class Scorer {
   constructor(dbmngr){
@@ -31,9 +31,9 @@ class Scorer {
 
   /**
    * adds point to id1 and updates its username. Adds a transaction with id2
-   * @param {String} id1 
-   * @param {String} id1_name 
-   * @param {String} id2 
+   * @param {String} id1 : ID of sender
+   * @param {String} id1_name : username of sender
+   * @param {String} id2: username of mentioned/replied to 
    */
   addPoint(id1, id1_name, id2){
     try{
@@ -51,74 +51,13 @@ class Scorer {
     this.dbmngr.addScore(id1, id1_name, id2);
   }
 
-  /**
-   * legacy stats UI. returns stats from JSON records given the ID
-   * @param {String} id 
-   * @returns 
-   */
-  getStats(id){
-    let str = '';
-    if(scores[id] == null) str = 'No records yet!';
-    else {
-      str = `${scores[id].username}\nTransaction count: ${scores[id].points}\n\nWith:\n`;
-
-      Object.keys(scores[id]['transactions']).forEach(key => {
-        str += `${key}: ${scores[id]['transactions'][key]}\n`;
-      });
-    }
-
-    return '```' + str + '```';
-  }
-
-  /**
-   * returns the user's stats from DB built into an EmbedBuilder instance
-   * @param {discordjs.User} user 
-   * @returns {discordjs.EmbedBuilder}
-   */
-  getStatsEmbedDB(message, user){
-    (async () => {
-      let rg = new RoleGiver();
-      let record = await this.dbmngr.findRecord(user.id);
-      let fullName = `${user.username}#${user.discriminator}`;
-      let transStr = "";
-      let roles = "";
-
-      let gm = await rg.fetchUser(user, message.guild);
-      gm.roles.cache.map( (r) => {
-        if(r.name in relevant_roles)
-          roles += `<@&${r.id}> `;
-      });
-
-      if(typeof record !== 'undefined' && record) {
-        Object.keys(record.transactions).forEach(key => {
-          transStr += `${key} : ${record.transactions[key]}\n`;
-        });
-      }
-      else {
-        record = {}
-        record["points"] = "ZERO";
-        transStr = "NO TRANSACTIONS YET!";
-      }
-      
-      message.reply({ embeds: [this.generateScoreCard(
-        fullName,
-        record.points,
-        user.avatarURL(),
-        roles,
-        transStr
-      )]});
-    })();
-  }
-
     /**
    * returns the user's stats from JSON records built into an EmbedBuilder instance
    * @param {discordjs.User} user 
    * @returns {discordjs.EmbedBuilder}
    */
-  getStatsEmbed(message, user){
+  getStatsEmbed(interaction, user){
     (async () => {
-      let util = new Utilities();
-      let rg = new RoleGiver();
       let record = scores[user.id];
       let fullName = `${user.username}#${user.discriminator}`;
       let transStr = "";
@@ -126,7 +65,7 @@ class Scorer {
       let creaStr = user.createdAt.toString();
       let dateData = util.getTimeDiff(user.createdAt);
       let creaDur = "";
-      let gm = await rg.fetchUser(user, message.guild);
+      let gm = await dUtil.getGuildMemberfromID(user.id, interaction.guild).catch(console.error);
       let joinStr = gm.joinedAt.toString();
       let joinDur = "";
 
@@ -140,8 +79,7 @@ class Scorer {
         joinDur += `${dateData[x]} `;
       });
 
-      let roleCache = await this.getUserRoles(user, message.guild, rg);
-      roleCache.map( (r) => {
+      gm.roles.cache.map( (r) => {
         if(relevant_roles.includes(r.name))
           roles += `<@&${r.id}> `;
       });
@@ -166,7 +104,7 @@ class Scorer {
           transStr += `${sortedTrans[i][0]} : ${sortedTrans[i][1]}\n`;
       }
 
-      message.reply({ embeds: [this.generateScoreCard(
+      interaction.reply({ embeds: [this.generateScoreCard(
         fullName,
         record.points,
         user.displayAvatarURL(),
@@ -176,7 +114,7 @@ class Scorer {
         creaDur,
         joinStr,
         joinDur
-      )]});
+      )]}).catch(console.error);
     })();
   }
 
@@ -199,18 +137,6 @@ class Scorer {
     else return scores[id].points;
   }
 
-  /**
-   * returns user roles given the User and Guild instances
-   * @param {User} user 
-   * @param {Guild} guild 
-   * @returns {Collection <discordjs.Roles>}
-   */
-  async getUserRoles(user, guild, rg){
-    if(rg == null || rg == undefined) rg = new RoleGiver();
-    let gm = await rg.fetchUser(user, guild);
-    return gm.roles.cache;
-  }
-  
   /**
    * generates and send the score card from the given data
    * @param {String} fullName 
