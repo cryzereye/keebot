@@ -1,4 +1,4 @@
-const { dev, testCHID, verifyCHID, me_id } = require('../json/config.json');
+const { dev, testCHID, verifyCHID, me_id, command_sign } = require('../json/config.json');
 class MessageProcessor {
   constructor(dbmngr) {
     this.dbmngr = dbmngr;
@@ -11,8 +11,10 @@ class MessageProcessor {
     let authorName = message.author.username + '#' + message.author.discriminator;
     let messageCHID = message.channel.id;
     let currentlyTesting = (messageCHID == testCHID && dev);
-
-    if (messageCHID == verifyCHID && !dev || currentlyTesting) { // only for vouch channel
+    if(message.content.startsWith(command_sign)){
+      await message.reply(```Slash commands are now implemented! Please use /help for more details```);
+    }
+    else if (messageCHID == verifyCHID && !dev || currentlyTesting) { // only for vouch channel
       console.log("Processing vouch msg from " + authorName);
       // process all verifications
       // id1 sender, id2 mentioned
