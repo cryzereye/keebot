@@ -29,11 +29,11 @@ class DBManager {
    * @param {string} [target] username of targer discord user
    */
   async addScore(id, username, target) {
-    await Score.addPoint(this.dbclient, this.colldb[0], id.toString(), username, target);
+    await Score.addPoint(this.colldb[0], id, username, target);
   }
 
   async getScore(id) {
-    return await Score.getScore(this.colldb[0], id.toString());
+    return await Score.getScore(this.colldb[0], id);
   }
 
   async clearScores(){
@@ -56,8 +56,12 @@ class DBManager {
     await VouchMsg.deleteOne(this.colldb[1], msgid);
   }
 
-  async deleteAll(){
+  async deleteAllVouch(){
     await VouchMsg.deleteAll(this.colldb[1]);
+  }
+
+  async getAllVouch(){
+    return await VouchMsg.getAll(this.colldb[1]);
   }
 }
 

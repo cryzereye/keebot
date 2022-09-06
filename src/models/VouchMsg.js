@@ -1,4 +1,4 @@
-exports.saveVouch = async(coll, msgid, authorID, authorName, mentioned, content) => {
+exports.saveVouch = async (coll, msgid, authorID, authorName, mentioned, content) => {
     await coll.insertOne({
         msgid: msgid,
         authorID: authorID,
@@ -8,24 +8,24 @@ exports.saveVouch = async(coll, msgid, authorID, authorName, mentioned, content)
     }).catch(console.error);
 }
 
-exports.getAll = async(coll) => {
-    return await coll.findMany().catch(console.error);
+exports.getAll = async (coll) => {
+    return await coll.find({});
 }
 
-exports.deleteAll = async(coll) => {
+exports.deleteAll = async (coll) => {
     return await coll.deleteMany({}).catch(console.error);
 }
 
-exports.deleteOne = async(coll, msgid) => {
+exports.deleteOne = async (coll, msgid) => {
     return await coll.deleteOne({
         _id: msgid
     }).catch(console.error);
 }
 
-exports.updateOne = async(coll, msgid, data) => {
+exports.updateOne = async (coll, msgid, data) => {
     return await coll.updateOne({
         _id: msgid
     },
-    { $set: data},
-    { upsert: true}).catch(console.error);
+        { $set: data },
+        { upsert: true }).catch(console.error);
 }
