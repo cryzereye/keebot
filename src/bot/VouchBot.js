@@ -16,29 +16,8 @@ class VouchBot {
     // client application ready up
     this.client.on('ready', () => {
       this.buildSlashCommands(); // client.application is null until client is ready
-      console.log("bot is ready");  
-      
-      if(dev){
-        this.client.user.setPresence({
-          activities: [{ 
-            name: "IN DEVELOPMENT",
-            type: "PLAYING",
-            platform: "desktop",
-            url: "https://github.com/cryzereye/vouch-bot-js"
-          }],
-          status: "dnd"
-        });
-      }
-      else{
-        this.client.user.setPresence({
-          activities: [{ 
-            name: "/help for more details",
-            type: "PLAYING",
-            platform: "desktop",
-            url: "https://github.com/cryzereye/vouch-bot-js"}], 
-          status: "online"
-        });
-      }
+      this.updatePresence();
+      console.log("bot is ready"); 
     });
 
     // handles incoming messages
@@ -81,6 +60,33 @@ class VouchBot {
     await rest.put(Routes.applicationGuildCommands(discord_id, serverID), { body: commands })
       .then((data) => console.log(`Successfully registered ${data.length} application commands.`))
       .catch(console.error);
+  }
+
+  /**
+   * updates bot presence
+   */
+  async updatePresence(){
+    let presence = {
+      activities:[{
+        type: "PLAYING",
+        platform: "desktop",
+        url: "https://github.com/cryzereye/vouch-bot-js"
+      }],
+      status : "online"
+    }
+    
+    if(dev){
+      presence.activities[0].name = "IN DEVELOPMENT";
+      presence.status = "dnd";
+    }
+    else{
+      presence.activities[0].name = "/help for more details";
+      presence.status = "online";
+    }
+    this.client.user.setPresence({
+      activities: presence.activities,
+      status: presence.status
+    });
   }
 }
 
