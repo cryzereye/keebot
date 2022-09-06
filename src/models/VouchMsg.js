@@ -1,6 +1,6 @@
 exports.saveVouch = async(coll, msgid, authorID, authorName, mentioned, content) => {
     await coll.insertOne({
-        _id: msgid,
+        msgid: msgid,
         authorID: authorID,
         authorName: authorName,
         mentioned: mentioned,
@@ -13,7 +13,7 @@ exports.getAll = async(coll) => {
 }
 
 exports.deleteAll = async(coll) => {
-    return await coll.deleteMany().catch(console.error);
+    return await coll.deleteMany({}).catch(console.error);
 }
 
 exports.deleteOne = async(coll, msgid) => {

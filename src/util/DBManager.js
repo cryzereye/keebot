@@ -12,14 +12,13 @@ class DBManager {
       this.colldb = [];
       this.colldb[0] = db.db(dbname).collection(collnames[0]);
       this.colldb[1] = db.db(dbname).collection(collnames[1]);
-      if(this.colldb[0] != undefined) {
+      if(this.colldb[0] != undefined)
         console.log(`${collnames[0]} connected`);
-      }
       if(this.colldb[1] != undefined)
-      console.log(`${collnames[1]} connected`);
+        console.log(`${collnames[1]} connected`);
 
       console.log("Connected to database!");
-    }).catch(console.error);
+    });
   }
 
   /**
@@ -30,31 +29,35 @@ class DBManager {
    * @param {string} [target] username of targer discord user
    */
   async addScore(id, username, target) {
-    await Score.addPoint(this.dbclient, this.scoredb, id.toString(), username, target);
+    await Score.addPoint(this.dbclient, this.colldb[0], id.toString(), username, target);
   }
 
   async getScore(id) {
-    return await Score.getScore(this.scoredb, id.toString());
+    return await Score.getScore(this.colldb[0], id.toString());
   }
 
   async clearScores(){
-    await Score.clearScores(this.scoredb);
+    await Score.clearScores(this.colldb[0]);
   }
 
   async findRecord(id){
-    return await Score.findRecord(this.scoredb, id.toString()).catch(console.error);
+    return await Score.findRecord(this.colldb[0], id.toString()).catch(console.error);
   }
 
   async saveVouch(msgid, authorID, authorName, mentioned, content){
-    await VouchMsg.saveVouch(this.vouchmsgdb, msgid, authorID, authorName, mentioned, content);
+    await VouchMsg.saveVouch(this.colldb[1], msgid, authorID, authorName, mentioned, content);
   }
 
   async deleteVouch(msgid){
-    await VouchMsg.deleteOne(this.vouchmsgdb, msgid);
+    await VouchMsg.deleteOne(this.colldb[1], msgid);
   }
 
   async updateVouch(msgid){
-    await VouchMsg.deleteOne(this.vouchmsgdb, msgid);
+    await VouchMsg.deleteOne(this.colldb[1], msgid);
+  }
+
+  async deleteAll(){
+    await VouchMsg.deleteAll(this.colldb[1]);
   }
 }
 

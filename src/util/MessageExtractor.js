@@ -13,10 +13,12 @@ class MessageExtractor {
     ).catch(console.error);
 
     let count = 0;
+    let countWithMention = 0; 
     let hasMoreMessages = true;
     let lastMessageID = channel.lastMessageId;
 
-    scorer.clearScores();
+    //scorer.clearScores();
+    await dbmngr.deleteAll();
     while(hasMoreMessages) {
       await channel.messages.fetch({ limit: 100, before: lastMessageID }).then(msglist => {
         let owner;
@@ -25,10 +27,11 @@ class MessageExtractor {
             owner = msg.author.username + '#' + msg.author.discriminator;
             let mentions = msg.mentions.users; // mentioned by initial vouch
             mentions.map(x => {
+              countWithMention++;
               //added async sequence here
               dbmngr.saveVouch(msg.id, msg.author.id, owner, x.username + '#' + x.discriminator, msg.content);
-              scorer.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator);
-              rolegivermngr.roleCheck(scorer.getScore(msg.author.id.toString()), msg);
+              //scorer.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator);
+              //rolegivermngr.roleCheck(scorer.getScore(msg.author.id.toString()), msg);
             });
           }
           catch(e){
@@ -43,6 +46,7 @@ class MessageExtractor {
       .catch(console.error); 
     }
     console.log('Message count: ' + count);
+    console.log('Message with mentioned count: ' + countWithMention);
     return true;
   }
 

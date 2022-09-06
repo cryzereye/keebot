@@ -66,26 +66,26 @@ class VouchBot {
    * updates bot presence
    */
   async updatePresence(){
+    let status;
     let presence = {
       activities:[{
         type: "PLAYING",
         platform: "desktop",
         url: "https://github.com/cryzereye/vouch-bot-js"
-      }],
-      status : "online"
+      }]
     }
     
     if(dev){
       presence.activities[0].name = "IN DEVELOPMENT";
-      presence.status = "dnd";
+      status = "dnd";
     }
     else{
       presence.activities[0].name = "/help for more details";
-      presence.status = "online";
+      status = "online";
     }
     this.client.user.setPresence({
       activities: presence.activities,
-      status: presence.status
+      status: status
     });
   }
 }
