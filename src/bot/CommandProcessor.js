@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-const { commands, me_id, botCHID, testCHID } = require('../json/config.json');
+const { commands, me_id, botCHID, testCHID, dev } = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
 
 class CommandProcessor {
