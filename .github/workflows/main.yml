@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        branch: [nonkb-filter, mongodb, registry, main-refactor, vouch-checker, slash-commands]
+        branch: [nonkb-filter, mongodb, registry, main-refactor, vouch-checker, slash-commands, documentation, embedded-stats]
     steps:
     - name: Prepare the Git credentials
       uses: actions/checkout@v3
