@@ -31,7 +31,7 @@ class MessageProcessor {
           else scorer.addPoint(authorID, authorName, mentioned);
         });
       }
-      //if (!dev)
+      if (!dev)
         rolegivermngr.roleCheck(scorer.getScore(authorID), message);
     }
   }
