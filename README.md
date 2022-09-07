@@ -1,4 +1,5 @@
-# Naruhodo - Keebisoria Vouch Bot
+
+# ![pepenaruhodo](images/icon.webp)Naruhodo - Keebisoria Vouch Bot
 This is the bot that manages the vouching system of the Discord server Keebisoria, a Philippine keyboard market hosted via Discord. 
 
 ### Current Features:
@@ -20,6 +21,7 @@ For the technical side:
 1. Full MongoDB implementation - currently solving async and transaction issues
 2. Unit testing implementation - Jest
 3. Bot dashboard - probably with React.js for practice
+4. Cloud hosting + Docker 
 
 Sample json/config.json:
 
