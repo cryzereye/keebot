@@ -10,7 +10,7 @@ class MessageProcessor {
     let messageCHID = message.channel.id;
     let currentlyTesting = (messageCHID == testCHID && dev);
     if(message.content.startsWith(command_sign)){
-      await message.reply(```Slash commands are now implemented! Please use /help for more details```);
+      return await message.reply("```Slash commands are now implemented! Please use /help for more details```");
     }
     else if (messageCHID == verifyCHID && !dev || currentlyTesting) { // only for vouch channel
       console.log("Processing vouch msg from " + authorName);
