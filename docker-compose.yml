@@ -1,0 +1,21 @@
+version: "3.3"
+services:
+  #mongodb:
+  #  image: mongo:4.2.1
+  #  container_name: mongo
+  #  environment:
+  #    MONGO_INITDB_ROOT_USERNAME: username_here
+  #    MONGO_INITDB_ROOT_PASSWORD: password_here
+  #  networks:
+  #    - vouchnetwork
+  #  ports:
+  #    - 27017:27017
+      
+  vouchbot:
+    build:
+      context: ./
+    networks:
+      - vouchnetwork
+
+networks:
+  vouchnetwork:
