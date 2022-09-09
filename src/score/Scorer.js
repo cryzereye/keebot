@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-//const { DBManager } = require('../util/DBManager');
+const { DBManager } = require('../util/DBManager');
 const { relevant_roles, dev } = require('../json/config.json');
 const fs = require('fs');
 const fileName = '../json/scores.json';
@@ -9,9 +9,8 @@ const util = require('../util/Utilities');
 const dUtil = require('../util/DiscordUtil');
 
 class Scorer {
-  // removed dbmngr arg
-  constructor(){
-    //this.dbmngr = dbmngr;
+  constructor(dbmngr){
+    this.dbmngr = dbmngr;
   }
 
   createNewEntry(id1, id1_name, id2){
@@ -126,7 +125,7 @@ class Scorer {
   clearScores(){
     scores = {};
     this.updateScoreFile();
-    //this.dbmngr.clearScores();
+    this.dbmngr.clearScores();
   }
 
   /**

@@ -30,7 +30,7 @@ class CommandProcessor {
           return await interaction.reply(`Do /extract in #verify-transaction`).catch(console.error);
         console.log('Data extraction from #verify-transactions starting...');
         let extractor = new MessageExtractor();
-        if(await extractor.extractAllVouches(interaction.channel, scorer, rolegivermngr)){
+        if(await extractor.extractAllVouches(this.dbmngr)){
           console.log('Extraction completed successfully');
           if(await scorer.refreshScoresFromDB())
             console.log("Score refresh done successfully");
