@@ -9,8 +9,9 @@ const util = require('../util/Utilities');
 const dUtil = require('../util/DiscordUtil');
 
 class Scorer {
-  constructor(dbmngr){
-    this.dbmngr = dbmngr;
+  // removed dbmngr arg
+  constructor(){
+    //this.dbmngr = dbmngr;
   }
 
   createNewEntry(id1, id1_name, id2){
@@ -125,7 +126,7 @@ class Scorer {
   clearScores(){
     scores = {};
     this.updateScoreFile();
-    this.dbmngr.clearScores();
+    //this.dbmngr.clearScores();
   }
 
   /**
