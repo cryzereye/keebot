@@ -11,11 +11,11 @@ class DBManager {
     this.dbclient.connect((err, db) => {
       this.colldb = [];
       this.colldb[0] = db.db(dbname).collection(collnames[0]);
-      console.log("Connected to database!");
-      for(let i = 0; i < colldb.length; i++){
+      for(let i = 0; i < this.colldb.length; i++){
         if(this.colldb[i] != undefined)
           console.log(`${collnames[0]} connected`);
       }
+      console.log("Connected to database!");
     });
   }
 

@@ -14,7 +14,8 @@ class Scorer {
    */
   getStatsEmbed(interaction, user) {
     (async () => {
-      const record = await this.dbmngr.getStats(user.id.toString());
+      let record = await this.dbmngr.getStats(user.id.toString());
+      console.log(record);
       const fullName = `${user.username}#${user.discriminator}`;
       const gm = await dUtil.getGuildMemberfromID(user.id, interaction.guild).catch(console.error);
       const roles = dUtil.getRolesAsString(gm, relevant_roles);
@@ -22,7 +23,7 @@ class Scorer {
 
       let transStr = "";
 
-      if (record.points == 0) {
+      if (record == null || record.points == 0) {
         record = {}
         record["points"] = "ZERO";
         transStr = "NO TRANSACTIONS YET!";

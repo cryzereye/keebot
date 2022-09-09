@@ -20,3 +20,14 @@ exports.getStats = async (coll, id) => {
   }).catch(console.error);
   return stats;
 }
+
+/**
+ * returns number of vouch instances from db
+ * @param {MongoDB.db.Collection} coll 
+ * @param {String} id 
+ * @returns {Number}
+ */
+exports.countVouches = async(coll, id) => {
+  let records = await coll.find({authorID: id});
+  return await records.count();
+}
