@@ -163,18 +163,6 @@ class Scorer {
 
     return embedBuilder;
   }
-  /**
-   * refresh score data using vouchmsg data
-   */
-  refreshScoresFromDB(){
-    this.dbmngr.clearScores();
-    this.dbmngr.getAllVouch().then( async(cursor) => {
-      await cursor.forEach( async(data) => {
-        await this.dbmngr.addScore(data.authorID, data.authorName, data.mentioned);
-      });
-      return true;
-    }).catch(console.error);
-  }
 }
 
 module.exports = { Scorer }

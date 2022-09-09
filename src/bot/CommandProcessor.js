@@ -26,15 +26,12 @@ class CommandProcessor {
         console.log('Checking if admin...');
         if (user.id != me_id)
           return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
-        if (interaction.channel.id != verifyCHID)
-          return await interaction.reply(`Do /extract in #verify-transaction`).catch(console.error);
+        //if (interaction.channel.id != verifyCHID)
+        //  return await interaction.reply(`Do /extract in #verify-transaction`).catch(console.error);
         console.log('Data extraction from #verify-transactions starting...');
         let extractor = new MessageExtractor();
-        if(await extractor.extractAllVouches(this.dbmngr)){
+        if(await extractor.extractAllVouches(this.dbmngr))
           console.log('Extraction completed successfully');
-          if(await scorer.refreshScoresFromDB())
-            console.log("Score refresh done successfully");
-        }
         return;
       }
       case commands[2].name: {

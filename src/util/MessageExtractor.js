@@ -12,7 +12,6 @@ class MessageExtractor {
    * @returns {Boolean}
    */
   async extractAllVouches(dbmngr){
-    return true;
     let channel = await dUtil.getChannelFromID(
       await dUtil.getGuildFromID(this.client, serverID).catch(console.error),
       verifyCHID
@@ -23,7 +22,6 @@ class MessageExtractor {
     let hasMoreMessages = true;
     let lastMessageID = channel.lastMessageId;
 
-    //scorer.clearScores();
     await dbmngr.deleteAllVouch();
     while(hasMoreMessages) {
       await channel.messages.fetch({ limit: 100, before: lastMessageID }).then(msglist => {
@@ -52,6 +50,6 @@ class MessageExtractor {
     console.log('Message with mentioned count: ' + countWithMention);
     return true;
   }
-
 }
+
 module.exports = { MessageExtractor }
