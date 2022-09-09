@@ -29,11 +29,11 @@ class DBManager {
    * @param {string} [target] username of targer discord user
    */
   async addScore(id, username, target) {
-    await Score.addPoint(this.colldb[0], id, username, target);
+    await Score.addPoint(this.colldb[0], id.toString(), username, target);
   }
 
   async getScore(id) {
-    return await Score.getScore(this.colldb[0], id);
+    return await Score.getScore(this.colldb[0], id.toString());
   }
 
   async clearScores(){

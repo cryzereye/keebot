@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-const { commands, me_id, botCHID} = require('../json/config.json');
+const { commands, me_id, botCHID, verifyCHID } = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
 
 class CommandProcessor {
@@ -13,29 +13,32 @@ class CommandProcessor {
     let fullName = `${user.username}#${user.discriminator}`;
     let interactionCHID = interaction.channel.id;
 
-      let result = "";
-      if(interactionCHID != botCHID && interaction.author.id != me_id) return await interaction.reply(`Use commands in <#${botCHID}>`);
-      switch(commandName){
-        case commands[0].name: {
-          const target = interaction.options.getUser('user');
-          if(target)
-            return scorer.getStatsEmbed(interaction, target);
-          return scorer.getStatsEmbed(interaction, user);
+    let result = "";
+    if (interactionCHID != botCHID && interaction.user.id != me_id) return await interaction.reply(`Use commands in <#${botCHID}>`);
+    switch (commandName) {
+      case commands[0].name: {
+        const target = interaction.options.getUser('user');
+        if (target)
+          return scorer.getStatsEmbed(interaction, target);
+        return scorer.getStatsEmbed(interaction, user);
+      }
+      case commands[1].name: {
+        console.log('Checking if admin...');
+        if (user.id != me_id)
+          return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
+        if (interaction.channel.id != verifyCHID)
+          return await interaction.reply(`Do /extract in #verify-transaction`).catch(console.error);
+        console.log('Data extraction from #verify-transactions starting...');
+        let extractor = new MessageExtractor();
+        if(await extractor.extractAllVouches(interaction.channel, scorer, rolegivermngr)){
+          console.log('Extraction completed successfully');
+          if(await scorer.refreshScoresFromDB())
+            console.log("Score refresh done successfully");
         }
-        case commands[1].name: {
-          console.log('Checking if admin...');
-          if(user.id != me_id)
-            return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
-          console.log('Data extraction from #verify-transactions starting...');
-          let extractor = new MessageExtractor();
-          extractor.extractAllMessages(interaction.channel, scorer, rolegivermngr)
-            .then(console.log('Extraction started'))
-            .catch(console.error);
-          return;
-        }
-        case commands[2].name: {
-          return await interaction.reply({embeds: [this.generateHelp(fullName)]}).catch(console.error);
-        }
+        return;
+      }
+      case commands[2].name: {
+        return await interaction.reply({ embeds: [this.generateHelp(fullName)] }).catch(console.error);
       }
     }
     if (result == "")
@@ -58,7 +61,5 @@ class CommandProcessor {
 
     return embedBuilder;
   }
-
 }
-
 module.exports = { CommandProcessor }

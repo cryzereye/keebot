@@ -20,10 +20,8 @@ exports.addPoint = async (coll, id, name, target) => {
       {
         $set: {
           username: name,
+          points: record.points + 1,
           transactions: trans
-        },
-        $inc: {
-          points: 1,
         }
       }
     ).then(

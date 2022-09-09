@@ -1,6 +1,6 @@
 const { MessageEmbed } = require('discord.js');
 //const { DBManager } = require('../util/DBManager');
-const { relevant_roles } = require('../json/config.json');
+const { relevant_roles, dev } = require('../json/config.json');
 const fs = require('fs');
 const fileName = '../json/scores.json';
 const osFile = './src/json/scores.json';
@@ -47,7 +47,8 @@ class Scorer {
       scores[id1]['transactions'][id2] = 0;
     scores[id1]['transactions'][id2] += 1;
 
-    this.updateScoreFile();
+    if(!dev)
+      this.updateScoreFile();
     this.dbmngr.addScore(id1, id1_name, id2);
   }
 

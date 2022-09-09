@@ -12,7 +12,7 @@ class MessageProcessor {
     let messageCHID = message.channel.id;
     let currentlyTesting = (messageCHID == testCHID && dev);
     if(message.content.startsWith(command_sign)){
-      return await message.reply("```Slash commands are now implemented! Please use /help for more details```");
+      await message.reply("```Slash commands are now implemented! Please use /help for more details```");
     }
     else if (messageCHID == verifyCHID && !dev || currentlyTesting) { // only for vouch channel
       console.log("Processing vouch msg from " + authorName);
@@ -30,7 +30,7 @@ class MessageProcessor {
         message.mentions.users.map(x => {
           let mentioned = x.username + '#' + x.discriminator;
           if(authorName == mentioned) message.reply(`**DO NOT VOUCH YOURSELF!** pinging <@${me_id}>`);
-          else scorer.addPoint(authorID, authorName, mentioned);
+          else this.dbmngr.saveVouch(message.id, authorID, authorName, mentioned, message.content);
         });
       }
       if (!dev)
