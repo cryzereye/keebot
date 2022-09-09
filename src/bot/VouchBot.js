@@ -4,7 +4,7 @@ const { REST } = require('@discordjs/rest');
 const { discord_id, discord_token, serverID, commands, dev } = require('../json/config.json');
 const { Scorer } = require('../score/Scorer');
 const { RoleGiverManager } = require('../role/RoleGiverManager');
-const { DBManager } = require('../util/DBManager');
+//const { DBManager } = require('../util/DBManager');
 const { CommandProcessor } = require('./CommandProcessor');
 const { MessageProcessor } = require('./MessageProcessor');
 const dUtil = require('../util/DiscordUtil');
@@ -44,9 +44,9 @@ class VouchBot {
         Intents.FLAGS.GUILD_MESSAGES, // required daw
       ]
     });
-    this.dbmngr = new DBManager();
+    //this.dbmngr = new DBManager();
     this.rolegivermngr = new RoleGiverManager(this.client);
-    this.scorer = new Scorer(this.dbmngr);
+    this.scorer = new Scorer(); // removed this.dbmngr arg
     this.cmdproc = new CommandProcessor();
     this.msgproc = new MessageProcessor();
   }
