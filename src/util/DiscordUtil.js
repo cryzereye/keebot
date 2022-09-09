@@ -4,9 +4,9 @@
  * @param {discord.js.Guild} guild 
  * @returns {discord.js.GuildMember}
  */
-exports.getGuildMemberfromID = async(id, guild) => {
+exports.getGuildMemberfromID = async (id, guild) => {
   return await guild.members.cache.find((gm) => gm.id == id) ||
-          await guild.members.fetch(id).catch(console.error);
+    await guild.members.fetch(id).catch(console.error);
 }
 
 /**
@@ -16,7 +16,7 @@ exports.getGuildMemberfromID = async(id, guild) => {
  * @param {Snowflake} chid 
  * @param {String} message 
  */
-exports.sendMessageToChannel = async(client, guildID, chid, message) => {
+exports.sendMessageToChannel = async (client, guildID, chid, message) => {
   let guild = await this.getGuildFromID(client, guildID).catch(console.error);
   let channel = await this.getChannelFromID(guild, chid).catch(console.error);
   await channel.sendMessage(message).catch(console.error);
@@ -28,9 +28,9 @@ exports.sendMessageToChannel = async(client, guildID, chid, message) => {
  * @param {Snowflake} guildID 
  * @returns {discord.js.Guild}
  */
-exports.getGuildFromID = async(client, guildID) => {
+exports.getGuildFromID = async (client, guildID) => {
   return await client.guilds.cache.find((g) => g.id == guildID) ||
-          await client.guilds.fetch(guildID).catch(console.error);
+    await client.guilds.fetch(guildID).catch(console.error);
 }
 
 /**
@@ -39,9 +39,9 @@ exports.getGuildFromID = async(client, guildID) => {
  * @param {Snowflake} channelID 
  * @returns {discord.js.Channel}
  */
-exports.getChannelFromID = async(guild, channelID) => {
+exports.getChannelFromID = async (guild, channelID) => {
   return await guild.channels.cache.find((ch) => ch.id == channelID) ||
-          await guild.channels.fetch(channelID).catch(console.error);
+    await guild.channels.fetch(channelID).catch(console.error);
 }
 
 /**
@@ -50,9 +50,9 @@ exports.getChannelFromID = async(guild, channelID) => {
  * @param {discord.js.Role} role 
  * @returns {Boolean}
  */
-exports.guildMemberHasRole = async(gm, role) => {
-  if(gm != undefined && role != undefined) {
-    if(gm.roles.cache.find(r => r.name === role.name))
+exports.guildMemberHasRole = async (gm, role) => {
+  if (gm != undefined && role != undefined) {
+    if (gm.roles.cache.find(r => r.name === role.name))
       return true;
   }
   return false;
@@ -64,9 +64,9 @@ exports.guildMemberHasRole = async(gm, role) => {
  * @param {discord.js.Guild} guild 
  * @param {discord.js.Role} role 
  */
-exports.addRoleToUser = async(user, guild, role) => {
+exports.addRoleToUser = async (user, guild, role) => {
   let gm = await this.getGuildMemberfromID(user.id, guild).catch(console.error);
-  if(gm != undefined && !(await this.guildMemberHasRole(gm, role).catch(console.error))){ // if member already has role, then do not put the role
+  if (gm != undefined && !(await this.guildMemberHasRole(gm, role).catch(console.error))) { // if member already has role, then do not put the role
     gm.roles.add(role).catch((e) => console.log(e.message));
     console.log(role.name + " added from " + user.username);
   }
@@ -78,9 +78,9 @@ exports.addRoleToUser = async(user, guild, role) => {
  * @param {discord.js.Guild} guild 
  * @param {discord.js.Role} role 
  */
- exports.removeRoleToUser = async(user, guild, role) => {
+exports.removeRoleToUser = async (user, guild, role) => {
   let gm = await this.getGuildMemberfromID(user.id, guild).catch(console.error);
-  if(gm != undefined && await this.guildMemberHasRole(gm, role).catch(console.error)){ // if member already has role, then do not put the role
+  if (gm != undefined && await this.guildMemberHasRole(gm, role).catch(console.error)) { // if member already has role, then do not put the role
     gm.roles.remove(role).catch((e) => console.log(e.message));
     console.log(role.name + " removed from " + user.username);
   }
@@ -93,9 +93,23 @@ exports.addRoleToUser = async(user, guild, role) => {
  * @param {Snowflake} guildID 
  * @returns {discord.js.Emoji}
  */
-exports.getEmojiInstance = async(name, client, guildID) => {
+exports.getEmojiInstance = async (name, client, guildID) => {
   let guild = await this.getGuildFromID(client, guildID).catch(console.error);
-  if(guild != undefined){
+  if (guild != undefined) {
     return guild.emojis.cache.find((e) => e.name == name);
   }
+}
+
+/**
+ * gets GuildMember roles and returns as 1 line string filtered by relevant_roles
+ * @param {discord.js.GuildMember} gm 
+ * @returns {String}
+ */
+exports.getRolesAsString = (gm, relevant_roles) => {
+  let roles = "";
+  gm.roles.cache.map((r) => {
+    if (relevant_roles.includes(r.name))
+      roles += `<@&${r.id}> `;
+  });
+  return roles;
 }
