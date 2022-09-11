@@ -1,6 +1,5 @@
 const { MongoClient } = require('mongodb');
 const { Score } = require('../models/Score');
-const { Config } = require('../models/Config');
 const { connURI, dbname, collnames } = require('../json/config.json');
 
 class DBManager {

@@ -34,7 +34,7 @@ class CommandProcessor {
           return await interaction.reply({embeds: [this.generateHelp(fullName)]}).catch(console.error);
         }
         case commands[3].name: {
-          return await interaction.reply("Not yet implemented").catch(console.error);
+          return await interaction.reply(this.saveReport(interaction));
         }
       }
       if(result == "")
@@ -56,6 +56,25 @@ class CommandProcessor {
         .addFields({ name: 'For bugs and data in accuracies', value: bugsHelp});
       
       return embedBuilder;
+    }
+
+    saveReport(interaction){
+      const reportType = interaction.options.getSubcommand(false);
+      const author = interaction.user;
+      switch (reportType) {
+        case "file": {
+          const reported = interaction.options.getUser('user');
+          const category = interaction.options.getString('category');
+          const summary = interaction.options.getString('summary');
+
+          return `Reporter: ${author.username}\nTarget: ${reported.username}\nCategory: ${category}\nSummary: ${summary}`;
+        }
+        case "verify": {
+          const reportID = interaction.options.getString('id');
+          return `Verified by: ${author.username}\nReport ID: ${reportID}`;
+        }
+      }
+
     }
     
 }
