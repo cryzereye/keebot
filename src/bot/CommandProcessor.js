@@ -33,6 +33,9 @@ class CommandProcessor {
         case commands[2].name: {
           return await interaction.reply({embeds: [this.generateHelp(fullName)]}).catch(console.error);
         }
+        case commands[3].name: {
+          return await interaction.reply("Not yet implemented").catch(console.error);
+        }
       }
       if(result == "")
         result = `No results for command ${commandName}`;
