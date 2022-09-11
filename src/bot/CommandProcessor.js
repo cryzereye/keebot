@@ -1,6 +1,7 @@
 const { MessageEmbed } = require('discord.js');
-const { commands, me_id, botCHID} = require('../json/config.json');
+const { commands, me_id, botCHID, reportsCHID} = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
+const dUtil = require('../util/DiscordUtil');
 
 class CommandProcessor {
     constructor() {}
@@ -34,12 +35,12 @@ class CommandProcessor {
           return await interaction.reply({embeds: [this.generateHelp(fullName)]}).catch(console.error);
         }
         case commands[3].name: {
-          return await interaction.reply(this.saveReport(interaction));
+          return await interaction.reply({
+            content: await this.saveReport(interaction),
+            ephemeral: true
+          });
         }
       }
-      if(result == "")
-        result = `No results for command ${commandName}`;
-      await interaction.reply(result).catch(console.error);
     }
 
     generateHelp(username){
@@ -58,7 +59,7 @@ class CommandProcessor {
       return embedBuilder;
     }
 
-    saveReport(interaction){
+    async saveReport(interaction){
       const reportType = interaction.options.getSubcommand(false);
       const author = interaction.user;
       switch (reportType) {
@@ -66,8 +67,9 @@ class CommandProcessor {
           const reported = interaction.options.getUser('user');
           const category = interaction.options.getString('category');
           const summary = interaction.options.getString('summary');
-
-          return `Reporter: ${author.username}\nTarget: ${reported.username}\nCategory: ${category}\nSummary: ${summary}`;
+          const report = `**Reporter**: ${author.username}\n**Target**: ${reported.username}\n**Category**: ${category}\n**Summary**: ${summary}`;
+          await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, reportsCHID, report);
+          return "Report saved!";
         }
         case "verify": {
           const reportID = interaction.options.getString('id');
