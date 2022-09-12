@@ -57,7 +57,7 @@ class Scorer {
    * @param {discordjs.User} user 
    * @returns {discordjs.EmbedBuilder}
    */
-  getStatsEmbed(interaction, user){
+  getStatsEmbed(interaction, user, reportmngr){
     (async () => {
       let record = scores[user.id];
       let fullName = `${user.username}#${user.discriminator}`;
@@ -69,6 +69,7 @@ class Scorer {
       let gm = await dUtil.getGuildMemberfromID(user.id, interaction.guild).catch(console.error);
       let joinStr = gm.joinedAt.toString();
       let joinDur = "";
+      let reportsCount = reportmngr.getVerifiedReportsCount(user.id.toString());
 
       Object.keys(dateData).forEach( (x) => {
         creaDur += `${dateData[x]} `;
@@ -111,6 +112,7 @@ class Scorer {
         user.displayAvatarURL(),
         roles,
         transStr,
+        reportsCount.toString(),
         creaStr,
         creaDur,
         joinStr,
@@ -147,7 +149,7 @@ class Scorer {
    * @param {Object} transStr 
    * @returns {discordjs.MessageEmbed}
    */
-  generateScoreCard(fullName, points, avatarURL, roles, transStr, creationStr, creationDuration, joinStr, joinDuration){
+  generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration){
     const embedBuilder = new MessageEmbed()
         .setColor("DEFAULT")
         .setTitle(`${points} Points`)
@@ -158,6 +160,7 @@ class Scorer {
         .setDescription(roles)
         .setThumbnail(`${avatarURL}`)
         .addFields({ name: 'Transactions:', value: transStr })
+        .addFields({ name: 'Verified Reports Involved:', value: reportsCount })
         .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
         .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
 

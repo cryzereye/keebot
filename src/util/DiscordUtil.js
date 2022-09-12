@@ -5,7 +5,7 @@
  * @returns {discord.js.GuildMember}
  */
 exports.getGuildMemberfromID = async(id, guild) => {
-  return await guild.members.cache.find((gm) => gm.id == id) ||
+  return await guild.members.cache.get((gm) => gm.id == id) ||
           await guild.members.fetch(id).catch(console.error);
 }
 
@@ -19,7 +19,7 @@ exports.getGuildMemberfromID = async(id, guild) => {
 exports.sendMessageToChannel = async(client, guildID, chid, message) => {
   let guild = await this.getGuildFromID(client, guildID).catch(console.error);
   let channel = await this.getChannelFromID(guild, chid).catch(console.error);
-  await channel.sendMessage(message).catch(console.error);
+  await channel.send(message).catch(console.error);
 }
 
 /**
@@ -29,7 +29,7 @@ exports.sendMessageToChannel = async(client, guildID, chid, message) => {
  * @returns {discord.js.Guild}
  */
 exports.getGuildFromID = async(client, guildID) => {
-  return await client.guilds.cache.find((g) => g.id == guildID) ||
+  return await client.guilds.cache.get((g) => g.id == guildID) ||
           await client.guilds.fetch(guildID).catch(console.error);
 }
 
@@ -40,7 +40,7 @@ exports.getGuildFromID = async(client, guildID) => {
  * @returns {discord.js.Channel}
  */
 exports.getChannelFromID = async(guild, channelID) => {
-  return await guild.channels.cache.find((ch) => ch.id == channelID) ||
+  return await guild.channels.cache.get((ch) => ch.id == channelID) ||
           await guild.channels.fetch(channelID).catch(console.error);
 }
 
@@ -96,6 +96,6 @@ exports.addRoleToUser = async(user, guild, role) => {
 exports.getEmojiInstance = async(name, client, guildID) => {
   let guild = await this.getGuildFromID(client, guildID).catch(console.error);
   if(guild != undefined){
-    return guild.emojis.cache.find((e) => e.name == name);
+    return guild.emojis.cache.get((e) => e.name == name);
   }
 }

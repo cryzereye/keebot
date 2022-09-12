@@ -1,11 +1,12 @@
 const { MessageEmbed } = require('discord.js');
-const { commands, me_id, botCHID} = require('../json/config.json');
+const { commands, me_id, botCHID, reportsCHID} = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
+const dUtil = require('../util/DiscordUtil');
 
 class CommandProcessor {
     constructor() {}
 
-    async processCommand(interaction, scorer, rolegivermngr){
+    async processCommand(interaction, scorer, rolegivermngr, reportmngr){
       const { commandName, user } = interaction;
       let fullName = `${user.username}#${user.discriminator}`;
       let interactionCHID = interaction.channel.id;
@@ -16,8 +17,8 @@ class CommandProcessor {
         case commands[0].name: {
           const target = interaction.options.getUser('user');
           if(target)
-            return scorer.getStatsEmbed(interaction, target);
-          return scorer.getStatsEmbed(interaction, user);
+            return scorer.getStatsEmbed(interaction, target, reportmngr);
+          return scorer.getStatsEmbed(interaction, user, reportmngr);
         }
         case commands[1].name: {
           console.log('Checking if admin...');
@@ -33,10 +34,13 @@ class CommandProcessor {
         case commands[2].name: {
           return await interaction.reply({embeds: [this.generateHelp(fullName)]}).catch(console.error);
         }
+        case commands[3].name: {
+          return await interaction.reply({
+            content: await this.processReport(interaction, reportmngr),
+            ephemeral: true
+          });
+        }
       }
-      if(result == "")
-        result = `No results for command ${commandName}`;
-      await interaction.reply(result).catch(console.error);
     }
 
     generateHelp(username){
@@ -53,6 +57,10 @@ class CommandProcessor {
         .addFields({ name: 'For bugs and data in accuracies', value: bugsHelp});
       
       return embedBuilder;
+    }
+
+    async processReport(interaction, reportmngr){
+      return await reportmngr.processReport(interaction);
     }
     
 }
