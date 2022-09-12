@@ -6,7 +6,7 @@ const dUtil = require('../util/DiscordUtil');
 class CommandProcessor {
     constructor() {}
 
-    async processCommand(interaction, scorer, rolegivermngr){
+    async processCommand(interaction, scorer, rolegivermngr, reportmngr){
       const { commandName, user } = interaction;
       let fullName = `${user.username}#${user.discriminator}`;
       let interactionCHID = interaction.channel.id;
@@ -36,7 +36,7 @@ class CommandProcessor {
         }
         case commands[3].name: {
           return await interaction.reply({
-            content: await this.saveReport(interaction),
+            content: await this.processReport(interaction, reportmngr),
             ephemeral: true
           });
         }
@@ -59,24 +59,8 @@ class CommandProcessor {
       return embedBuilder;
     }
 
-    async saveReport(interaction){
-      const reportType = interaction.options.getSubcommand(false);
-      const author = interaction.user;
-      switch (reportType) {
-        case "file": {
-          const reported = interaction.options.getUser('user');
-          const category = interaction.options.getString('category');
-          const summary = interaction.options.getString('summary');
-          const report = `**Reporter**: ${author.username}\n**Target**: ${reported.username}\n**Category**: ${category}\n**Summary**: ${summary}`;
-          await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, reportsCHID, report);
-          return "Report saved!";
-        }
-        case "verify": {
-          const reportID = interaction.options.getString('id');
-          return `Verified by: ${author.username}\nReport ID: ${reportID}`;
-        }
-      }
-
+    async processReport(interaction, reportmngr){
+      return await reportmngr.processReport(interaction);
     }
     
 }
