@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { relevant_roles, dev } = require('../json/config.json');
 const util = require('../util/Utilities');
 const dUtil = require('../util/DiscordUtil');
@@ -31,14 +31,6 @@ class Scorer {
       else
         transStr = this.sortTransAsString(record.transactions);
 
-      sortedTrans.sort(function (a, b) {
-        return b[1] - a[1];
-      });
-
-      for (let i = 0; i < sortedTrans.length; i++)
-        transStr += `${sortedTrans[i][0]} : ${sortedTrans[i][1]}\n`;
-
-
       interaction.reply({
         embeds: [this.generateScoreCard(
           fullName,
@@ -65,20 +57,20 @@ class Scorer {
    * @param {Object} transStr 
    * @returns {discordjs.MessageEmbed}
    */
-  generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration) {
-    const embedBuilder = new MessageEmbed()
-      .setColor("DEFAULT")
-      .setTitle(`${points} Points`)
-      .setAuthor({
-        name: fullName,
-        iconUrl: `${avatarURL}`
-      })
-      .setDescription(roles)
-      .setThumbnail(`${avatarURL}`)
-      .addFields({ name: 'Transactions:', value: transStr })
-      .addFields({ name: 'Verified Reports Involved:', value: reportsCount })
-      .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
-      .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
+  generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration){
+    const embedBuilder = new EmbedBuilder()
+        .setColor("DEFAULT")
+        .setTitle(`${points} Points`)
+        .setAuthor({
+          name: fullName,
+          iconUrl: `${avatarURL}`
+        })
+        .setDescription(roles)
+        .setThumbnail(`${avatarURL}`)
+        .addFields({ name: 'Transactions:', value: transStr })
+        .addFields({ name: 'Verified Reports Involved:', value: reportsCount })
+        .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
+        .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
 
     return embedBuilder;
   }
