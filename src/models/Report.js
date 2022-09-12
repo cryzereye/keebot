@@ -26,9 +26,16 @@ exports.fileNewReport = (authorID, authorName, targetID, targetName, category, s
   return reportID;
 }
 
-exports.verifyReportFromFile = (id, verified) => {
-  reports[id].verified = verified;
-  this.saveReportToFile();
+exports.verifyReportFromFile = (id, verified, verifier, verifyDate) => {
+  if(reports[id].verified)
+    return {verified: false, report: reports[id]};
+  else {
+    reports[id].verified = verified;
+    reports[id].verifier = verifier;
+    reports[id].verifyDate = verifyDate;
+    this.saveReportToFile();
+    return {verified: true, report: reports[id]};
+  }
 }
 
 exports.getReportCountFromFile = () => {
