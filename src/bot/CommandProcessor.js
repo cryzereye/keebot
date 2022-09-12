@@ -17,8 +17,8 @@ class CommandProcessor {
         case commands[0].name: {
           const target = interaction.options.getUser('user');
           if(target)
-            return scorer.getStatsEmbed(interaction, target);
-          return scorer.getStatsEmbed(interaction, user);
+            return scorer.getStatsEmbed(interaction, target, reportmngr);
+          return scorer.getStatsEmbed(interaction, user, reportmngr);
         }
         case commands[1].name: {
           console.log('Checking if admin...');

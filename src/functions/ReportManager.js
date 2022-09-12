@@ -38,6 +38,10 @@ class ReportManager {
     }
   }
 
+  getVerifiedReportsCount(id){
+    return Report.countVerifiedReportsForUser(id);
+  }
+
 }
 
 module.exports = { ReportManager };
