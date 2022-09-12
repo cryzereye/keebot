@@ -38,12 +38,10 @@ class MessageProcessor {
     }
   }
 
-  async processDeleteMessage() {
+  async processDeleteMessage(message) {
     if (messageCHID == verifyCHID && !dev || currentlyTesting){
-      this.dbmngr.deleteVouch();
+      await this.dbmngr.deleteVouch(message.id);
     }
-    if (!dev)
-      rolegivermngr.roleCheck(scorer.getScore(authorID), message);
   }
 }
 
