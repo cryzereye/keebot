@@ -1,4 +1,4 @@
-const { Client, Intents} = require('discord.js');
+const { Client, GatewayIntentBits, Partials, InteractionType } = require('discord.js');
 const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
 const { discord_id, discord_token, serverID, commands, dev } = require('../json/config.json');
@@ -28,7 +28,7 @@ class VouchBot {
 
     // handles usage of slash commands
     this.client.on('interactionCreate', async interaction => {
-      if (!interaction.isCommand()) return;
+      if (!interaction.type === InteractionType.ApplicationCommand) return;
       this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr);
     });
     
@@ -40,10 +40,8 @@ class VouchBot {
    */
   buildDependencies(){
     this.client = new Client({
-      intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES, // required daw
-      ]
+      intents: [GatewayIntentBits.Guilds],
+      partials: [Partials.Channel]
     });
     //this.dbmngr = new DBManager();
     this.rolegivermngr = new RoleGiverManager(this.client);

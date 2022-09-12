@@ -46,6 +46,7 @@ class CommandProcessor {
     generateHelp(username){
       const verifyHelp = `This is where you send vouches for the people that you have transacted with **within the server**. For vouch confirmation, please reply to the vouch where you got mentioned, else you would not be scored for it.`;
       const statsHelp = `/stats <optional user>: see your stats or your target user's stats`;
+      const reportsHelp = `/report file <user> <category> <summary>: file a report regarding a transaction incident within Keebisoria`;
       const extractHelp = `For admin use only`;
       const bugsHelp = `Please DM <@${me_id}>`;
       const embedBuilder = new MessageEmbed()
@@ -53,6 +54,7 @@ class CommandProcessor {
         .setTitle(`Help | ${username}`)
         .addFields({ name: '#verify-transaction:', value: verifyHelp})
         .addFields({ name: '/stats:', value: statsHelp})
+        .addFields({ name: '/report file:', value: reportsHelp})
         .addFields({ name: '/extract:', value: extractHelp})
         .addFields({ name: 'For bugs and data in accuracies', value: bugsHelp});
       
