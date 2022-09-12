@@ -1,6 +1,7 @@
 const { MessageEmbed } = require('discord.js');
-const { commands, me_id, botCHID, verifyCHID } = require('../json/config.json');
+const { commands, me_id, botCHID, reportsCHID, verifyCHID } = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
+const dUtil = require('../util/DiscordUtil');
 
 class CommandProcessor {
   constructor(client, dbmngr) {
@@ -8,7 +9,7 @@ class CommandProcessor {
     this.dbmngr = dbmngr;
   }
 
-  async processCommand(interaction, scorer, rolegivermngr) {
+  async processCommand(interaction, scorer, rolegivermngr, reportmngr) {
     const { commandName, user } = interaction;
     let fullName = `${user.username}#${user.discriminator}`;
     let interactionCHID = interaction.channel.id;
@@ -19,23 +20,28 @@ class CommandProcessor {
       case commands[0].name: {
         const target = interaction.options.getUser('user');
         if (target)
-          return scorer.getStatsEmbed(interaction, target);
-        return scorer.getStatsEmbed(interaction, user);
+          return scorer.getStatsEmbed(interaction, target, reportmngr);
+        return scorer.getStatsEmbed(interaction, user, reportmngr);
       }
       case commands[1].name: {
         console.log('Checking if admin...');
         if (user.id != me_id)
           return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
-        //if (interaction.channel.id != verifyCHID)
-        //  return await interaction.reply(`Do /extract in #verify-transaction`).catch(console.error);
         console.log('Data extraction from #verify-transactions starting...');
         let extractor = new MessageExtractor();
-        if(await extractor.extractAllVouches(this.dbmngr))
-          console.log('Extraction completed successfully');
+        extractor.extractAllMessages(interaction.channel, scorer, rolegivermngr)
+          .then(console.log('Extraction started'))
+          .catch(console.error);
         return;
       }
       case commands[2].name: {
         return await interaction.reply({ embeds: [this.generateHelp(fullName)] }).catch(console.error);
+      }
+      case commands[3].name: {
+        return await interaction.reply({
+          content: await this.processReport(interaction, reportmngr),
+          ephemeral: true
+        });
       }
     }
     if (result == "")
@@ -58,5 +64,10 @@ class CommandProcessor {
 
     return embedBuilder;
   }
+
+  async processReport(interaction, reportmngr) {
+    return await reportmngr.processReport(interaction);
+  }
+
 }
 module.exports = { CommandProcessor }

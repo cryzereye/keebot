@@ -19,7 +19,7 @@ exports.getGuildMemberfromID = async (id, guild) => {
 exports.sendMessageToChannel = async (client, guildID, chid, message) => {
   let guild = await this.getGuildFromID(client, guildID).catch(console.error);
   let channel = await this.getChannelFromID(guild, chid).catch(console.error);
-  await channel.sendMessage(message).catch(console.error);
+  await channel.send(message).catch(console.error);
 }
 
 /**
@@ -30,7 +30,6 @@ exports.sendMessageToChannel = async (client, guildID, chid, message) => {
  */
 exports.getGuildFromID = async (client, guildID) => {
   return await client.guilds.cache.get(guildID) ||
-    await client.guilds.resolve(guildID) ||
     await client.guilds.fetch(guildID).catch(console.error);
 }
 
@@ -42,7 +41,6 @@ exports.getGuildFromID = async (client, guildID) => {
  */
 exports.getChannelFromID = async (guild, channelID) => {
   return await guild.channels.cache.get(channelID) ||
-    await guilds.channels.resolve(channelID) ||
     await guild.channels.fetch(channelID).catch(console.error);
 }
 

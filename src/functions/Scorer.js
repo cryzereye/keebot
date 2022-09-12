@@ -12,7 +12,7 @@ class Scorer {
    * @param {discordjs.User} user 
    * @returns {discordjs.EmbedBuilder}
    */
-  getStatsEmbed(interaction, user) {
+  getStatsEmbed(interaction, user, reportmngr) {
     (async () => {
       let record = await this.dbmngr.getStats(user.id.toString());
       console.log(record);
@@ -31,20 +31,29 @@ class Scorer {
       else
         transStr = this.sortTransAsString(record.transactions);
 
-      await interaction.reply({
+      sortedTrans.sort(function (a, b) {
+        return b[1] - a[1];
+      });
+
+      for (let i = 0; i < sortedTrans.length; i++)
+        transStr += `${sortedTrans[i][0]} : ${sortedTrans[i][1]}\n`;
+
+
+      interaction.reply({
         embeds: [this.generateScoreCard(
           fullName,
           record.points,
           user.displayAvatarURL(),
           roles,
           transStr,
+          reportsCount.toString(),
           creaStr,
           creaDur,
           joinStr,
           joinDur
         )]
       }).catch(console.error);
-    })();
+    })
   }
 
   /**
@@ -56,7 +65,7 @@ class Scorer {
    * @param {Object} transStr 
    * @returns {discordjs.MessageEmbed}
    */
-  generateScoreCard(fullName, points, avatarURL, roles, transStr, creationStr, creationDuration, joinStr, joinDuration) {
+  generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration) {
     const embedBuilder = new MessageEmbed()
       .setColor("DEFAULT")
       .setTitle(`${points} Points`)
@@ -67,6 +76,7 @@ class Scorer {
       .setDescription(roles)
       .setThumbnail(`${avatarURL}`)
       .addFields({ name: 'Transactions:', value: transStr })
+      .addFields({ name: 'Verified Reports Involved:', value: reportsCount })
       .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
       .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
 
