@@ -2,25 +2,26 @@ const { EmbedBuilder } = require('discord.js');
 const { relevant_roles, dev } = require('../json/config.json');
 const util = require('../util/Utilities');
 const dUtil = require('../util/DiscordUtil');
+const { ReportManager } = require('./ReportManager');
 
 class Scorer {
   constructor(dbmngr) {
     this.dbmngr = dbmngr;
   }
   /**
-   * returns the user's stats from JSON records built into an EmbedBuilder instance
+   * replies the user's stats from db records built into an EmbedBuilder instance
+   * @param {discordjs.Interaction} interaction 
    * @param {discordjs.User} user 
-   * @returns {discordjs.EmbedBuilder}
+   * @param {ReportManager} reportmngr 
    */
   getStatsEmbed(interaction, user, reportmngr) {
     (async () => {
       let record = await this.dbmngr.getStats(user.id.toString());
-      console.log(record);
       const fullName = `${user.username}#${user.discriminator}`;
       const gm = await dUtil.getGuildMemberfromID(user.id, interaction.guild).catch(console.error);
       const roles = dUtil.getRolesAsString(gm, relevant_roles);
       const { creaStr, creaDur, joinStr, joinDur } = this.getDatesData(user, gm);
-
+      let reportsCount = reportmngr.getVerifiedReportsCount(user.id.toString());
       let transStr = "";
 
       if (record == null || record.points == 0) {
@@ -31,7 +32,7 @@ class Scorer {
       else
         transStr = this.sortTransAsString(record.transactions);
 
-      interaction.reply({
+      await interaction.reply({
         embeds: [this.generateScoreCard(
           fullName,
           record.points,
@@ -45,7 +46,7 @@ class Scorer {
           joinDur
         )]
       }).catch(console.error);
-    })
+    });
   }
 
   /**

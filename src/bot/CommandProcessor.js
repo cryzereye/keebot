@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { commands, me_id, botCHID, reportsCHID, verifyCHID } = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
 const dUtil = require('../util/DiscordUtil');
@@ -29,7 +29,7 @@ class CommandProcessor {
           return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
         console.log('Data extraction from #verify-transactions starting...');
         let extractor = new MessageExtractor();
-        extractor.extractAllMessages(interaction.channel, scorer, rolegivermngr)
+        extractor.extractAllVouches(interaction.channel, scorer, rolegivermngr)
           .then(console.log('Extraction started'))
           .catch(console.error);
         return;
@@ -39,7 +39,7 @@ class CommandProcessor {
       }
       case commands[3].name: {
         return await interaction.reply({
-          content: await this.processReport(interaction, reportmngr),
+          content: await reportmngr.processReport(interaction),
           ephemeral: true
         });
       }
@@ -55,7 +55,7 @@ class CommandProcessor {
       const reportsHelp = `/report file <user> <category> <summary>: file a report regarding a transaction incident within Keebisoria`;
       const extractHelp = `For admin use only`;
       const bugsHelp = `Please DM <@${me_id}>`;
-      const embedBuilder = new MessageEmbed()
+      const embedBuilder = new EmbedBuilder()
         .setColor("DEFAULT")
         .setTitle(`Help | ${username}`)
         .addFields({ name: '#verify-transaction:', value: verifyHelp})
