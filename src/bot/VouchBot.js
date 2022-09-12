@@ -25,6 +25,11 @@ class VouchBot {
       this.msgproc.processMessage(message, this.client.user.id, this.scorer, this.rolegivermngr);
     });
 
+    // handles deleted messages
+    this.client.on('messageDelete', message => {  // recent change yung messageCreate
+      this.msgproc.processDeleteMessage(message, this.client.user.id, this.scorer, this.rolegivermngr);
+    });
+
     // handles usage of slash commands
     this.client.on('interactionCreate', async interaction => {
       if (!interaction.isCommand()) return;

@@ -11,7 +11,7 @@ class MessageProcessor {
     let authorName = message.author.username + '#' + message.author.discriminator;
     let messageCHID = message.channel.id;
     let currentlyTesting = (messageCHID == testCHID && dev);
-    if(message.content.startsWith(command_sign)){
+    if (message.content.startsWith(command_sign)) {
       await message.reply("```Slash commands are now implemented! Please use /help for more details```");
     }
     else if (messageCHID == verifyCHID && !dev || currentlyTesting) { // only for vouch channel
@@ -22,20 +22,28 @@ class MessageProcessor {
       // possible reply back, 1 instance
       if (message.type == 'REPLY') {
         let replyto = message.mentions.repliedUser.username + '#' + message.mentions.repliedUser.discriminator;
-        if(authorName == replyto) message.reply(`**DO NOT CONFIRM FOR YOURSELF!** pinging <@${me_id}>`);
-        else scorer.addPoint(authorID, authorName, replyto);
+        if (authorName == replyto) message.reply(`**DO NOT CONFIRM FOR YOURSELF!** pinging <@${me_id}>`);
+        else this.dbmngr.saveVouch(message.id, authorID, authorName, replyto, message.content);
       }
       else {
         // initial send
         message.mentions.users.map(x => {
           let mentioned = x.username + '#' + x.discriminator;
-          if(authorName == mentioned) message.reply(`**DO NOT VOUCH YOURSELF!** pinging <@${me_id}>`);
+          if (authorName == mentioned) message.reply(`**DO NOT VOUCH YOURSELF!** pinging <@${me_id}>`);
           else this.dbmngr.saveVouch(message.id, authorID, authorName, mentioned, message.content);
         });
       }
       if (!dev)
         rolegivermngr.roleCheck(scorer.getScore(authorID), message);
     }
+  }
+
+  async processDeleteMessage() {
+    if (messageCHID == verifyCHID && !dev || currentlyTesting){
+      this.dbmngr.deleteVouch();
+    }
+    if (!dev)
+      rolegivermngr.roleCheck(scorer.getScore(authorID), message);
   }
 }
 
