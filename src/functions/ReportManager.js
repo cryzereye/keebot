@@ -1,9 +1,16 @@
+const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const Report = require('../models/Report');
 const dUtil = require('../util/DiscordUtil');
-const { reportsCHID, admins } = require('../json/config.json');
+const { reportsCHID, admins, reportTypes, verifiedReportsCHID } = require('../json/config.json');
 
 class ReportManager {
-  constructor() { }
+  constructor() {
+    this.modal = new ModalBuilder().setCustomId('reportModal');
+    this.modal.addComponent(
+      new ActionRowBuilder().addComponents(this.buildReportMenuField()),
+      new ActionRowBuilder().addComponents(this.buildReportSummaryField()),
+    );
+  }
 
   async processReport(interaction) {
     const reportType = interaction.options.getSubcommand(false);
@@ -57,8 +64,44 @@ class ReportManager {
     }
   }
 
+  processModals(){
+
+  }
+
   getVerifiedReportsCount(id) {
     return Report.countVerifiedReportsForUser(id);
+  }
+
+  buildReportMenuField() {
+    let options = [];
+
+    reportTypes.map( r => {
+      options.push({
+        label: r,
+        description : "",
+        value: r
+      });
+    })
+    const menu = new SelectMenuBuilder()
+      .setCustomId('reportType')
+      .setPlaceholder('Report Type')
+      .setMinValues(1)
+      .setMaxValues(1)
+      .addOptions(options);
+    return menu;
+  }
+
+  buildReportSummaryField() {
+    const summary = new TextInputBuilder()
+      .setCustomId('summary')
+      .setLabel("Summary of report")
+      .setStyle(TextInputStyle.Paragraph)
+      .setMaxLength(250)
+      .setMinLength(10)
+      .setPlaceholder('Please entry a summary of your report')
+      .setValue('Default')
+      .setRequired(true);
+    return summary;
   }
 
 }
