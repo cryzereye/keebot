@@ -1,16 +1,8 @@
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const { relevant_roles } = require('../json/config.json');
+const { relevant_roles, newListingsCHID } = require('../json/config.json');
 
 class PostManager {
-  constructor() {
-    this.modal = new ModalBuilder();
-    this.components = [
-      new ActionRowBuilder().addComponents(this.buildHaveField()),
-      new ActionRowBuilder().addComponents(this.buildWantField()),
-      new ActionRowBuilder().addComponents(this.buildImgurField()),
-      new ActionRowBuilder().addComponents(this.buildDetailsField())
-    ];
-  }
+  constructor() {}
 
   buildRoleField(itemrole) {
     const role = new TextInputBuilder()
@@ -65,33 +57,45 @@ class PostManager {
   }
 
   async newPostModal(interaction) {
+    let modal = new ModalBuilder();
+    let components = [
+      new ActionRowBuilder().addComponents(this.buildHaveField()),
+      new ActionRowBuilder().addComponents(this.buildWantField()),
+      new ActionRowBuilder().addComponents(this.buildImgurField()),
+      new ActionRowBuilder().addComponents(this.buildDetailsField())
+    ];
+
     const type = interaction.options.getString('type');
     const itemrole = interaction.options.getRole('itemrole');
 
-    if(relevant_roles.includes(itemrole.name))
-      return await interaction.reply("**INVALID ITEM ROLE**").catch(console.error);
+    if(itemrole){
+      if(relevant_roles.includes(itemrole.name))
+        return await interaction.reply({
+          content: "**INVALID ITEM ROLE**",
+          ephemeral: true
+        }).catch(console.error);
+      modal.addComponents(new ActionRowBuilder().addComponents(this.buildRoleField(itemrole)));
+    }
 
     switch (type) {
       case "buy": {
-        this.modal.setCustomId("buyPostModal").setTitle("Buy an item!");
+        modal.setCustomId("buyPostModal").setTitle("Buy an item!");
         break;
       }
       case "sell": {
-        this.modal.setCustomId("sellPostModal").setTitle("Sell an item!");
+        modal.setCustomId("sellPostModal").setTitle("Sell an item!");
         break;
       }
       case "trade": {
-        this.modal.setCustomId("tradePostModal").setTitle("Trade an item!");
+        modal.setCustomId("tradePostModal").setTitle("Trade an item!");
         break;
       }
     }
-
-    this.modal.addComponents(new ActionRowBuilder().addComponents(this.buildRoleField(itemrole)));
-    this.modal.addComponents(this.components);
-    await interaction.showModal(this.modal).catch(console.error);
+    modal.addComponents(components);
+    await interaction.showModal(modal).catch(console.error);
   }
 
-  newPost() { }
+  newPost(type) { }
 
   editPost() { }
 
