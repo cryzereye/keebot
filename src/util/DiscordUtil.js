@@ -15,11 +15,12 @@ exports.getGuildMemberfromID = async(id, guild) => {
  * @param {Snowflake} guildID 
  * @param {Snowflake} chid 
  * @param {String} message 
+ * @return {discord.js.Message} sent message
  */
 exports.sendMessageToChannel = async(client, guildID, chid, message) => {
   let guild = await this.getGuildFromID(client, guildID).catch(console.error);
   let channel = await this.getChannelFromID(guild, chid).catch(console.error);
-  await channel.send(message).catch(console.error);
+  return await channel.send(message).catch(console.error);
 }
 
 /**
