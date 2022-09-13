@@ -1,7 +1,6 @@
 const { MongoClient } = require('mongodb');
 const Score = require('../models/Score');
 const VouchMsg = require('../models/VouchMsg');
-const { QueueManager } = require('../util/QueueManager');
 const { connURI, dbname, collnames } = require('../json/config.json');
 
 
@@ -19,7 +18,6 @@ class DBManager {
       }
       console.log("Connected to database!");
     });
-    this.queue = new QueueManager();
   }
 
   async getStats(id) {
