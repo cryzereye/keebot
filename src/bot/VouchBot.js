@@ -1,4 +1,4 @@
-const { Client, Intents} = require('discord.js');
+const { Client, GatewayIntentBits, Partials, InteractionType } = require('discord.js');
 const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
 const { discord_id, discord_token, serverID, commands, dev } = require('../json/config.json');
@@ -7,6 +7,7 @@ const { RoleGiverManager } = require('../functions/RoleGiverManager');
 const { ReportManager } = require('../functions/ReportManager');
 //const { DBManager } = require('../util/DBManager');
 const { CommandProcessor } = require('./CommandProcessor');
+const { ModalProcessor } = require('./ModalProcessor');
 const { MessageProcessor } = require('./MessageProcessor');
 const dUtil = require('../util/DiscordUtil');
 
@@ -28,8 +29,12 @@ class VouchBot {
 
     // handles usage of slash commands
     this.client.on('interactionCreate', async interaction => {
-      if (!interaction.isCommand()) return;
-      this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr);
+      if (interaction.type === InteractionType.ApplicationCommand)
+        this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr);
+      else if (interaction.type === InteractionType.ModalSubmit)
+        this.modalproc.processModal(interaction, this.reportmngr);
+      else
+        return;
     });
     
     this.client.login(discord_token);
@@ -40,16 +45,15 @@ class VouchBot {
    */
   buildDependencies(){
     this.client = new Client({
-      intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES, // required daw
-      ]
+      intents: [GatewayIntentBits.Guilds],
+      partials: [Partials.Channel]
     });
     //this.dbmngr = new DBManager();
     this.rolegivermngr = new RoleGiverManager(this.client);
     this.scorer = new Scorer(); // removed this.dbmngr arg
     this.reportmngr = new ReportManager();
     this.cmdproc = new CommandProcessor();
+    this.modalproc = new ModalProcessor();
     this.msgproc = new MessageProcessor();
   }
 

@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 //const { DBManager } = require('../util/DBManager');
 const { relevant_roles } = require('../json/config.json');
 const fs = require('fs');
@@ -150,7 +150,7 @@ class Scorer {
    * @returns {discordjs.MessageEmbed}
    */
   generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration){
-    const embedBuilder = new MessageEmbed()
+    const embedBuilder = new EmbedBuilder()
         .setColor("DEFAULT")
         .setTitle(`${points} Points`)
         .setAuthor({
