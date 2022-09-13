@@ -23,32 +23,29 @@ class DBManager {
   }
 
   async getStats(id) {
-    return await this.addAsyncJob(Score.getStats(this.colldb[0], id.toString()));
+    return await Score.getStats(this.colldb[0], id.toString());
   }
 
   async saveVouch(msgid, authorID, authorName, mentioned, content) {
-    return await this.addAsyncJob(VouchMsg.saveVouch(this.colldb[0], msgid, authorID, authorName, mentioned, content));
+    return await VouchMsg.saveVouch(this.colldb[0], msgid, authorID, authorName, mentioned, content);
   }
 
   async deleteVouch(msgid) {
-    return await this.addAsyncJob(VouchMsg.deleteOne(this.colldb[0], msgid));
+    return await VouchMsg.deleteOne(this.colldb[0], msgid);
   }
 
   async updateVouch(msgid) {
-    return await this.addAsyncJob(VouchMsg.deleteOne(this.colldb[0], msgid));
+    return await VouchMsg.deleteOne(this.colldb[0], msgid);
   }
 
   async deleteAllVouch() {
-    return await this.addAsyncJob(VouchMsg.deleteAll(this.colldb[0]));
+    return await VouchMsg.deleteAll(this.colldb[0]);
   }
 
   async getAllVouch() {
-    return await this.addAsyncJob(VouchMsg.getAll(this.colldb[0]));
+    return await VouchMsg.getAll(this.colldb[0]);
   }
 
-  async addAsyncJob(action) {
-    return await this.queue.enqueue(action);
-  }
 }
 
 module.exports = { DBManager }
