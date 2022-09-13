@@ -1,15 +1,15 @@
-const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, SelectMenuBuilder } = require('discord.js');
 const Report = require('../models/Report');
 const dUtil = require('../util/DiscordUtil');
 const { reportsCHID, admins, reportTypes, verifiedReportsCHID } = require('../json/config.json');
 
 class ReportManager {
   constructor() {
-    this.modal = new ModalBuilder().setCustomId('reportModal');
+    /**this.modal = new ModalBuilder().setCustomId('reportModal');
     this.modal.addComponent(
       new ActionRowBuilder().addComponents(this.buildReportMenuField()),
       new ActionRowBuilder().addComponents(this.buildReportSummaryField()),
-    );
+    );*/
   }
 
   async processReport(interaction) {

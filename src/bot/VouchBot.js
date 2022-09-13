@@ -5,6 +5,7 @@ const { discord_id, discord_token, serverID, commands, dev } = require('../json/
 const { Scorer } = require('../functions/Scorer');
 const { RoleGiverManager } = require('../functions/RoleGiverManager');
 const { ReportManager } = require('../functions/ReportManager');
+const { PostManager } = require('../functions/PostManager');
 //const { DBManager } = require('../util/DBManager');
 const { CommandProcessor } = require('./CommandProcessor');
 const { ModalProcessor } = require('./ModalProcessor');
@@ -30,9 +31,9 @@ class VouchBot {
     // handles usage of slash commands
     this.client.on('interactionCreate', async interaction => {
       if (interaction.type === InteractionType.ApplicationCommand)
-        this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr);
+        this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr, this.postmngr);
       else if (interaction.type === InteractionType.ModalSubmit)
-        this.modalproc.processModal(interaction, this.reportmngr);
+        this.modalproc.processModal(interaction, this.reportmngr, this.postmngr);
       else
         return;
     });
@@ -52,6 +53,7 @@ class VouchBot {
     this.rolegivermngr = new RoleGiverManager(this.client);
     this.scorer = new Scorer(); // removed this.dbmngr arg
     this.reportmngr = new ReportManager();
+    this.postmngr = new PostManager();
     this.cmdproc = new CommandProcessor();
     this.modalproc = new ModalProcessor();
     this.msgproc = new MessageProcessor();
