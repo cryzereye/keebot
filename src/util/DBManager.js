@@ -1,6 +1,7 @@
 const { MongoClient } = require('mongodb');
 const Score = require('../models/Score');
 const VouchMsg = require('../models/VouchMsg');
+const async = require('async')
 const { connURI, dbname, collnames } = require('../json/config.json');
 
 
@@ -18,30 +19,64 @@ class DBManager {
       }
       console.log("Connected to database!");
     });
+
+    this.defineQueue();
   }
 
-  async getStats(id) {
-    return await Score.getStats(this.colldb[0], id.toString());
+  /**
+   * https://www.geeksforgeeks.org/node-js-async-queue-method/
+   */
+  defineQueue() {
+    console.log("Defining queue..");
+    this.queue = async.queue((task, completed) => {
+      console.log("Currently Busy Processing Task " + task);
+
+      setTimeout(() => {
+        const remaining = this.queue.length();
+        completed(null, { task, remaining });
+      }, 1000);
+    }, 1);
+    console.log("Async queue defined!");
   }
 
-  async saveVouch(msgid, authorID, authorName, mentioned, content) {
-    return await VouchMsg.saveVouch(this.colldb[0], msgid, authorID, authorName, mentioned, content);
+  getStats(id) {
+    return addJob(Score.getStats(this.colldb[0], id.toString()));
   }
 
-  async deleteVouch(msgid) {
-    return await VouchMsg.deleteOne(this.colldb[0], msgid);
+  saveVouch(msgid, authorID, authorName, mentioned, content) {
+    return addJob(VouchMsg.saveVouch(this.colldb[0], msgid, authorID, authorName, mentioned, content));
   }
 
-  async updateVouch(msgid) {
-    return await VouchMsg.deleteOne(this.colldb[0], msgid);
+  deleteVouch(msgid) {
+    return addJob(VouchMsg.deleteOne(this.colldb[0], msgid));
   }
 
-  async deleteAllVouch() {
-    return await VouchMsg.deleteAll(this.colldb[0]);
+  updateVouch(msgid) {
+    return addJob(VouchMsg.deleteOne(this.colldb[0], msgid));
   }
 
-  async getAllVouch() {
-    return await VouchMsg.getAll(this.colldb[0]);
+  deleteAllVouch() {
+    return addJob(VouchMsg.deleteAll(this.colldb[0]));
+  }
+
+  getAllVouch() {
+    return addJob(VouchMsg.getAll(this.colldb[0]));
+  }
+
+  /**
+   * https://www.geeksforgeeks.org/node-js-async-queue-method/
+   * @param {function} job 
+   */
+  addJob(job) {
+    this.queue.push(job, (error, { job, remaining }) => {
+      if (error) {
+        console.log(`An error occurred while processing task ${job}`);
+      } else {
+        console.log(`Finished processing task ${job}
+                 . ${remaining} tasks remaining`);
+        return job;
+      }
+    });
   }
 
 }
