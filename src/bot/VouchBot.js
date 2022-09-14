@@ -33,7 +33,7 @@ class VouchBot {
       if (interaction.type === InteractionType.ApplicationCommand)
         this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr, this.postmngr);
       else if (interaction.type === InteractionType.ModalSubmit)
-        this.modalproc.processModal(interaction, this.reportmngr, this.postmngr);
+        this.modalproc.processModal(interaction, this.postmngr);
       else
         return;
     });

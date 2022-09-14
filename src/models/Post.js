@@ -2,6 +2,7 @@ const fs = require('fs');
 const fileName = '../json/post.json';
 const osFile = './src/json/post.json';
 let { post } = require(fileName);
+const { sellCHID, buyCHID, tradeCHID, serverID } = require('../json/config.json');
 
 exports.savePostToFile = () => {
   let dataStr = { "post": post }
@@ -37,7 +38,21 @@ exports.markSold = (postID, soldToID, soldDate) => {
   this.savePostToFile();
 }
 
-exports.delete = (id) => {
+exports.delete = (postID) => {
   post[postID] == null;
   this.savePostToFile();
+}
+
+exports.bumped = (postID, bumpDate) => {
+  post[postID].bumpDate = bumpDate;
+}
+
+/**
+ * returns a url corresponding to the given msgid
+ * @param {String} channelID: channel ID
+ * @param {String} msgid 
+ * @returns {String} URL
+ */
+exports.generateUrl = (channelID, msgid) => {
+  return `https://discord.com/channels/${serverID}/${channelID}/${msgid}`;
 }

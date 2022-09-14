@@ -1,16 +1,18 @@
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const { relevant_roles, newListingsCHID } = require('../json/config.json');
+const { relevant_roles, newListingsCHID, testCHID } = require('../json/config.json');
+const Post = require('../models/Post');
+const dUtil = require('../util/DiscordUtil');
 
 class PostManager {
-  constructor() {}
+  constructor() { }
 
   buildRoleField(itemrole) {
     const role = new TextInputBuilder()
-      .setCustomId('role')
+      .setCustomId(itemrole.id.toString())
       .setLabel("Item Role [DO NOT EDIT ROLE]")
       .setStyle(TextInputStyle.Short)
       .setPlaceholder(itemrole.id.toString())
-      .setValue(itemrole.name)
+      .setValue(itemrole.name);
     return role;
   }
 
@@ -68,15 +70,14 @@ class PostManager {
     const type = interaction.options.getString('type');
     const itemrole = interaction.options.getRole('itemrole');
 
-    if(itemrole){
-      if(relevant_roles.includes(itemrole.name))
+    if (itemrole) {
+      if (relevant_roles.includes(itemrole.name))
         return await interaction.reply({
           content: "**INVALID ITEM ROLE**",
           ephemeral: true
         }).catch(console.error);
       modal.addComponents(new ActionRowBuilder().addComponents(this.buildRoleField(itemrole)));
     }
-
     switch (type) {
       case "buy": {
         modal.setCustomId("buyPostModal").setTitle("Buy an item!");
@@ -95,7 +96,57 @@ class PostManager {
     await interaction.showModal(modal).catch(console.error);
   }
 
-  newPost(type) { }
+  async newPost(client, guild, type, authorID, postDate, data) {
+    let channelID = testCHID; // test purposes only
+    let content = "";
+    let newListContent = "";
+    let msgURL = "";
+    /**switch (type) {
+      case "buy": channelID = sellCHID; break;
+      case "sell": channelID = buyCHID; break;
+      case "trade": channelID = tradeCHID; break;
+    }*/
+
+    // goes into buy/sell/trade channel
+    content += `**Post by <@${authorID}>**\n\n`;
+    content += `HAVE: ${data.have}\n`;
+    content += `WANT: ${data.want}\n`;
+    if ("imgur" in data)
+      content += `${data.imgur}\n\n`;
+
+    if ("details" in data)
+      content += `${data.details}\n`;
+
+    // goes into new-listings channel
+    newListContent += `New <#${channelID}> post from <@${authorID}>**\n`;
+    if ("roleID" in data)
+      newListContent += `For <@&${data.roleID}>\n`;
+    newListContent += `HAVE:  ${data.have}\n`;
+    newListContent += `WANT:  ${data.want}\n`;
+
+    // gets sent message from buy/sell/trade channels then gets id, generates url to be sent in #new-listings
+    const message = await dUtil.sendMessageToChannel(client, guild.id, channelID, content);
+    msgURL = Post.generateUrl(channelID, message.id);
+    newListContent += `${msgURL}`;
+
+    const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, newListingsCHID, newListContent);
+
+    Post.new(
+      message.id,
+      newListMsg.id,
+      authorID,
+      type,
+      data.have,
+      data.want,
+      postDate
+    );
+
+    return {
+      posted: true,
+      url: msgURL,
+      newListingURL: Post.generateUrl(newListingsCHID, newListMsg.id),
+    };
+  }
 
   editPost() { }
 
