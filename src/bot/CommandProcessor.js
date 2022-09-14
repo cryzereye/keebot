@@ -41,7 +41,7 @@ class CommandProcessor {
       }
       case commands[4].name: {
         if (interaction.user.id == me_id)
-          return postmngr.newPostModal(interaction);
+          return this.processPost(interaction, postmngr);
         else 
           return await interaction.reply("**NOT YET AVAILABLE**");
       }
@@ -67,7 +67,22 @@ class CommandProcessor {
   }
 
   async processReport(interaction, reportmngr) {
-    return await reportmngr.processReport(interaction);
+    await reportmngr.processReport(interaction);
+  }
+
+  /**
+   * segregates /post usage
+   * @param {discord.js.Interaction} interaction 
+   * @param {postManager} postmngr 
+   */
+  processPost(interaction, postmngr){
+    const postType = interaction.options.getSubcommand(false);
+    switch(postType){
+      case "new": return postmngr.newPostModal(interaction);
+      case "edit": return postmngr.editPostModal(interaction);
+      case "delete": return postmngr.deletePostModal(interaction);
+    }
+    
   }
 
 }

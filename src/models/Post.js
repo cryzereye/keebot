@@ -2,7 +2,7 @@ const fs = require('fs');
 const fileName = '../json/post.json';
 const osFile = './src/json/post.json';
 let { post } = require(fileName);
-const { sellCHID, buyCHID, tradeCHID, serverID } = require('../json/config.json');
+const { serverID } = require('../json/config.json');
 
 exports.savePostToFile = () => {
   let dataStr = { "post": post }
@@ -27,9 +27,14 @@ exports.new = (postID, newListID, authorID, type, have, want, postDate) => {
   this.savePostToFile();
 }
 
-exports.edit = (postID, have, want) => {
+exports.get = (postID) => {
+  return post[postID];
+}
+
+exports.edit = (postID, have, want, editDate) => {
   post[postID].have = have;
   post[postID].want = want;
+  post[postID].editDate = editDate;
   this.savePostToFile();
 }
 
