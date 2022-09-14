@@ -19,6 +19,7 @@ exports.new = (postID, newListID, authorID, type, have, want, postDate) => {
     have: have,
     want: want,
     postDate: postDate,
+    bumpDate: postDate,
     sold: false,
     soldToID: "",
     soldDate: ""

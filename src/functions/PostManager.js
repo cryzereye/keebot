@@ -108,7 +108,7 @@ class PostManager {
     }*/
 
     // goes into buy/sell/trade channel
-    content += `**Post by <@${authorID}>**\n\n`;
+    content += `**Post by <@!${authorID}>**\n\n`;
     content += `HAVE: ${data.have}\n`;
     content += `WANT: ${data.want}\n`;
     if ("imgur" in data)
@@ -118,7 +118,7 @@ class PostManager {
       content += `${data.details}\n`;
 
     // goes into new-listings channel
-    newListContent += `New <#${channelID}> post from <@${authorID}>**\n`;
+    newListContent += `**New <#${channelID}> post from <@!${authorID}>**\n`;
     if ("roleID" in data)
       newListContent += `For <@&${data.roleID}>\n`;
     newListContent += `HAVE:  ${data.have}\n`;
