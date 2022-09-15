@@ -22,12 +22,15 @@ exports.new = (postID, newListID, authorID, type, have, want, postDate) => {
     bumpDate: postDate,
     sold: false,
     soldToID: "",
-    soldDate: ""
+    soldDate: "",
+    deleted: false
   };
   this.savePostToFile();
 }
 
 exports.get = (postID) => {
+  console.log("get:" + postID);
+  console.log(post[postID]);
   return post[postID];
 }
 
@@ -38,14 +41,15 @@ exports.edit = (postID, have, want, editDate) => {
   this.savePostToFile();
 }
 
-exports.markSold = (postID, soldToID, soldDate) => {
-  post[postID].soldToID = soldToID;
+exports.markSold = (postID, soldDate) => {
   post[postID].soldDate = soldDate;
+  post[postID].sold = true;
   this.savePostToFile();
 }
 
-exports.delete = (postID) => {
-  post[postID] == null;
+exports.delete = (postID, deleteDate) => {
+  post[postID].deleteDate = deleteDate;
+  post[postID].deleted = true;
   this.savePostToFile();
 }
 

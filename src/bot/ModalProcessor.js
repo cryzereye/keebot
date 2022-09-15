@@ -9,6 +9,7 @@ class ModalProcessor {
       case "sellPostModal":
       case "tradePostModal": this.processPostModal(interaction, postmngr); break;
       case "editPostModal": this.processEditPostModal(interaction, postmngr); break;
+      case "soldPostModal": this.processSoldPostModal(interaction, postmngr); break;
     }
   }
 
@@ -54,17 +55,42 @@ class ModalProcessor {
     data.want = fields.get("want").value;
     data.editDate = interaction.createdAt;
 
-    const { edited, url, newListingURL } = await postmngr.editPost(
+    const { edited, url, newListingURL, errorContent } = await postmngr.editPost(
       interaction.client, interaction.guild, authorID, data
     ).catch(console.error);
 
     if (edited)
       editResult = `Your post has been edited:\n${url}\nUpdated notif: ${newListingURL}`;
     else
-      editResult = `There was an error editing your post. Pinging <@!${me_id}>`;
+      editResult = `${errorContent} Pinging <@!${me_id}>`;
 
     await interaction.reply({
       content: editResult,
+      ephemeral: true
+    });
+  }
+
+  async processSoldPostModal(interaction, postmngr) {
+    const fields = interaction.fields.fields;
+    let data = {};
+    let soldResult;
+
+    const postID = fields.keys().next().value;
+    if (postID && postID != "have")
+      data.postID = postID;
+    data.soldDate = interaction.createdAt;
+
+    const { sold, url, errorContent } = await postmngr.soldPost(
+      interaction.guild, data
+    ).catch(console.error);
+
+    if (sold)
+      soldResult = `Your post has been marked sold:\n${url}`;
+    else
+      soldResult = `${errorContent} Pinging <@!${me_id}>`;
+
+    await interaction.reply({
+      content: soldResult,
       ephemeral: true
     });
   }

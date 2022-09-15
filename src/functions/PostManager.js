@@ -69,90 +69,280 @@ class PostManager {
   }
 
   async editPostModal(interaction) {
-    const postID = interaction.options.getString('id');
+    const postID = interaction.options.getString('editid');
     let editPost = Post.get(postID);
-    if (editPost.authorID !== interaction.user.id) {
-      return await interaction.reply({
-        content: `Invalid! Make sure you are editing your own post. Pinging <@!${me_id}>`,
-        ephemeral: true
-      }).catch(console.error);
-    }
 
-    let modal = this.generateModal("edit", "", null, postID, editPost.have, editPost.want);
-    if (modal)
-      return await interaction.showModal(modal).catch(console.error);
+    if (editPost) {
+      if (editPost.authorID !== interaction.user.id) {
+        return await interaction.reply({
+          content: `Invalid! Make sure you are editing your own post. Pinging <@!${me_id}>`,
+          ephemeral: true
+        }).catch(console.error);
+      }
+
+      if (editPost.sold) {
+        return await interaction.reply({
+          content: `Invalid! Post is already marked as sold`,
+          ephemeral: true
+        }).catch(console.error);
+      }
+
+      let modal = this.generateModal("edit", "", null, postID, editPost.have, editPost.want);
+      if (modal)
+        return await interaction.showModal(modal).catch(console.error);
+      else {
+        return await interaction.reply({
+          content: `Error in editing post. Pinging <@!${me_id}>`,
+          ephemeral: true
+        }).catch(console.error);
+      }
+    }
     else {
       return await interaction.reply({
-        content: `Error in editing post. Pinging <@!${me_id}>`,
+        content: `Invalid! Post/ID does not exist.`,
         ephemeral: true
       }).catch(console.error);
     }
   }
 
   async editPost(client, guild, authorID, data) {
-    const record = await Post.get(data.postID);
-    const channelID = this.getChannelFromType(record.type);
-    const postMsg = await dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
+    let record = Post.get(data.postID);
 
-    if (!postMsg) {
+    if (record) {
+      const channelID = this.getChannelFromType(record.type);
+      const postMsg = await dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
+
+      if (!postMsg) {
+        return {
+          edited: false,
+          url: "",
+          newListingURL: "",
+          errorContent: "Unable to fetch message from channel."
+        };
+      }
+
+      let content = postMsg.content.split('\n');
+      let newContent = "";
+      let newListContent = "";
+      let haveEdited = false;
+      let wantEdited = false;
+
+      content.map(line => {
+        if (line.startsWith("HAVE: ") && !haveEdited)
+          newContent += `HAVE: ${data.have}\n`;
+        else if (line.startsWith("WANT: ") && !wantEdited)
+          newContent += `WANT: ${data.want}\n`;
+        else
+          newContent += line + "\n"
+      });
+
+      const message = await postMsg.edit(newContent).catch(console.error);
+      if (!message) {
+        return {
+          edited: false,
+          url: "",
+          newListingURL: "",
+          errorContent: ""
+        };
+      }
+      let msgURL = Post.generateUrl(message.channel.id, message.id);
+
+      newListContent += `**UPDATED <#${channelID}> post from <@!${authorID}>**\n`;
+      newListContent += `HAVE: ~~${record.have}~~ ${data.have}\n`;
+      newListContent += `WANT: ~~${record.want}~~ ${data.want}\n`;
+      newListContent += `${msgURL}`;
+
+      const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, newListingsCHID, newListContent).catch(console.error);
+
+      Post.edit(
+        data.postID,
+        data.have,
+        data.want,
+        data.editDate
+      );
+
+      return {
+        edited: true,
+        url: msgURL,
+        newListingURL: Post.generateUrl(newListingsCHID, newListMsg.id),
+        errorContent: ""
+      };
+    }
+    else {
       return {
         edited: false,
         url: "",
-        newListingURL: ""
+        newListingURL: "",
+        errorContent: "Invalid! Post/ID does not exist."
       };
     }
-
-    let content = postMsg.content.split('\n');
-    let newContent = "";
-    let newListContent = "";
-    let haveEdited = false;
-    let wantEdited = false;
-
-    content.map(line => {
-      if (line.startsWith("HAVE: ") && !haveEdited)
-        newContent += `HAVE: ${data.have}\n`;
-      else if (line.startsWith("WANT: ") && !wantEdited)
-        newContent += `WANT: ${data.want}\n`;
-      else
-        newContent += line + "\n"
-    });
-
-    const message = await postMsg.edit(newContent).catch(console.error);
-    if (!message) {
-      return {
-        edited: false,
-        url: "",
-        newListingURL: ""
-      };
-    }
-    let msgURL = Post.generateUrl(message.channel.id, message.id);
-
-    newListContent += `**UPDATED <#${channelID}> post from <@!${authorID}>**\n`;
-    newListContent += `HAVE: ~~${record.have}~~ ${data.have}\n`;
-    newListContent += `WANT: ~~${record.want}~~ ${data.want}\n`;
-    newListContent += `${msgURL}`;
-
-    const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, newListingsCHID, newListContent).catch(console.error);
-
-    Post.edit(
-      data.postID,
-      data.have,
-      data.want,
-      data.editDate
-    );
-
-    return {
-      edited: true,
-      url: msgURL,
-      newListingURL: Post.generateUrl(newListingsCHID, newListMsg.id)
-    };
   }
 
-  markSoldPost() { }
+  async soldPostModal(interaction) {
+    const postID = interaction.options.getString('soldid');
+    let soldPost = Post.get(postID);
 
-  markUnsoldPost() { }
+    if (soldPost) {
+      if (soldPost.authorID !== interaction.user.id) {
+        return await interaction.reply({
+          content: `Invalid! Make sure you are marking your own post as sold. Pinging <@!${me_id}>`,
+          ephemeral: true
+        }).catch(console.error);
+      }
 
-  deletePost() { }
+      if (soldPost.sold) {
+        return await interaction.reply({
+          content: `Invalid! Post is already marked as sold`,
+          ephemeral: true
+        }).catch(console.error);
+      }
+
+      let modal = this.generateModal("sold", "", null, postID, soldPost.have, soldPost.want);
+      if (modal)
+        return await interaction.showModal(modal).catch(console.error);
+      else {
+        return await interaction.reply({
+          content: `Error in marking post as sold. Pinging <@!${me_id}>`,
+          ephemeral: true
+        }).catch(console.error);
+      }
+    }
+    else {
+      return await interaction.reply({
+        content: `Invalid! Post/ID does not exist.`,
+        ephemeral: true
+      }).catch(console.error);
+    }
+  }
+
+  async soldPost(guild, data) {
+    let record = Post.get(data.postID);
+
+    if (record) {
+      const channelID = this.getChannelFromType(record.type);
+      const postMsg = await dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
+
+      if (!postMsg) {
+        return {
+          sold: false,
+          url: "",
+          errorContent: "Unable to fetch message from channel."
+        };
+      }
+
+      let newContent = `||${postMsg.content}||`;
+
+      const message = await postMsg.edit(newContent).catch(console.error);
+      if (!message) {
+        return {
+          sold: false,
+          url: "",
+          errorContent: "Unable to edit post message"
+        };
+      }
+      let msgURL = Post.generateUrl(message.channel.id, message.id);
+
+      Post.markSold(
+        data.postID,
+        data.soldDate
+      );
+
+      return {
+        sold: true,
+        url: msgURL,
+        errorContent: ""
+      };
+    }
+    else {
+      return {
+        sold: false,
+        url: "",
+        errorContent: "Invalid! Post/ID does not exist."
+      };
+    }
+  }
+
+  async deletePostModal(interaction) {
+    const postID = interaction.options.getString('deleteid');
+    let deletePost = Post.get(postID);
+
+    if (deletePost) {
+      if (deletePost.authorID !== interaction.user.id) {
+        return await interaction.reply({
+          content: `Invalid! Make sure you are deleting your own post. Pinging <@!${me_id}>`,
+          ephemeral: true
+        }).catch(console.error);
+      }
+
+      if (deletePost.sold) {
+        return await interaction.reply({
+          content: `Invalid! Post is already marked as sold`,
+          ephemeral: true
+        }).catch(console.error);
+      }
+
+      let modal = this.generateModal("delete", "", null, postID, deletePost.have, deletePost.want);
+      if (modal)
+        return await interaction.showModal(modal).catch(console.error);
+      else {
+        return await interaction.reply({
+          content: `Error in deleting post. Pinging <@!${me_id}>`,
+          ephemeral: true
+        }).catch(console.error);
+      }
+    }
+    else {
+      return await interaction.reply({
+        content: `Invalid! Post/ID does not exist.`,
+        ephemeral: true
+      }).catch(console.error);
+    }
+  }
+
+  async deletePost(guild, data) {
+    let record = Post.get(data.postID);
+
+    if (record) {
+      const channelID = this.getChannelFromType(record.type);
+      const postMsg = await dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
+
+      if (!postMsg) {
+        return {
+          deleted: false,
+          url: "",
+          errorContent: "Unable to fetch message from channel."
+        };
+      }
+
+      const message = await postMsg.delete().catch(console.error);
+      if (!message) {
+        return {
+          deleted: false,
+          url: "",
+          errorContent: "Unable to delete post message"
+        };
+      }
+      let msgURL = Post.generateUrl(message.channel.id, message.id);
+
+      Post.delete(
+        data.postID,
+        data.deleteDate
+      );
+
+      return {
+        deleted: true,
+        url: msgURL,
+        errorContent: ""
+      };
+    }
+    else {
+      return {
+        deleted: false,
+        url: "",
+        errorContent: "Invalid! Post/ID does not exist."
+      };
+    }
+  }
 
   buildRoleField(itemrole) {
     const role = new TextInputBuilder()
@@ -218,8 +408,8 @@ class PostManager {
       .setLabel("Post ID: DO NOT EDIT")
       .setStyle(TextInputStyle.Short)
       .setPlaceholder(value)
-      .setRequired(true);
-    if (value) postId.setValue(value);
+      .setRequired(true)
+      .setValue(value);
     return postId;
   }
 
@@ -245,7 +435,15 @@ class PostManager {
     }
     else if (mode == "edit") {
       modal.addComponents(new ActionRowBuilder().addComponents(this.buildPostIDField(postID)));
-      modal.setCustomId("editPostModal").setTitle("Edit your post!");
+      modal.setCustomId("editPostModal").setTitle("Editing your post...");
+    }
+    else if (mode == "sold") {
+      modal.addComponents(new ActionRowBuilder().addComponents(this.buildPostIDField(postID)));
+      modal.setCustomId("soldPostModal").setTitle("Confirm as SOLD?");
+    }
+    else if (mode == "delete") {
+      modal.addComponents(new ActionRowBuilder().addComponents(this.buildPostIDField(postID)));
+      modal.setCustomId("deletePostModal").setTitle("Confirm delete post?");
     }
 
     modal.addComponents(components);

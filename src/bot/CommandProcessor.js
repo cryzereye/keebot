@@ -75,12 +75,13 @@ class CommandProcessor {
    * @param {discord.js.Interaction} interaction 
    * @param {postManager} postmngr 
    */
-  processPost(interaction, postmngr){
+  async processPost(interaction, postmngr){
     const postType = interaction.options.getSubcommand(false);
     switch(postType){
-      case "new": return postmngr.newPostModal(interaction);
-      case "edit": return postmngr.editPostModal(interaction);
-      case "delete": return postmngr.deletePostModal(interaction);
+      case "new": return await postmngr.newPostModal(interaction);
+      case "edit": return await postmngr.editPostModal(interaction);
+      case "sold": return await postmngr.soldPostModal(interaction);
+      case "delete": return await postmngr.deletePostModal(interaction);
     }
     
   }
