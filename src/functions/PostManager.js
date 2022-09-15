@@ -87,6 +87,13 @@ class PostManager {
         }).catch(console.error);
       }
 
+      if (editPost.deleted) {
+        return await interaction.reply({
+          content: `Invalid! Post is already deleted`,
+          ephemeral: true
+        }).catch(console.error);
+      }
+
       let modal = this.generateModal("edit", "", null, postID, editPost.have, editPost.want);
       if (modal)
         return await interaction.showModal(modal).catch(console.error);
@@ -197,6 +204,13 @@ class PostManager {
         }).catch(console.error);
       }
 
+      if (soldPost.deleted) {
+        return await interaction.reply({
+          content: `Invalid! Post is already deleted`,
+          ephemeral: true
+        }).catch(console.error);
+      }
+
       let modal = this.generateModal("sold", "", null, postID, soldPost.have, soldPost.want);
       if (modal)
         return await interaction.showModal(modal).catch(console.error);
@@ -274,9 +288,9 @@ class PostManager {
         }).catch(console.error);
       }
 
-      if (deletePost.sold) {
+      if (deletePost.deleted) {
         return await interaction.reply({
-          content: `Invalid! Post is already marked as sold`,
+          content: `Invalid! Post is already deleted`,
           ephemeral: true
         }).catch(console.error);
       }

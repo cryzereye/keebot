@@ -29,8 +29,6 @@ exports.new = (postID, newListID, authorID, type, have, want, postDate) => {
 }
 
 exports.get = (postID) => {
-  console.log("get:" + postID);
-  console.log(post[postID]);
   return post[postID];
 }
 

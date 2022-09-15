@@ -10,6 +10,7 @@ class ModalProcessor {
       case "tradePostModal": this.processPostModal(interaction, postmngr); break;
       case "editPostModal": this.processEditPostModal(interaction, postmngr); break;
       case "soldPostModal": this.processSoldPostModal(interaction, postmngr); break;
+      case "deletePostModal": this.processDeletePostModal(interaction, postmngr); break;
     }
   }
 
@@ -91,6 +92,31 @@ class ModalProcessor {
 
     await interaction.reply({
       content: soldResult,
+      ephemeral: true
+    });
+  }
+
+  async processDeletePostModal(interaction, postmngr) {
+    const fields = interaction.fields.fields;
+    let data = {};
+    let deleteResult;
+
+    const postID = fields.keys().next().value;
+    if (postID && postID != "have")
+      data.postID = postID;
+    data.deleteDate = interaction.createdAt;
+
+    const { deleted, url, errorContent } = await postmngr.deletePost(
+      interaction.guild, data
+    ).catch(console.error);
+
+    if (deleted)
+    deleteResult = `Your post has been deleted`;
+    else
+    deleteResult = `${errorContent} Pinging <@!${me_id}>`;
+
+    await interaction.reply({
+      content: deleteResult,
       ephemeral: true
     });
   }
