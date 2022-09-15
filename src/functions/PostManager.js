@@ -68,8 +68,10 @@ class PostManager {
     };
   }
 
-  async editPostModal(interaction) {
-    const postID = interaction.options.getString('editid');
+  async editPostModal(interaction, argPostID) {
+    let postID = argPostID;
+    if(postID == "")
+      postID = interaction.options.getString('editid');
     let editPost = Post.get(postID);
 
     if (editPost) {
@@ -185,8 +187,10 @@ class PostManager {
     }
   }
 
-  async soldPostModal(interaction) {
-    const postID = interaction.options.getString('soldid');
+  async soldPostModal(interaction, argPostID) {
+    let postID = argPostID;
+    if(postID == "")
+      postID = interaction.options.getString('soldid');
     let soldPost = Post.get(postID);
 
     if (soldPost) {
@@ -276,8 +280,10 @@ class PostManager {
     }
   }
 
-  async deletePostModal(interaction) {
-    const postID = interaction.options.getString('deleteid');
+  async deletePostModal(interaction, argPostID) {
+    let postID = argPostID;
+    if(postID == "")
+      postID = interaction.options.getString('deleteid');
     let deletePost = Post.get(postID);
 
     if (deletePost) {

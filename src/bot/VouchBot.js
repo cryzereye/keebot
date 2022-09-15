@@ -10,6 +10,7 @@ const { PostManager } = require('../functions/PostManager');
 const { CommandProcessor } = require('./CommandProcessor');
 const { ModalProcessor } = require('./ModalProcessor');
 const { MessageProcessor } = require('./MessageProcessor');
+const { ContextProcessor } = require('./ContextProcessor');
 const dUtil = require('../util/DiscordUtil');
 
 class VouchBot {
@@ -30,7 +31,9 @@ class VouchBot {
 
     // handles usage of slash commands
     this.client.on('interactionCreate', async interaction => {
-      if (interaction.type === InteractionType.ApplicationCommand)
+      if (interaction.isContextMenuCommand())
+        this.contextproc.processContext(interaction, this.postmngr);
+      else if (interaction.type === InteractionType.ApplicationCommand)
         this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr, this.postmngr);
       else if (interaction.type === InteractionType.ModalSubmit)
         this.modalproc.processModal(interaction, this.postmngr);
@@ -57,6 +60,7 @@ class VouchBot {
     this.cmdproc = new CommandProcessor();
     this.modalproc = new ModalProcessor();
     this.msgproc = new MessageProcessor();
+    this.contextproc = new ContextProcessor();
   }
 
   /**

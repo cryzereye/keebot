@@ -10,7 +10,6 @@ class CommandProcessor {
     let fullName = `${user.username}#${user.discriminator}`;
     let interactionCHID = interaction.channel.id;
 
-    let result = "";
     if (interactionCHID != botCHID && interaction.user.id != me_id) return await interaction.reply(`Use commands in <#${botCHID}>`);
     switch (commandName) {
       case commands[0].name: {
@@ -79,9 +78,9 @@ class CommandProcessor {
     const postType = interaction.options.getSubcommand(false);
     switch(postType){
       case "new": return await postmngr.newPostModal(interaction);
-      case "edit": return await postmngr.editPostModal(interaction);
-      case "sold": return await postmngr.soldPostModal(interaction);
-      case "delete": return await postmngr.deletePostModal(interaction);
+      case "edit": return await postmngr.editPostModal(interaction, "");
+      case "sold": return await postmngr.soldPostModal(interaction, "");
+      case "delete": return await postmngr.deletePostModal(interaction, "");
     }
     
   }
