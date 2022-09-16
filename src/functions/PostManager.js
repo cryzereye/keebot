@@ -56,6 +56,7 @@ class PostManager {
       newListMsg.id,
       authorID,
       type,
+      data.roleID,
       data.have,
       data.want,
       postDate
@@ -362,6 +363,40 @@ class PostManager {
         errorContent: "Invalid! Post/ID does not exist."
       };
     }
+  }
+
+  async listPost(interaction){
+    const author = interaction.options.getUser("user");
+    const itemrole = interaction.options.getRole("listitemrole");
+    let authorID;
+    let itemroleID;
+    if(author) authorID = author.id;
+    if(itemrole) itemroleID = itemrole.id;
+
+    if(authorID == null && itemroleID == null){
+      return await interaction.reply({
+        content: "You must enter either a user or an item role",
+        ephemeral: true
+      }).catch(console.error);
+    }
+
+    const records = Post.list(authorID, itemroleID);
+    let content = "";
+    let channel;
+
+    if(records.length === 0){
+      return await interaction.reply({
+        content: "No posts found related to either user or item role.",
+        ephemeral: true
+      }).catch(console.error);
+    }
+
+    records.map( x =>{
+      channel = this.getChannelFromType(x.type);
+      content += `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\n\n`;
+    });
+
+    await interaction.reply(content).catch(console.error);
   }
 
   buildRoleField(itemrole) {

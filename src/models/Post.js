@@ -11,11 +11,13 @@ exports.savePostToFile = () => {
   });
 }
 
-exports.new = (postID, newListID, authorID, type, have, want, postDate) => {
+exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate) => {
   post[postID] = {
+    postID: postID,
     newListID: newListID,
     authorID: authorID,
     type: type,
+    itemrole: itemrole,
     have: have,
     want: want,
     postDate: postDate,
@@ -53,6 +55,31 @@ exports.delete = (postID, deleteDate) => {
 
 exports.bumped = (postID, bumpDate) => {
   post[postID].bumpDate = bumpDate;
+}
+
+exports.list = (authorID, itemrole) => {
+  let records = [];
+  let matchedAuthorID;
+  let matchedItemRole;
+  Object.keys(post).map(x => {
+    if(post[x].sold || post[x].deleted) return;
+    matchedAuthorID = true;
+    matchedItemRole = true;
+
+    if(authorID != null){
+      if(post[x].authorID === authorID) matchedAuthorID = true;
+      else matchedAuthorID = false;
+    }
+
+    if(itemrole != null){
+      if(post[x].itemrole === itemrole) matchedItemRole = true;
+      else matchedItemRole = false;
+    }
+
+    if(matchedAuthorID && matchedItemRole)
+      records.push(post[x]);
+  });
+  return records;
 }
 
 /**

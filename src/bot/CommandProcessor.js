@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-const { commands, me_id, botCHID, reportsCHID } = require('../json/config.json');
+const { commands, me_id, botCHID, reportsCHID, admins } = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
 
 class CommandProcessor {
@@ -10,7 +10,7 @@ class CommandProcessor {
     let fullName = `${user.username}#${user.discriminator}`;
     let interactionCHID = interaction.channel.id;
 
-    if (interactionCHID != botCHID && interaction.user.id != me_id) return await interaction.reply(`Use commands in <#${botCHID}>`);
+    if (interactionCHID != botCHID && !admins.includes(interaction.user.id)) return await interaction.reply(`Use commands in <#${botCHID}>`);
     switch (commandName) {
       case commands[0].name: {
         const target = interaction.options.getUser('user');
@@ -20,7 +20,7 @@ class CommandProcessor {
       }
       case commands[1].name: {
         console.log('Checking if admin...');
-        if (user.id != me_id)
+        if (!admins.includes(user.id))
           return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
         console.log('Data extraction from #verify-transactions starting...');
         let extractor = new MessageExtractor();
@@ -39,7 +39,7 @@ class CommandProcessor {
         });
       }
       case commands[4].name: {
-        if (interaction.user.id == me_id)
+        if (admins.includes(interaction.user.id))
           return this.processPost(interaction, postmngr);
         else 
           return await interaction.reply("**NOT YET AVAILABLE**");
@@ -81,6 +81,7 @@ class CommandProcessor {
       case "edit": return await postmngr.editPostModal(interaction, "");
       case "sold": return await postmngr.soldPostModal(interaction, "");
       case "delete": return await postmngr.deletePostModal(interaction, "");
+      case "list": return await postmngr.listPost(interaction);
     }
     
   }
