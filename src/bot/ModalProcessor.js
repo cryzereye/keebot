@@ -31,6 +31,8 @@ class ModalProcessor {
     if (fields.has("imgur")) data.imgur = fields.get("imgur").value;
     if (fields.has("details")) data.details = fields.get("details").value;
 
+    data = this.cleanUserEntries(data);
+
     const { posted, url, newListingURL } = await postmngr.newPost(
       interaction.client, interaction.guild, type, authorID, postDate, data
     );
@@ -55,6 +57,8 @@ class ModalProcessor {
     data.have = fields.get("have").value;
     data.want = fields.get("want").value;
     data.editDate = interaction.createdAt;
+
+    data = this.cleanUserEntries(data);
 
     const { edited, url, newListingURL, errorContent } = await postmngr.editPost(
       interaction.client, interaction.guild, authorID, data
@@ -81,6 +85,8 @@ class ModalProcessor {
       data.postID = postID;
     data.soldDate = interaction.createdAt;
 
+    data = this.cleanUserEntries(data);
+
     const { sold, url, errorContent } = await postmngr.soldPost(
       interaction.guild, data
     ).catch(console.error);
@@ -106,6 +112,8 @@ class ModalProcessor {
       data.postID = postID;
     data.deleteDate = interaction.createdAt;
 
+    data = this.cleanUserEntries(data);
+
     const { deleted, url, errorContent } = await postmngr.deletePost(
       interaction.guild, data
     ).catch(console.error);
@@ -119,6 +127,14 @@ class ModalProcessor {
       content: deleteResult,
       ephemeral: true
     });
+  }
+
+  cleanUserEntries(data){
+    Object.keys(data).forEach( x => {
+      if(x === "details") return;
+      data[x] = data[x].toString().replace("\n", " ");
+    });
+    return data;
   }
 }
 
