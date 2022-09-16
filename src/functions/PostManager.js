@@ -396,7 +396,10 @@ class PostManager {
       content += `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\n\n`;
     });
 
-    await interaction.reply(content).catch(console.error);
+    await interaction.reply({
+      content: content,
+      ephemeral: true
+    }).catch(console.error);
   }
 
   buildRoleField(itemrole) {

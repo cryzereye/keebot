@@ -42,7 +42,10 @@ class CommandProcessor {
         if (admins.includes(interaction.user.id))
           return this.processPost(interaction, postmngr);
         else 
-          return await interaction.reply("**NOT YET AVAILABLE**");
+          return await interaction.reply({
+            content: "**NOT YET AVAILABLE**",
+            ephemeral: true
+          });
       }
     }
   }
