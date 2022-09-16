@@ -54,6 +54,11 @@ class CommandProcessor {
     const verifyHelp = `This is where you send vouches for the people that you have transacted with **within the server**. For vouch confirmation, please reply to the vouch where you got mentioned, else you would not be scored for it.`;
     const statsHelp = `/stats <optional user>: see your stats or your target user's stats`;
     const reportsHelp = `/report file <user> <category> <summary>: file a report regarding a transaction incident within Keebisoria`;
+    const postNewHelp = `/post new <buy/sell/trade> <optional item role>: lets you create a new buy/sell/trade post. If item role is entered, there will be an item role ping for you listing upon creation. **Note** that the ID that will be given afterwards is your reference ID for your post`;
+    const postEditHelp = `/post edit <editid>: lets you edit the post that corresponds to the given ID. You can also do 'Right-click > Apps > Edit post' on your target post`;
+    const postSoldHelp = `/post sold <soldid>: will mark the post that corresponds to the given ID as sold. You can also do 'Right-click > Apps > Mark as sold' on your target post`;
+    const postDeleteHelp = `/post delete <deleteid>: will delete the post that corresponds to the given ID. You can also do 'Right-click > Apps > Delete post' on your target post`;
+    const postListHelp = `/post list <optional user> <optional item role>: Lets you see the list of posts that belongs to the given user or has the item role given. You need enter either of the two, or both.`;
     const extractHelp = `For admin use only`;
     const bugsHelp = `Please DM <@${me_id}>`;
     const embedBuilder = new MessageEmbed()
@@ -62,6 +67,11 @@ class CommandProcessor {
       .addFields({ name: '#verify-transaction:', value: verifyHelp })
       .addFields({ name: '/stats:', value: statsHelp })
       .addFields({ name: '/report file:', value: reportsHelp })
+      .addFields({ name: '/post new:', value: postNewHelp })
+      .addFields({ name: '/post edit:', value: postEditHelp })
+      .addFields({ name: '/post sold:', value: postSoldHelp })
+      .addFields({ name: '/post delete:', value: postDeleteHelp })
+      .addFields({ name: '/post list:', value: postListHelp })
       .addFields({ name: '/extract:', value: extractHelp })
       .addFields({ name: 'For bugs and data in accuracies', value: bugsHelp });
 
