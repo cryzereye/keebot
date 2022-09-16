@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { commands, me_id, botCHID, reportsCHID, admins } = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
 
@@ -61,7 +61,7 @@ class CommandProcessor {
     const postListHelp = `/post list <optional user> <optional item role>: Lets you see the list of posts that belongs to the given user or has the item role given. You need enter either of the two, or both.`;
     const extractHelp = `For admin use only`;
     const bugsHelp = `Please DM <@${me_id}>`;
-    const embedBuilder = new MessageEmbed()
+    const embedBuilder = new EmbedBuilder()
       .setColor("DEFAULT")
       .setTitle(`Help | ${username}`)
       .addFields({ name: '#verify-transaction:', value: verifyHelp })
