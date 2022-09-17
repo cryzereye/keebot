@@ -1,3 +1,5 @@
+const { channelID } = require('../json/config.json');
+
 /**
  * returns the GuildMember equivalent of ID given
  * @param {Snowflake} id : User id
@@ -132,4 +134,26 @@ exports.getMessageFromID = async (guild, chid, msgid) => {
   let channel = await this.getChannelFromID(guild, chid).catch(console.error);
   return channel.messages.cache.get(msgid) ||
     await channel.messages.fetch(msgid).catch(console.error);
+}
+
+/**
+ * does the replies and logging after user interactions
+ * @param {discord.js.Interaction} interaction 
+ * @param {Boolean} success 
+ * @param {String} content 
+ * @param {Boolean} isModal
+ * @param {discord.js.Modal} modal
+ */
+exports.postProcess = async (interaction, success, content, isModal, modal) => {
+  if (!success)
+    await this.sendMessageToChannel(interaction.client, interaction.guild.id, channelID.keebotlogs, `<@${interaction.user.id}>\n${content}`);
+  if (isModal) {
+    await interaction.showModal(modal).catch(console.error);
+  }
+  else {
+    await interaction.reply({
+      content: content,
+      ephemeral: true
+    });
+  }
 }

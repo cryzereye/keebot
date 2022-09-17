@@ -11,7 +11,6 @@ const { CommandProcessor } = require('./CommandProcessor');
 const { ModalProcessor } = require('./ModalProcessor');
 const { MessageProcessor } = require('./MessageProcessor');
 const { ContextProcessor } = require('./ContextProcessor');
-const dUtil = require('../util/DiscordUtil');
 
 class VouchBot {
   constructor() {

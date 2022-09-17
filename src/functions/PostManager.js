@@ -12,12 +12,19 @@ class PostManager {
 
     let modal = this.generateModal("new", type, itemrole);
     if (modal)
-      return await interaction.showModal(modal).catch(console.error);
+      return {
+        success: true,
+        content: "",
+        isModal: true,
+        modal: modal
+      }
     else {
-      return await interaction.reply({
+      return {
+        success: false,
         content: "**INVALID ITEM ROLE**",
-        ephemeral: true
-      }).catch(console.error);
+        isModal: false,
+        modal: null
+      }
     }
   }
 
@@ -71,47 +78,62 @@ class PostManager {
 
   async editPostModal(interaction, argPostID) {
     let postID = argPostID;
-    if(postID == "")
+    if (postID == "")
       postID = interaction.options.getString('editid');
     let editPost = Post.get(postID);
 
     if (editPost) {
       if (editPost.authorID !== interaction.user.id) {
-        return await interaction.reply({
+        return {
+          success: false,
           content: `Invalid! Make sure you are editing your own post. Pinging <@!${me_id}>`,
-          ephemeral: true
-        }).catch(console.error);
+          isModal: false,
+          modal: null
+        }
       }
 
       if (editPost.sold) {
-        return await interaction.reply({
+        return {
+          success: false,
           content: `Invalid! Post is already marked as sold`,
-          ephemeral: true
-        }).catch(console.error);
+          isModal: false,
+          modal: null
+        }
       }
 
       if (editPost.deleted) {
-        return await interaction.reply({
+        return {
+          success: false,
           content: `Invalid! Post is already deleted`,
-          ephemeral: true
-        }).catch(console.error);
+          isModal: false,
+          modal: null
+        }
       }
 
       let modal = this.generateModal("edit", "", null, postID, editPost.have, editPost.want);
       if (modal)
-        return await interaction.showModal(modal).catch(console.error);
+        return {
+          success: true,
+          content: "",
+          isModal: true,
+          modal: modal
+        }
       else {
-        return await interaction.reply({
+        return {
+          success: false,
           content: `Error in editing post. Pinging <@!${me_id}>`,
-          ephemeral: true
-        }).catch(console.error);
+          isModal: false,
+          modal: null
+        }
       }
     }
     else {
-      return await interaction.reply({
+      return {
+        success: false,
         content: `Invalid! Post/ID does not exist.`,
-        ephemeral: true
-      }).catch(console.error);
+        isModal: false,
+        modal: null
+      }
     }
   }
 
@@ -190,47 +212,62 @@ class PostManager {
 
   async soldPostModal(interaction, argPostID) {
     let postID = argPostID;
-    if(postID == "")
+    if (postID == "")
       postID = interaction.options.getString('soldid');
     let soldPost = Post.get(postID);
 
     if (soldPost) {
       if (soldPost.authorID !== interaction.user.id) {
-        return await interaction.reply({
+        return {
+          success: false,
           content: `Invalid! Make sure you are marking your own post as sold. Pinging <@!${me_id}>`,
-          ephemeral: true
-        }).catch(console.error);
+          isModal: false,
+          modal: null
+        }
       }
 
       if (soldPost.sold) {
-        return await interaction.reply({
+        return {
+          success: false,
           content: `Invalid! Post is already marked as sold`,
-          ephemeral: true
-        }).catch(console.error);
+          isModal: false,
+          modal: null
+        }
       }
 
       if (soldPost.deleted) {
-        return await interaction.reply({
+        return {
+          success: false,
           content: `Invalid! Post is already deleted`,
-          ephemeral: true
-        }).catch(console.error);
+          isModal: false,
+          modal: null
+        }
       }
 
       let modal = this.generateModal("sold", "", null, postID, soldPost.have, soldPost.want);
       if (modal)
-        return await interaction.showModal(modal).catch(console.error);
+      return {
+        success: true,
+        content: "",
+        isModal: true,
+        modal: modal
+      }
       else {
-        return await interaction.reply({
+        return {
+          success: false,
           content: `Error in marking post as sold. Pinging <@!${me_id}>`,
-          ephemeral: true
-        }).catch(console.error);
+          isModal: false,
+          modal: null
+        }
       }
     }
     else {
-      return await interaction.reply({
+      return {
+        success: false,
         content: `Invalid! Post/ID does not exist.`,
-        ephemeral: true
-      }).catch(console.error);
+        isModal: false,
+        modal: null
+      }
     }
   }
 
@@ -283,40 +320,53 @@ class PostManager {
 
   async deletePostModal(interaction, argPostID) {
     let postID = argPostID;
-    if(postID == "")
+    if (postID == "")
       postID = interaction.options.getString('deleteid');
     let deletePost = Post.get(postID);
 
     if (deletePost) {
       if (deletePost.authorID !== interaction.user.id) {
-        return await interaction.reply({
+        return {
+          success: false,
           content: `Invalid! Make sure you are deleting your own post. Pinging <@!${me_id}>`,
-          ephemeral: true
-        }).catch(console.error);
+          isModal: false,
+          modal: null
+        }
       }
 
       if (deletePost.deleted) {
-        return await interaction.reply({
+        return {
+          success: false,
           content: `Invalid! Post is already deleted`,
-          ephemeral: true
-        }).catch(console.error);
+          isModal: false,
+          modal: null
+        }
       }
 
       let modal = this.generateModal("delete", "", null, postID, deletePost.have, deletePost.want);
       if (modal)
-        return await interaction.showModal(modal).catch(console.error);
+      return {
+        success: true,
+        content: "",
+        isModal: true,
+        modal: modal
+      }
       else {
-        return await interaction.reply({
+        return {
+          success: false,
           content: `Error in deleting post. Pinging <@!${me_id}>`,
-          ephemeral: true
-        }).catch(console.error);
+          isModal: false,
+          modal: null
+        }
       }
     }
     else {
-      return await interaction.reply({
+      return {
+        success: false,
         content: `Invalid! Post/ID does not exist.`,
-        ephemeral: true
-      }).catch(console.error);
+        isModal: false,
+        modal: null
+      }
     }
   }
 
@@ -365,41 +415,47 @@ class PostManager {
     }
   }
 
-  async listPost(interaction){
+  async listPost(interaction) {
     const author = interaction.options.getUser("user");
     const itemrole = interaction.options.getRole("listitemrole");
     let authorID;
     let itemroleID;
-    if(author) authorID = author.id;
-    if(itemrole) itemroleID = itemrole.id;
+    if (author) authorID = author.id;
+    if (itemrole) itemroleID = itemrole.id;
 
-    if(authorID == null && itemroleID == null){
-      return await interaction.reply({
+    if (authorID == null && itemroleID == null) {
+      return {
+        success: false,
         content: "You must enter either a user or an item role",
-        ephemeral: true
-      }).catch(console.error);
+        isModal: false,
+        modal: null
+      }
     }
 
     const records = Post.list(authorID, itemroleID);
     let content = "";
     let channel;
 
-    if(records.length === 0){
-      return await interaction.reply({
+    if (records.length === 0) {
+      return {
+        success: false,
         content: "No posts found related to either user or item role.",
-        ephemeral: true
-      }).catch(console.error);
+        isModal: false,
+        modal: null
+      }
     }
 
-    records.map( x =>{
+    records.map(x => {
       channel = this.getChannelFromType(x.type);
-      content += `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\n\n`;
+      content += `<#${channel}> ${x.postID}\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\n\n`;
     });
 
-    await interaction.reply({
+    return {
+      success: true,
       content: content,
-      ephemeral: true
-    }).catch(console.error);
+      isModal: false,
+      modal: null
+    }
   }
 
   buildRoleField(itemrole) {

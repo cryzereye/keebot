@@ -1,4 +1,6 @@
-const { me_id } = require('../json/config.json');
+const { DiscordAPIError } = require('discord.js');
+const { me_id, channelID } = require('../json/config.json');
+const dUtil = require('../util/DiscordUtil');
 
 class ModalProcessor {
   constructor() { }
@@ -36,13 +38,7 @@ class ModalProcessor {
     const { posted, url, newListingURL } = await postmngr.newPost(
       interaction.client, interaction.guild, type, authorID, postDate, data
     );
-
-    if (posted) {
-      await interaction.reply({
-        content: `Your item has been listed:\n${url}\nNew listing:${newListingURL}`,
-        ephemeral: true
-      });
-    }
+    dUtil.postProcess(interaction, posted, `Your item has been listed:\n${url}\nNew listing:${newListingURL}`, false, null);
   }
 
   async processEditPostModal(interaction, postmngr) {
@@ -67,12 +63,9 @@ class ModalProcessor {
     if (edited)
       editResult = `Your post has been edited:\n${url}\nUpdated notif: ${newListingURL}`;
     else
-      editResult = `${errorContent} Pinging <@!${me_id}>`;
+      editResult = errorContent;
 
-    await interaction.reply({
-      content: editResult,
-      ephemeral: true
-    });
+      dUtil.postProcess(interaction, edited, editResult, false, null);
   }
 
   async processSoldPostModal(interaction, postmngr) {
@@ -94,12 +87,9 @@ class ModalProcessor {
     if (sold)
       soldResult = `Your post has been marked sold:\n${url}`;
     else
-      soldResult = `${errorContent} Pinging <@!${me_id}>`;
+      soldResult = errorContent;
 
-    await interaction.reply({
-      content: soldResult,
-      ephemeral: true
-    });
+      dUtil.postProcess(interaction, sold, soldResult, false, null);
   }
 
   async processDeletePostModal(interaction, postmngr) {
@@ -119,19 +109,16 @@ class ModalProcessor {
     ).catch(console.error);
 
     if (deleted)
-    deleteResult = `Your post has been deleted`;
+      deleteResult = `Your post has been deleted`;
     else
-    deleteResult = `${errorContent} Pinging <@!${me_id}>`;
+      deleteResult = errorContent;
 
-    await interaction.reply({
-      content: deleteResult,
-      ephemeral: true
-    });
+    dUtil.postProcess(interaction, deleted, deleteResult, false, null);
   }
 
-  cleanUserEntries(data){
-    Object.keys(data).forEach( x => {
-      if(x === "details") return;
+  cleanUserEntries(data) {
+    Object.keys(data).forEach(x => {
+      if (x === "details") return;
       data[x] = data[x].toString().replace("\n", " ");
     });
     return data;

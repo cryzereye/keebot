@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
-const { commands, me_id, botCHID, reportsCHID, admins } = require('../json/config.json');
+const { commands, me_id, botCHID, reportsCHID, admins, channelID } = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
+const dUtil = require('../util/DiscordUtil');
 
 class CommandProcessor {
   constructor() { }
@@ -90,13 +91,23 @@ class CommandProcessor {
   async processPost(interaction, postmngr){
     const postType = interaction.options.getSubcommand(false);
     switch(postType){
-      case "new": return await postmngr.newPostModal(interaction);
-      case "edit": return await postmngr.editPostModal(interaction, "");
-      case "sold": return await postmngr.soldPostModal(interaction, "");
-      case "delete": return await postmngr.deletePostModal(interaction, "");
-      case "list": return await postmngr.listPost(interaction);
+      case "new": this.processResults(interaction, await postmngr.newPostModal(interaction)); break;
+      case "edit": this.processResults(interaction,  await postmngr.editPostModal(interaction, "")); break;
+      case "sold": this.processResults(interaction,  await postmngr.soldPostModal(interaction, "")); break;
+      case "delete": this.processResults(interaction,  await postmngr.deletePostModal(interaction, "")); break;
+      case "list": this.processResults(interaction,  await postmngr.listPost(interaction)); break;
     }
     
+  }
+
+  /**
+   * does the results processing for all modal functions
+   * @param {discord.js.Interaction} interaction 
+   * @param {Object} data 
+   */
+  processResults(interaction, data){
+    const {success, content, isModal, modal} = data;
+    dUtil.postProcess(interaction, success, content, isModal, modal);
   }
 
 }
