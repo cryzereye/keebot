@@ -66,6 +66,7 @@ exports.delete = (postID, deleteDate) => {
 
 exports.bumped = (postID, bumpDate) => {
   post[postID].bumpDate = bumpDate;
+  this.savePostToFile();
 }
 
 exports.list = (authorID, itemrole) => {
