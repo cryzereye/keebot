@@ -4,10 +4,15 @@ const osFile = './src/json/reports.json';
 let { reports } = require(fileName);
 
 exports.saveReportToFile = () => {
-  let dataStr = { "reports": reports }
-  fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err) {
-    if (err) return console.log(err);
-  });
+  let dataStr = { "reports": reports };
+  try {
+    fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err) {
+      if (err) return console.log(err);
+    });
+  }
+  catch (err) {
+    console.log(err);
+  }
 }
 
 exports.fileNewReport = (authorID, authorName, targetID, targetName, category, summary, date) => {
@@ -27,14 +32,14 @@ exports.fileNewReport = (authorID, authorName, targetID, targetName, category, s
 }
 
 exports.verifyReportFromFile = (id, verified, verifier, verifyDate) => {
-  if(reports[id].verified)
-    return {verified: false, report: reports[id]};
+  if (reports[id].verified)
+    return { verified: false, report: reports[id] };
   else {
     reports[id].verified = verified;
     reports[id].verifier = verifier;
     reports[id].verifyDate = verifyDate;
     this.saveReportToFile();
-    return {verified: true, report: reports[id]};
+    return { verified: true, report: reports[id] };
   }
 }
 
@@ -45,7 +50,7 @@ exports.getReportCountFromFile = () => {
 exports.countVerifiedReportsForUser = (targetid) => {
   let count = 0;
   Object.keys(reports).forEach((key) => {
-    if(reports[key].targetID === targetid && reports[key].verified) {
+    if (reports[key].targetID === targetid && reports[key].verified) {
       count++;
     }
   });

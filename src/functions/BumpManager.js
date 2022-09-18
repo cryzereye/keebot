@@ -1,7 +1,7 @@
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const util = require('../util/Utilities');
-const { channelID } = require('../json/config.json');
+const { channelID, dev } = require('../json/config.json');
 
 class BumpManager {
   constructor(client) {
