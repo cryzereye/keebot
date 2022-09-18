@@ -2,9 +2,13 @@ const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = req
 const { relevant_roles, newListingsCHID, testCHID, me_id, dev, sellCHID, buyCHID, tradeCHID } = require('../json/config.json');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
+const { BumpManager } = require('./BumpManager');
 
 class PostManager {
-  constructor() { }
+  constructor(client) {
+    this.bumpmngr = new BumpManager(client);
+    this.bumpmngr.startService();
+  }
 
   async newPostModal(interaction) {
     const type = interaction.options.getString('type');
@@ -246,12 +250,12 @@ class PostManager {
 
       let modal = this.generateModal("sold", "", null, postID, soldPost.have, soldPost.want);
       if (modal)
-      return {
-        success: true,
-        content: "",
-        isModal: true,
-        modal: modal
-      }
+        return {
+          success: true,
+          content: "",
+          isModal: true,
+          modal: modal
+        }
       else {
         return {
           success: false,
@@ -345,12 +349,12 @@ class PostManager {
 
       let modal = this.generateModal("delete", "", null, postID, deletePost.have, deletePost.want);
       if (modal)
-      return {
-        success: true,
-        content: "",
-        isModal: true,
-        modal: modal
-      }
+        return {
+          success: true,
+          content: "",
+          isModal: true,
+          modal: modal
+        }
       else {
         return {
           success: false,

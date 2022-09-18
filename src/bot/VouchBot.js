@@ -55,7 +55,7 @@ class VouchBot {
     this.rolegivermngr = new RoleGiverManager(this.client);
     this.scorer = new Scorer(); // removed this.dbmngr arg
     this.reportmngr = new ReportManager();
-    this.postmngr = new PostManager();
+    this.postmngr = new PostManager(this.client);
     this.cmdproc = new CommandProcessor();
     this.modalproc = new ModalProcessor();
     this.msgproc = new MessageProcessor();
