@@ -119,8 +119,8 @@ exports.generateUrl = (channelID, msgid) => {
 exports.getChannelFromType = (type) => {
   if (dev) return channelsID.test;
   switch (type) {
-    case "buy": return channelsID.sell;
-    case "sell": return channelsID.buy;
-    case "trade": return channelsID.trade;
+    case "buy": return channelsID.selling;
+    case "sell": return channelsID.buying;
+    case "trade": return channelsID.trading;
   }
 }
