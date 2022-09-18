@@ -2,7 +2,7 @@ const fs = require('fs');
 const fileName = '../json/post.json';
 const osFile = './src/json/post.json';
 let { post } = require(fileName);
-const { serverID } = require('../json/config.json');
+const { serverID, channelID, dev } = require('../json/config.json');
 
 exports.savePostToFile = () => {
   let dataStr = { "post": post }
@@ -32,6 +32,17 @@ exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate
 
 exports.get = (postID) => {
   return post[postID];
+}
+
+exports.getAllNeedsBump = () => {
+  let postArr = Object.values(post);
+  let result = [];
+  let len = postArr.length;
+  for(let i = 0; i < len; i++) {
+    if(!postArr[i].sold && !postArr[i].deleted && postArr[i].bumpDate < new Date().now())
+      result.push(x);
+  }
+  return result;
 }
 
 exports.edit = (postID, have, want, editDate) => {
@@ -90,4 +101,18 @@ exports.list = (authorID, itemrole) => {
  */
 exports.generateUrl = (channelID, msgid) => {
   return `https://discord.com/channels/${serverID}/${channelID}/${msgid}`;
+}
+
+/**
+ * returns channel ID corresponding to given type
+ * @param {String} type buy/sell/trade
+ * @returns {String} channel ID
+ */
+exports.getChannelFromType = (type) =>{
+  if (dev) return channelID.testCHID;
+  switch (type) {
+    case "buy": return channelID.sellCHID;
+    case "sell": return channelID.buyCHID
+    case "trade": return channelID.tradeCHID;
+  }
 }

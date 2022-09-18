@@ -23,4 +23,23 @@ exports.getTimeDiff = (target) => {
   return result;
 }
 
+/**
+ * returns date equivalent or adding x hours to the date start
+ * @param {Date} start 
+ * @param {Number} hours 
+ * @returns {Date}
+ */
+exports.addHours = (start, hours) => {
+  let date = new Date();
+  date.setTime(start.getTime() + hours * 60 * 60 * 1000);
+  return date;
+}
 
+/**
+ * get ms equivalent of arg mins for js date/time usages
+ * @param {Number} mins 
+ * @returns {Number} ms in mins
+ */
+ exports.getMinutes = (mins) => {
+  return mins * 60 * 1000;
+}

@@ -29,7 +29,7 @@ class PostManager {
   }
 
   async newPost(client, guild, type, authorID, postDate, data) {
-    let channelID = this.getChannelFromType(type); // test purposes only
+    let channelID = Post.getChannelFromType(type); // test purposes only
     let content = "";
     let newListContent = "";
     let msgURL = "";
@@ -141,7 +141,7 @@ class PostManager {
     let record = Post.get(data.postID);
 
     if (record) {
-      const channelID = this.getChannelFromType(record.type);
+      const channelID = Post.getChannelFromType(record.type);
       const postMsg = await dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
 
       if (!postMsg) {
@@ -275,7 +275,7 @@ class PostManager {
     let record = Post.get(data.postID);
 
     if (record) {
-      const channelID = this.getChannelFromType(record.type);
+      const channelID = Post.getChannelFromType(record.type);
       const postMsg = await dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
 
       if (!postMsg) {
@@ -374,7 +374,7 @@ class PostManager {
     let record = Post.get(data.postID);
 
     if (record) {
-      const channelID = this.getChannelFromType(record.type);
+      const channelID = Post.getChannelFromType(record.type);
       const postMsg = await dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
 
       if (!postMsg) {
@@ -446,7 +446,7 @@ class PostManager {
     }
 
     records.map(x => {
-      channel = this.getChannelFromType(x.type);
+      channel = Post.getChannelFromType(x.type);
       content += `<#${channel}> ${x.postID}\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\n\n`;
     });
 
@@ -570,15 +570,6 @@ class PostManager {
       case "buy": return { id: "buyPostModal", title: "Buy" };
       case "sell": return { id: "sellPostModal", title: "Sell" };
       case "trade": return { id: "tradePostModal", title: "Trade" };
-    }
-  }
-
-  getChannelFromType(type) {
-    if (dev) return testCHID;
-    switch (type) {
-      case "buy": return sellCHID;
-      case "sell": return buyCHID
-      case "trade": return tradeCHID;
     }
   }
 }
