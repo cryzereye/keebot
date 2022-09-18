@@ -12,11 +12,10 @@ This is the bot that manages the marketplace system of the Discord server Keebis
 
 All features above will have future additions. Here's our list as of now:
 
-1. Automated buy/sell/trade bumps 
-2. Streamlined vouch edits and deletes detection: subject to mod/admin double check
-3. Automated vouch verification against actual buy/sell/trade listings
-4. Help assistance scoring system
-5. Service provider registry and search
+1. Streamlined vouch edits and deletes detection: subject to mod/admin double check
+2. Automated vouch verification against actual buy/sell/trade listings
+3. Help assistance scoring system
+4. Service provider registry and search
 
 For the technical side:
 
