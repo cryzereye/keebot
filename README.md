@@ -1,6 +1,6 @@
 
-# ![pepenaruhodo](images/icon.webp)Naruhodo - Keebisoria Vouch Bot
-This is the bot that manages the vouching system of the Discord server Keebisoria, a Philippine keyboard market hosted via Discord. 
+# ![pepenaruhodo](images/icon.webp)Keebot - A Marketplace-Management Bot
+This is the bot that manages the marketplace system of the Discord server Keebisoria, a Philippine keyboard market hosted via Discord. As of now, this bot is limited to this Discord server but we aim to provide the system globally.
 
 ### Current Features:
 
@@ -24,53 +24,6 @@ For the technical side:
 2. Unit testing implementation - Jest
 3. Bot dashboard - probably with React.js for practice
 4. Cloud hosting + Docker 
-
-Sample json/config.json:
-
-`
-{
-  "discord_id": "",
-  "discord_token": "",
-  "command_sign": "",
-  "me_id": "",
-  "verifyCHID": "",
-  "botCHID": "",
-  "testCHID": "",
-  "serverID": "",
-  "roles": [
-    {
-      "role": "",
-      "filter": #
-    }
-  ],
-  "dev": false,
-  "connURI": "",
-  "dbname": "",
-  "collnames": [
-    ""
-  ],
-  "relevant_roles": [
-    "",
-    ""
-  ],
-  "commands": [
-    {
-      "name": "",
-      "type": 1,
-      "description": "",
-      "options": [
-        {
-          "name": "",
-          "description": "",
-          "type": 1,
-          "required": false
-        }
-      ]
-    }
-  ]
-}
-`
-
 
 For donations and tips:
 - [Paypal](https://paypal.me/cryzereye)
