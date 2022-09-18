@@ -67,20 +67,19 @@ class ReportManager {
     const channelID = interaction.channel.id;
     const message = await dUtil.getMessageFromID(interaction.guild, channelID, targetID).catch(console.error);
 
-    
-    if(message){
+    if (message) {
       // default is users post the sales. before bot feature
       let reportedName = message.author.username + "#" + message.author.discriminator;
       let reportedID = message.author.id;
       const mentioned = message.mentions.users.values();
-      console.log(mentioned);
+
       // for bot-posted sales
-      if(mentioned.length > 0){
+      if (mentioned.length > 0) {
         reportedName = mentioned[0].username + "#" + mentioned[0].discriminator;
         reportedID = mentioned[0].id;
       }
-      
-      if(reportedID === this.client.user.id){
+
+      if (reportedID === this.client.user.id) {
         return await interaction.reply({
           content: `**Invalid report!** Refer to the original post. Not on the bumps`,
           ephemeral: true
@@ -97,9 +96,11 @@ class ReportManager {
         new Date(interaction.createdAt).toString()
       );
 
+      console.log(`Report for ${reportedName} saved`);
+
       let content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${targetID}>\n${Post.generateUrl(channelID, targetID)}`;
       let filedReport = await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.reports, content);
-      if(filedReport){
+      if (filedReport) {
         await interaction.reply({
           content: `Report filed ID ${reportID}`,
           ephemeral: true
@@ -125,7 +126,7 @@ class ReportManager {
     return modal;
   }
 
-  buildShortField(id, label, value){
+  buildShortField(id, label, value) {
     const field = new TextInputBuilder()
       .setCustomId(id)
       .setLabel(label)

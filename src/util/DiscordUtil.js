@@ -20,10 +20,16 @@ exports.getGuildMemberfromID = async (id, guild) => {
  * @return {discord.js.Message} sent message
  */
 exports.sendMessageToChannel = async (client, guildID, chid, message) => {
-  let guild = await this.getGuildFromID(client, guildID).catch(console.error);
-  if(guild) {
-    let channel = await this.getChannelFromID(guild, chid).catch(console.error);
-    if(channel) return await channel.send(message).catch(console.error);
+  console.log("Send to channel loop start...");
+  while (true) {
+    let guild = await this.getGuildFromID(client, guildID).catch(console.error);
+    if (guild) {
+      let channel = await this.getChannelFromID(guild, chid).catch(console.error);
+      if (channel && await channel.send(message).catch(console.error)){
+        console.log("Send to channel loop end...");
+        return;
+      }
+    }
   }
 
 }
