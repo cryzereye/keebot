@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { commands, me_id, botCHID, reportsCHID, admins, channelID } = require('../json/config.json');
+const { commands, me_id, admins, channelID } = require('../json/config.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
 const dUtil = require('../util/DiscordUtil');
 
@@ -11,7 +11,7 @@ class CommandProcessor {
     let fullName = `${user.username}#${user.discriminator}`;
     let interactionCHID = interaction.channel.id;
 
-    if (interactionCHID != botCHID && !admins.includes(interaction.user.id)) return await interaction.reply(`Use commands in <#${botCHID}>`);
+    if (interactionCHID != channelID.bot && !admins.includes(interaction.user.id)) return await interaction.reply(`Use commands in <#${channelID.bot}>`);
     switch (commandName) {
       case commands[0].name: {
         const target = interaction.options.getUser('user');

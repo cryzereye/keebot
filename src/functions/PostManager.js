@@ -1,5 +1,5 @@
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const { relevant_roles, newListingsCHID, me_id } = require('../json/config.json');
+const { relevant_roles, channelsID, me_id } = require('../json/config.json');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const { BumpManager } = require('./BumpManager');
@@ -76,7 +76,7 @@ class PostManager {
     return {
       posted: true,
       url: msgURL,
-      newListingURL: Post.generateUrl(newListingsCHID, newListMsg.id),
+      newListingURL: Post.generateUrl(channelsID.newListings, newListMsg.id),
     };
   }
 
@@ -200,7 +200,7 @@ class PostManager {
       return {
         edited: true,
         url: msgURL,
-        newListingURL: Post.generateUrl(newListingsCHID, newListMsg.id),
+        newListingURL: Post.generateUrl(channelsID.newListings, newListMsg.id),
         errorContent: ""
       };
     }

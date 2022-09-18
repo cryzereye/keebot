@@ -1,7 +1,7 @@
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, SelectMenuBuilder } = require('discord.js');
 const Report = require('../models/Report');
 const dUtil = require('../util/DiscordUtil');
-const { reportsCHID, admins, reportTypes, verifiedReportsCHID } = require('../json/config.json');
+const { admins, reportTypes, channelsID } = require('../json/config.json');
 
 class ReportManager {
   constructor() {
@@ -34,7 +34,7 @@ class ReportManager {
         );
         const reportContent = `Reporter: ${authorName}\nTarget: ${reportedName}\nCategory: ${category}\nSummary: ${summary}`;
         const finalReport = "**REPORT ID: #" + reportID + "**```" + reportContent + "```";
-        await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, reportsCHID, finalReport);
+        await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.reports, finalReport);
         return `**REPORT FILED** ID: ${reportID}`;
       }
       case "verify": {
