@@ -12,6 +12,9 @@ exports.savePostToFile = () => {
 }
 
 exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate) => {
+  let bumpDate = new Date(postDate);
+  bumpDate.setTime(postDate.getTime() +  60 * 1000);
+
   post[postID] = {
     postID: postID,
     newListID: newListID,
@@ -20,8 +23,8 @@ exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate
     itemrole: itemrole,
     have: have,
     want: want,
-    postDate: postDate,
-    bumpDate: postDate,
+    postDate: new Date(postDate).toString(),
+    bumpDate: bumpDate.toString(),
     sold: false,
     soldToID: "",
     soldDate: "",
@@ -38,9 +41,11 @@ exports.getAllNeedsBump = () => {
   let postArr = Object.values(post);
   let result = [];
   let len = postArr.length;
+  const currDate = new Date();
+
   for(let i = 0; i < len; i++) {
-    if(!postArr[i].sold && !postArr[i].deleted && postArr[i].bumpDate < new Date().now())
-      result.push(x);
+    if(!postArr[i].sold && !postArr[i].deleted && new Date(postArr[i].bumpDate) < currDate)
+      result.push(postArr[i]);
   }
   return result;
 }
@@ -110,10 +115,10 @@ exports.generateUrl = (channelID, msgid) => {
  * @returns {String} channel ID
  */
 exports.getChannelFromType = (type) =>{
-  if (dev) return channelID.testCHID;
+  if (dev) return channelID.test;
   switch (type) {
-    case "buy": return channelID.sellCHID;
-    case "sell": return channelID.buyCHID
-    case "trade": return channelID.tradeCHID;
+    case "buy": return channelID.sell;
+    case "sell": return channelID.buy;
+    case "trade": return channelID.trade;
   }
 }

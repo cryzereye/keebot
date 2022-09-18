@@ -14,10 +14,14 @@ const { ContextProcessor } = require('./ContextProcessor');
 
 class VouchBot {
   constructor() {
-    this.buildDependencies();
-  
+    this.client = new Client({
+      intents: [GatewayIntentBits.Guilds],
+      partials: [Partials.Channel]
+    });
+
     // client application ready up
     this.client.on('ready', () => {
+      this.buildDependencies();
       this.buildSlashCommands(); // client.application is null until client is ready
       this.updatePresence();
       console.log("bot is ready"); 
@@ -47,10 +51,6 @@ class VouchBot {
    * builds all classes that would do the jobs for the bot
    */
   buildDependencies(){
-    this.client = new Client({
-      intents: [GatewayIntentBits.Guilds],
-      partials: [Partials.Channel]
-    });
     //this.dbmngr = new DBManager();
     this.rolegivermngr = new RoleGiverManager(this.client);
     this.scorer = new Scorer(); // removed this.dbmngr arg

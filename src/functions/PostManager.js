@@ -1,5 +1,5 @@
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const { relevant_roles, newListingsCHID, testCHID, me_id, dev, sellCHID, buyCHID, tradeCHID } = require('../json/config.json');
+const { relevant_roles, newListingsCHID, me_id } = require('../json/config.json');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const { BumpManager } = require('./BumpManager');
@@ -33,7 +33,7 @@ class PostManager {
   }
 
   async newPost(client, guild, type, authorID, postDate, data) {
-    let channelID = Post.getChannelFromType(type); // test purposes only
+    let channelID = Post.getChannelFromType(type);
     let content = "";
     let newListContent = "";
     let msgURL = "";
