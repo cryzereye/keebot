@@ -59,7 +59,7 @@ class CommandProcessor {
     const postEditHelp = `/post edit <editid>: lets you edit the post that corresponds to the given ID. You can also do 'Right-click > Apps > Edit post' on your target post`;
     const postSoldHelp = `/post sold <soldid>: will mark the post that corresponds to the given ID as sold. You can also do 'Right-click > Apps > Mark as sold' on your target post`;
     const postDeleteHelp = `/post delete <deleteid>: will delete the post that corresponds to the given ID. You can also do 'Right-click > Apps > Delete post' on your target post`;
-    const postListHelp = `/post list <optional user> <optional item role>: Lets you see the list of posts that belongs to the given user or has the item role given. You need enter either of the two, or both.`;
+    const postListHelp = `/post list <optional user> <optional item role>: Lets you see your own posts list. You can also add <user> to see the posts of the target user, or add <item role> to see items under the given item role. Both can be used at the same time.`;
     const extractHelp = `For admin use only`;
     const bugsHelp = `Please DM <@${me_id}>`;
     const embedBuilder = new EmbedBuilder()

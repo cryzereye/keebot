@@ -428,12 +428,7 @@ class PostManager {
     if (itemrole) itemroleID = itemrole.id;
 
     if (authorID == null && itemroleID == null) {
-      return {
-        success: false,
-        content: "You must enter either a user or an item role",
-        isModal: false,
-        modal: null
-      }
+      authorID == interaction.user.id;
     }
 
     const records = Post.list(authorID, itemroleID);
