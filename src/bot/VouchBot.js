@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits, Partials, InteractionType } = require('discord.js');
 const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
-const { discord_id, discord_token, serverID, dev } = require('../json/config.json');
+const { discord_id, discord_token, channelsID, dev } = require('../json/config.json');
 const { commands } = require('../globals/commands.json');
 const { Scorer } = require('../functions/Scorer');
 const { RoleGiverManager } = require('../functions/RoleGiverManager');
@@ -69,7 +69,7 @@ class VouchBot {
   async buildSlashCommands(){
     const rest = new REST({ version: '10' }).setToken(discord_token);
 
-    await rest.put(Routes.applicationGuildCommands(discord_id, serverID), { body: commands })
+    await rest.put(Routes.applicationGuildCommands(discord_id, channelsID.server), { body: commands })
       .then((data) => console.log(`Successfully registered ${data.length} application commands.`))
       .catch(console.error);
   }

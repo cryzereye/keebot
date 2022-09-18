@@ -1,4 +1,4 @@
-const { channelID } = require('../json/config.json');
+const { channelsID } = require('../json/config.json');
 
 /**
  * returns the GuildMember equivalent of ID given
