@@ -36,7 +36,7 @@ class VouchBot {
     // handles usage of slash commands
     this.client.on('interactionCreate', async interaction => {
       if (interaction.isContextMenuCommand())
-        this.contextproc.processContext(interaction, this.postmngr);
+        this.contextproc.processContext(interaction, this.postmngr, this.reportmngr);
       else if (interaction.type === InteractionType.ApplicationCommand)
         this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr, this.postmngr);
       else if (interaction.type === InteractionType.ModalSubmit)
@@ -55,7 +55,7 @@ class VouchBot {
     //this.dbmngr = new DBManager();
     this.rolegivermngr = new RoleGiverManager(this.client);
     this.scorer = new Scorer(); // removed this.dbmngr arg
-    this.reportmngr = new ReportManager();
+    this.reportmngr = new ReportManager(this.client);
     this.postmngr = new PostManager(this.client);
     this.cmdproc = new CommandProcessor();
     this.modalproc = new ModalProcessor();

@@ -18,7 +18,7 @@ class ModalProcessor {
 
   async processPostModal(interaction, postmngr) {
     const authorID = interaction.user.id;
-    const postDate = interaction.createdAt;
+    const postDate = new Date(interaction.createdAt).toString();
 
     const type = interaction.customId.replace("PostModal", "");
     const fields = interaction.fields.fields;
@@ -52,7 +52,7 @@ class ModalProcessor {
       data.postID = postID;
     data.have = fields.get("have").value;
     data.want = fields.get("want").value;
-    data.editDate = interaction.createdAt;
+    data.editDate = new Date(interaction.createdAt).toString();
 
     data = this.cleanUserEntries(data);
 
@@ -76,7 +76,7 @@ class ModalProcessor {
     const postID = fields.keys().next().value;
     if (postID && postID != "have")
       data.postID = postID;
-    data.soldDate = interaction.createdAt;
+    data.soldDate = new Date(interaction.createdAt).toString();
 
     data = this.cleanUserEntries(data);
 
@@ -100,7 +100,7 @@ class ModalProcessor {
     const postID = fields.keys().next().value;
     if (postID && postID != "have")
       data.postID = postID;
-    data.deleteDate = interaction.createdAt;
+    data.deleteDate = new Date(interaction.createdAt).toString();
 
     data = this.cleanUserEntries(data);
 

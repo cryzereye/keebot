@@ -1,15 +1,12 @@
-const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, SelectMenuBuilder } = require('discord.js');
+const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const Report = require('../models/Report');
+const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
-const { admins, reportTypes, channelsID } = require('../json/config.json');
+const { admins, channelsID, reportTypes } = require('../json/config.json');
 
 class ReportManager {
-  constructor() {
-    /**this.modal = new ModalBuilder().setCustomId('reportModal');
-    this.modal.addComponent(
-      new ActionRowBuilder().addComponents(this.buildReportMenuField()),
-      new ActionRowBuilder().addComponents(this.buildReportSummaryField()),
-    );*/
+  constructor(client) {
+    this.client = client;
   }
 
   async processReport(interaction) {
@@ -30,7 +27,7 @@ class ReportManager {
           reportedName,
           category,
           summary,
-          interaction.createdAt
+          new Date(interaction.createdAt).toString()
         );
         const reportContent = `Reporter: ${authorName}\nTarget: ${reportedName}\nCategory: ${category}\nSummary: ${summary}`;
         const finalReport = "**REPORT ID: #" + reportID + "**```" + reportContent + "```";
@@ -45,7 +42,7 @@ class ReportManager {
         else {
           const reportID = interaction.options.getString('id');
           const verifier = authorName;
-          const verifyDate = interaction.createdAt;
+          const verifyDate = new Date(interaction.createdAt).toString();
           const { verified, report } = Report.verifyReportFromFile(reportID, true, verifier, verifyDate);
 
           if (verified) {
@@ -64,7 +61,33 @@ class ReportManager {
     }
   }
 
-  processModals(){
+  async reportPost(interaction, targetID) {
+    const authorID = interaction.user.id;
+    const authorName = interaction.user.username + "#" + interaction.user.discriminator;
+    const channelID = interaction.channel.id;
+    const message = dUtil.getMessageFromID(interaction.guild, channelID, targetID);
+    const reportedName = interaction.reported.username + "#" + interaction.reported.discriminator;
+
+    if(message){
+      const reportID = Report.fileNewReport(
+        authorID,
+        authorName,
+        targetID,
+        reportedName,
+        reportTypes[4],
+        summary,
+        new Date(interaction.createdAt).toString()
+      );
+
+      let content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${targetID}>\n${Post.generateUrl(channelID, targetID)}`;
+      let filedReport = await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.reports, content);
+      if(filedReport){
+        await interaction.reply({
+          content: `Report filed ID ${reportID}`,
+          ephemeral: true
+        });
+      }
+    }
 
   }
 
@@ -72,23 +95,29 @@ class ReportManager {
     return Report.countVerifiedReportsForUser(id);
   }
 
-  buildReportMenuField() {
-    let options = [];
+  generateModal(target) {
+    let modal = new ModalBuilder();
+    let components = [
+      new ActionRowBuilder().addComponents(this.buildShortField("target", "User", target)),
+      new ActionRowBuilder().addComponents(this.buildReportSummaryField())
+    ];
 
-    reportTypes.map( r => {
-      options.push({
-        label: r,
-        description : "",
-        value: r
-      });
-    })
-    const menu = new SelectMenuBuilder()
-      .setCustomId('reportType')
-      .setPlaceholder('Report Type')
-      .setMinValues(1)
-      .setMaxValues(1)
-      .addOptions(options);
-    return menu;
+    modal.setCustomId("reportModal").setTitle("Submit a report");
+    modal.addComponents(components);
+    return modal;
+  }
+
+  buildShortField(id, label, value){
+    const field = new TextInputBuilder()
+      .setCustomId(id)
+      .setLabel(label)
+      .setStyle(TextInputStyle.Short)
+      .setMaxLength(200)
+      .setMinLength(1)
+      .setPlaceholder(`Enter ${label}`)
+      .setValue(value)
+      .setRequired(true);
+    return field;
   }
 
   buildReportSummaryField() {
@@ -96,14 +125,13 @@ class ReportManager {
       .setCustomId('summary')
       .setLabel("Summary of report")
       .setStyle(TextInputStyle.Paragraph)
-      .setMaxLength(250)
-      .setMinLength(10)
+      .setMaxLength(500)
+      .setMinLength(1)
       .setPlaceholder('Please entry a summary of your report')
       .setValue('Default')
       .setRequired(true);
     return summary;
   }
-
 }
 
 module.exports = { ReportManager };

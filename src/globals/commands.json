@@ -197,6 +197,10 @@
         {
             "name": "Mark as sold",
             "type": 3
+        },
+        {
+            "name": "Report Post/Message",
+            "type": 3
         }
     ]
 }

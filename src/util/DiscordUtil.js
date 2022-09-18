@@ -125,7 +125,7 @@ exports.getEmojiInstance = async (name, client, guildID) => {
 
 /**
  * returns a message instance from the given message id
- * @param {discord.js.Client} guild: guild instance
+ * @param {discord.js.Guild} guild: guild instance
  * @param {String} chid: channel id
  * @param {String} msgid: message id
  * @returns {discord.js.Message}
