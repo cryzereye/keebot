@@ -107,8 +107,8 @@ exports.list = (authorID, itemrole) => {
  * @param {String} msgid 
  * @returns {String} URL
  */
-exports.generateUrl = (channelID, msgid) => {
-  return `https://discord.com/channels/${serverID}/${channelID}/${msgid}`;
+exports.generateUrl = (chid, msgid) => {
+  return `https://discord.com/channels/${channelsID.server}/${chid}/${msgid}`;
 }
 
 /**
