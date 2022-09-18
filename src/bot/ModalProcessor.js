@@ -1,5 +1,5 @@
 const { DiscordAPIError } = require('discord.js');
-const { me_id, channelID } = require('../json/config.json');
+const { me_id, channelsID } = require('../json/config.json');
 const dUtil = require('../util/DiscordUtil');
 
 class ModalProcessor {

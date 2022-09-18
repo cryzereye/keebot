@@ -21,8 +21,11 @@ exports.getGuildMemberfromID = async (id, guild) => {
  */
 exports.sendMessageToChannel = async (client, guildID, chid, message) => {
   let guild = await this.getGuildFromID(client, guildID).catch(console.error);
-  let channel = await this.getChannelFromID(guild, chid).catch(console.error);
-  return await channel.send(message).catch(console.error);
+  if(guild) {
+    let channel = await this.getChannelFromID(guild, chid).catch(console.error);
+    if(channel) return await channel.send(message).catch(console.error);
+  }
+
 }
 
 /**
@@ -146,7 +149,7 @@ exports.getMessageFromID = async (guild, chid, msgid) => {
  */
 exports.postProcess = async (interaction, success, content, isModal, modal) => {
   if (!success)
-    await this.sendMessageToChannel(interaction.client, interaction.guild.id, channelID.keebotlogs, `<@${interaction.user.id}>\n${content}`);
+    await this.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.keebotlogs, `<@${interaction.user.id}>\n${content}`);
   if (isModal) {
     await interaction.showModal(modal).catch(console.error);
   }

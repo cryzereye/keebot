@@ -2,7 +2,7 @@ const fs = require('fs');
 const fileName = '../json/post.json';
 const osFile = './src/json/post.json';
 let { post } = require(fileName);
-const { serverID, channelID, dev } = require('../json/config.json');
+const { serverID, channelsID, dev } = require('../json/config.json');
 
 exports.savePostToFile = () => {
   let dataStr = { "post": post };
@@ -117,10 +117,10 @@ exports.generateUrl = (channelID, msgid) => {
  * @returns {String} channel ID
  */
 exports.getChannelFromType = (type) => {
-  if (dev) return channelID.test;
+  if (dev) return channelsID.test;
   switch (type) {
-    case "buy": return channelID.sell;
-    case "sell": return channelID.buy;
-    case "trade": return channelID.trade;
+    case "buy": return channelsID.sell;
+    case "sell": return channelsID.buy;
+    case "trade": return channelsID.trade;
   }
 }

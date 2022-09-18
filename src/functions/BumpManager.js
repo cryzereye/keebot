@@ -1,7 +1,7 @@
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const util = require('../util/Utilities');
-const { channelID, dev } = require('../json/config.json');
+const { channelsID, dev } = require('../json/config.json');
 
 class BumpManager {
   constructor(client) {
@@ -24,7 +24,7 @@ class BumpManager {
         // preps to get the original post message from channel
         let channel = Post.getChannelFromType(currPost.type);
         let origPost = await dUtil.getMessageFromID(
-          await dUtil.getGuildFromID(this.client, channelID.server),
+          await dUtil.getGuildFromID(this.client, channelsID.server),
           channel,
           currPost.postID
         ).catch(console.error);

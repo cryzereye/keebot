@@ -65,17 +65,35 @@ class ReportManager {
     const authorID = interaction.user.id;
     const authorName = interaction.user.username + "#" + interaction.user.discriminator;
     const channelID = interaction.channel.id;
-    const message = dUtil.getMessageFromID(interaction.guild, channelID, targetID);
-    const reportedName = interaction.reported.username + "#" + interaction.reported.discriminator;
+    const message = await dUtil.getMessageFromID(interaction.guild, channelID, targetID).catch(console.error);
 
+    
     if(message){
+      // default is users post the sales. before bot feature
+      let reportedName = message.author.username + "#" + message.author.discriminator;
+      let reportedID = message.author.id;
+      const mentioned = message.mentions.users.values();
+      console.log(mentioned);
+      // for bot-posted sales
+      if(mentioned.length > 0){
+        reportedName = mentioned[0].username + "#" + mentioned[0].discriminator;
+        reportedID = mentioned[0].id;
+      }
+      
+      if(reportedID === this.client.user.id){
+        return await interaction.reply({
+          content: `**Invalid report!** Refer to the original post. Not on the bumps`,
+          ephemeral: true
+        });
+      }
+
       const reportID = Report.fileNewReport(
         authorID,
         authorName,
-        targetID,
+        reportedID,
         reportedName,
         reportTypes[4],
-        summary,
+        "Something incorrect in the post",
         new Date(interaction.createdAt).toString()
       );
 
