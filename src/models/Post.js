@@ -2,7 +2,7 @@ const fs = require('fs');
 const fileName = '../json/post.json';
 const osFile = './src/json/post.json';
 let { post } = require(fileName);
-const { serverID, channelID } = require('../json/config.json');
+const { serverID, channelID, dev } = require('../json/config.json');
 
 exports.savePostToFile = () => {
   let dataStr = { "post": post };
