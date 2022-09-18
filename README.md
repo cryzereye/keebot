@@ -4,6 +4,7 @@ This is the bot that manages the vouching system of the Discord server Keebisori
 
 ### Current Features:
 
+- Has marketplace features available. The users can send a bot command to post either an item for the configured buy/sell/trade channels. It can also edit, delete, and mark it as sold. There is also a command for listing the target user's posts and/or an item that is under a certain category. The bot also bumps the posts in a set interval. This is the post visibility.
 - Saves scores for the vouches sent to a specific channel. The vouch sender points increases as he/she/they sends a vouch message with the user that they have transacted with within the server mentioned within the same message. A counterpart point for the mentioned gets added up the him/her/them upon replying to the vouch message where he/she/they got mentioned.
 - Contains a stats command where the user can see anyone's stats, containing information like the transaction points, roles, transaction link with other users (based on vouches, with instance count), account creation date, and server join date. This stats serve as basis for the users to check the reliability of the user they want to check and probably transact with.
 - Has a report command which users can use to report transaction-related incidents within the server. As of writing this, all discussions are done via DMs. Upon verification of the report, admin/mods can flag the report as verified and a 'verified report count' will be added to the user's stats.
