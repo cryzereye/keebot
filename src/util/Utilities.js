@@ -1,3 +1,4 @@
+const { dev } = require('../json/config.json');
 /**
  * from: https://www.codegrepper.com/code-examples/javascript/node+js+time+difference+in+hours
  * returns time difference from now to target
@@ -23,4 +24,26 @@ exports.getTimeDiff = (target) => {
   return result;
 }
 
+/**
+ * returns date equivalent or adding x hours to the date start
+ * @param {Date} start 
+ * @param {Number} hours 
+ * @returns {Date}
+ */
+exports.addHours = (start, hours) => {
+  let date = new Date(start);
+  if(dev)
+    date.setTime(date.getTime() + 60 * 1000); // 1 min. for test purposes
+  else
+    date.setTime(date.getTime() + hours * 60 * 60 * 1000); // hours * 1 hour
+  return date.toString();
+}
 
+/**
+ * get ms equivalent of arg mins for js date/time usages
+ * @param {Number} mins 
+ * @returns {Number} ms in mins
+ */
+ exports.getMinutes = (mins) => {
+  return mins * 60 * 1000;
+}

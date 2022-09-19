@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 //const { DBManager } = require('../util/DBManager');
 const { relevant_roles } = require('../json/config.json');
 const fs = require('fs');
@@ -10,11 +10,11 @@ const dUtil = require('../util/DiscordUtil');
 
 class Scorer {
   // removed dbmngr arg
-  constructor(){
+  constructor() {
     //this.dbmngr = dbmngr;
   }
 
-  createNewEntry(id1, id1_name, id2){
+  createNewEntry(id1, id1_name, id2) {
     scores[id1] = JSON.parse(`{"username":"${id1_name}","points" : 1,"transactions":{"${id2}":0}}`);
   }
 
@@ -23,11 +23,16 @@ class Scorer {
    * above included
    * handles the file write-update of the JSON record for scores
    */
-  updateScoreFile(){
-    let dataStr = {"scores": scores}
-    fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err) {
-      if (err) return console.log(err);
-    });
+  updateScoreFile() {
+    let dataStr = { "scores": scores };
+    try {
+      fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err) {
+        if (err) return console.log(err);
+      });
+    }
+    catch (err) {
+      console.log(err);
+    }
   }
 
   /**
@@ -36,15 +41,15 @@ class Scorer {
    * @param {String} id1_name : username of sender
    * @param {String} id2: username of mentioned/replied to 
    */
-  addPoint(id1, id1_name, id2){
-    try{
-      scores[id1].points +=1;
+  addPoint(id1, id1_name, id2) {
+    try {
+      scores[id1].points += 1;
       scores[id1].username = id1_name; // to keep username updated (discord users can change usernames anytime)
     }
-    catch(err){
+    catch (err) {
       this.createNewEntry(id1, id1_name, id2);
     }
-    if(scores[id1]['transactions'][id2] == null)
+    if (scores[id1]['transactions'][id2] == null)
       scores[id1]['transactions'][id2] = 0;
     scores[id1]['transactions'][id2] += 1;
 
@@ -52,12 +57,12 @@ class Scorer {
     //this.dbmngr.addScore(id1, id1_name, id2);
   }
 
-    /**
-   * returns the user's stats from JSON records built into an EmbedBuilder instance
-   * @param {discordjs.User} user 
-   * @returns {discordjs.EmbedBuilder}
-   */
-  getStatsEmbed(interaction, user, reportmngr){
+  /**
+ * returns the user's stats from JSON records built into an EmbedBuilder instance
+ * @param {discordjs.User} user 
+ * @returns {discordjs.EmbedBuilder}
+ */
+  getStatsEmbed(interaction, user, reportmngr) {
     (async () => {
       let record = scores[user.id];
       let fullName = `${user.username}#${user.discriminator}`;
@@ -71,22 +76,22 @@ class Scorer {
       let joinDur = "";
       let reportsCount = reportmngr.getVerifiedReportsCount(user.id.toString());
 
-      Object.keys(dateData).forEach( (x) => {
+      Object.keys(dateData).forEach((x) => {
         creaDur += `${dateData[x]} `;
       });
 
       dateData = util.getTimeDiff(gm.joinedAt);
 
-      Object.keys(dateData).forEach( (x) => {
+      Object.keys(dateData).forEach((x) => {
         joinDur += `${dateData[x]} `;
       });
 
-      gm.roles.cache.map( (r) => {
-        if(relevant_roles.includes(r.name))
+      gm.roles.cache.map((r) => {
+        if (relevant_roles.includes(r.name))
           roles += `<@&${r.id}> `;
       });
 
-      if (record == null){
+      if (record == null) {
         record = {}
         record["points"] = "ZERO";
         transStr = "NO TRANSACTIONS YET!";
@@ -94,37 +99,39 @@ class Scorer {
       else {
         // https://stackoverflow.com/questions/1069666/sorting-object-property-by-values
         let sortedTrans = [];
-        for( let t in record.transactions){
+        for (let t in record.transactions) {
           sortedTrans.push([t, record.transactions[t]]);
         }
 
-        sortedTrans.sort(function(a, b) {
+        sortedTrans.sort(function (a, b) {
           return b[1] - a[1];
         });
 
-        for(let i = 0; i < sortedTrans.length; i++)
+        for (let i = 0; i < sortedTrans.length; i++)
           transStr += `${sortedTrans[i][0]} : ${sortedTrans[i][1]}\n`;
       }
 
-      interaction.reply({ embeds: [this.generateScoreCard(
-        fullName,
-        record.points,
-        user.displayAvatarURL(),
-        roles,
-        transStr,
-        reportsCount.toString(),
-        creaStr,
-        creaDur,
-        joinStr,
-        joinDur
-      )]}).catch(console.error);
+      interaction.reply({
+        embeds: [this.generateScoreCard(
+          fullName,
+          record.points,
+          user.displayAvatarURL(),
+          roles,
+          transStr,
+          reportsCount.toString(),
+          creaStr,
+          creaDur,
+          joinStr,
+          joinDur
+        )]
+      }).catch(console.error);
     })();
   }
 
   /**
    * clears all scores from both JSON data and DB
    */
-  clearScores(){
+  clearScores() {
     scores = {};
     this.updateScoreFile();
     //this.dbmngr.clearScores();
@@ -135,8 +142,8 @@ class Scorer {
    * @param {String} id 
    * @returns {Number}
    */
-  getScore(id){
-    if(scores[id] == null) return 0;
+  getScore(id) {
+    if (scores[id] == null) return 0;
     else return scores[id].points;
   }
 
@@ -149,20 +156,20 @@ class Scorer {
    * @param {Object} transStr 
    * @returns {discordjs.MessageEmbed}
    */
-  generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration){
-    const embedBuilder = new MessageEmbed()
-        .setColor("DEFAULT")
-        .setTitle(`${points} Points`)
-        .setAuthor({
-          name: fullName,
-          iconUrl: `${avatarURL}`
-        })
-        .setDescription(roles)
-        .setThumbnail(`${avatarURL}`)
-        .addFields({ name: 'Transactions:', value: transStr })
-        .addFields({ name: 'Verified Reports Involved:', value: reportsCount })
-        .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
-        .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
+  generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration) {
+    const embedBuilder = new EmbedBuilder()
+      .setColor("DEFAULT")
+      .setTitle(`${points} Points`)
+      .setAuthor({
+        name: fullName,
+        iconUrl: `${avatarURL}`
+      })
+      .setDescription(roles)
+      .setThumbnail(`${avatarURL}`)
+      .addFields({ name: 'Transactions:', value: transStr })
+      .addFields({ name: 'Verified Reports Involved:', value: reportsCount })
+      .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
+      .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
 
     return embedBuilder;
   }

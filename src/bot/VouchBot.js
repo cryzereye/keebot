@@ -1,21 +1,28 @@
-const { Client, Intents} = require('discord.js');
+const { Client, GatewayIntentBits, Partials, InteractionType } = require('discord.js');
 const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
-const { discord_id, discord_token, serverID, commands, dev } = require('../json/config.json');
+const { discord_id, discord_token, channelsID, dev } = require('../json/config.json');
+const { commands } = require('../globals/commands.json');
 const { Scorer } = require('../functions/Scorer');
 const { RoleGiverManager } = require('../functions/RoleGiverManager');
 const { ReportManager } = require('../functions/ReportManager');
+const { PostManager } = require('../functions/PostManager');
 //const { DBManager } = require('../util/DBManager');
 const { CommandProcessor } = require('./CommandProcessor');
+const { ModalProcessor } = require('./ModalProcessor');
 const { MessageProcessor } = require('./MessageProcessor');
-const dUtil = require('../util/DiscordUtil');
+const { ContextProcessor } = require('./ContextProcessor');
 
 class VouchBot {
   constructor() {
-    this.buildDependencies();
-  
+    this.client = new Client({
+      intents: [GatewayIntentBits.Guilds],
+      partials: [Partials.Channel]
+    });
+
     // client application ready up
     this.client.on('ready', () => {
+      this.buildDependencies();
       this.buildSlashCommands(); // client.application is null until client is ready
       this.updatePresence();
       console.log("bot is ready"); 
@@ -28,8 +35,14 @@ class VouchBot {
 
     // handles usage of slash commands
     this.client.on('interactionCreate', async interaction => {
-      if (!interaction.isCommand()) return;
-      this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr);
+      if (interaction.isContextMenuCommand())
+        this.contextproc.processContext(interaction, this.postmngr, this.reportmngr);
+      else if (interaction.type === InteractionType.ApplicationCommand)
+        this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr, this.postmngr);
+      else if (interaction.type === InteractionType.ModalSubmit)
+        this.modalproc.processModal(interaction, this.postmngr);
+      else
+        return;
     });
     
     this.client.login(discord_token);
@@ -39,18 +52,15 @@ class VouchBot {
    * builds all classes that would do the jobs for the bot
    */
   buildDependencies(){
-    this.client = new Client({
-      intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES, // required daw
-      ]
-    });
     //this.dbmngr = new DBManager();
     this.rolegivermngr = new RoleGiverManager(this.client);
     this.scorer = new Scorer(); // removed this.dbmngr arg
-    this.reportmngr = new ReportManager();
+    this.reportmngr = new ReportManager(this.client);
+    this.postmngr = new PostManager(this.client);
     this.cmdproc = new CommandProcessor();
+    this.modalproc = new ModalProcessor();
     this.msgproc = new MessageProcessor();
+    this.contextproc = new ContextProcessor();
   }
 
   /**
@@ -59,7 +69,7 @@ class VouchBot {
   async buildSlashCommands(){
     const rest = new REST({ version: '10' }).setToken(discord_token);
 
-    await rest.put(Routes.applicationGuildCommands(discord_id, serverID), { body: commands })
+    await rest.put(Routes.applicationGuildCommands(discord_id, channelsID.server), { body: commands })
       .then((data) => console.log(`Successfully registered ${data.length} application commands.`))
       .catch(console.error);
   }
