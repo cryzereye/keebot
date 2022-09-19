@@ -64,19 +64,19 @@ class ReportManager {
   async reportPost(interaction, targetID) {
     const authorID = interaction.user.id;
     const authorName = interaction.user.username + "#" + interaction.user.discriminator;
-    const channelID = interaction.channel.id;
-    const message = await dUtil.getMessageFromID(interaction.guild, channelID, targetID).catch(console.error);
+    const channelID = interaction.channelId;
+    const message = await dUtil.getMessageFromID(interaction.member.guild, channelID, targetID).catch(console.error);
 
     if (message) {
       // default is users post the sales. before bot feature
       let reportedName = message.author.username + "#" + message.author.discriminator;
       let reportedID = message.author.id;
-      const mentioned = message.mentions.users.values();
+      const mentioned = message.mentions.users.values().next().value;
 
       // for bot-posted sales
-      if (mentioned.length > 0) {
-        reportedName = mentioned[0].username + "#" + mentioned[0].discriminator;
-        reportedID = mentioned[0].id;
+      if (mentioned) {
+        reportedName = mentioned.username + "#" +mentioned.discriminator;
+        reportedID = mentioned.id;
       }
 
       if (reportedID === this.client.user.id) {
@@ -98,10 +98,10 @@ class ReportManager {
 
       console.log(`Report for ${reportedName} saved`);
 
-      let content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${targetID}>\n${Post.generateUrl(channelID, targetID)}`;
+      let content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${reportedID}>\n${Post.generateUrl(channelID, targetID)}`;
       let filedReport = await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.reports, content);
       if (filedReport) {
-        await interaction.reply({
+        return await interaction.reply({
           content: `Report filed ID ${reportID}`,
           ephemeral: true
         });
