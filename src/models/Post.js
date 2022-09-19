@@ -25,7 +25,7 @@ exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate
 
   post[postID] = {
     postID: postID,
-    newListID: newListID,
+    newListID: [newListID],
     authorID: authorID,
     type: type,
     itemrole: itemrole,
@@ -52,10 +52,11 @@ exports.getAllNeedsBump = () => {
   return postArr.filter(post => !post.sold && !post.deleted && new Date(post.bumpDate) < currDate);
 }
 
-exports.edit = (postID, have, want, editDate) => {
+exports.edit = (postID, have, want, editDate, newListingID) => {
   post[postID].have = have;
   post[postID].want = want;
   post[postID].editDate = editDate;
+  post[postID].newListID.push(newListingID);
   this.savePostToFile();
 }
 
