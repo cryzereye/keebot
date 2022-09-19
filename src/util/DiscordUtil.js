@@ -1,3 +1,5 @@
+const { channelsID } = require('../json/config.json');
+
 /**
  * returns the GuildMember equivalent of ID given
  * @param {Snowflake} id : User id
@@ -15,11 +17,17 @@ exports.getGuildMemberfromID = async (id, guild) => {
  * @param {Snowflake} guildID 
  * @param {Snowflake} chid 
  * @param {String} message 
+ * @return {discord.js.Message} sent message
  */
 exports.sendMessageToChannel = async (client, guildID, chid, message) => {
   let guild = await this.getGuildFromID(client, guildID).catch(console.error);
-  let channel = await this.getChannelFromID(guild, chid).catch(console.error);
-  await channel.send(message).catch(console.error);
+  let fetchedMsg = await this.getMessageFromID(guild, chid, msgid);
+
+  if (fetchedMsg) {
+    let response = await fetchedMsg.edit(content).catch(console.error);
+    if (response) return true;
+  }
+  return false;
 }
 
 /**

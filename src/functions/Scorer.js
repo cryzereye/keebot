@@ -58,20 +58,20 @@ class Scorer {
    * @param {Object} transStr 
    * @returns {discordjs.MessageEmbed}
    */
-  generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration){
+  generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration) {
     const embedBuilder = new EmbedBuilder()
-        .setColor("DEFAULT")
-        .setTitle(`${points} Points`)
-        .setAuthor({
-          name: fullName,
-          iconUrl: `${avatarURL}`
-        })
-        .setDescription(roles)
-        .setThumbnail(`${avatarURL}`)
-        .addFields({ name: 'Transactions:', value: transStr })
-        .addFields({ name: 'Verified Reports Involved:', value: reportsCount })
-        .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
-        .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
+      .setColor("DEFAULT")
+      .setTitle(`${points} Points`)
+      .setAuthor({
+        name: fullName,
+        iconUrl: `${avatarURL}`
+      })
+      .setDescription(roles)
+      .setThumbnail(`${avatarURL}`)
+      .addFields({ name: 'Transactions:', value: transStr })
+      .addFields({ name: 'Verified Reports Involved:', value: reportsCount })
+      .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
+      .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
 
     return embedBuilder;
   }
