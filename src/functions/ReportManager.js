@@ -55,7 +55,7 @@ class ReportManager {
           }
         }
 
-        await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, reportsCHID, reply);
+        await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.reports, reply);
         return reply;
       }
     }

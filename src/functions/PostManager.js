@@ -60,7 +60,7 @@ class PostManager {
     msgURL = Post.generateUrl(channelID, message.id);
     newListContent += `${msgURL}`;
 
-    const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, newListingsCHID, newListContent);
+    const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, channelsID.newListings, newListContent);
 
     Post.new(
       message.id,
@@ -188,7 +188,7 @@ class PostManager {
       newListContent += `WANT: ~~${record.want}~~ ${data.want}\n`;
       newListContent += `${msgURL}`;
 
-      const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, newListingsCHID, newListContent).catch(console.error);
+      const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, channelsID.newListings, newListContent).catch(console.error);
 
       Post.edit(
         data.postID,
