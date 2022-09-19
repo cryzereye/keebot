@@ -41,13 +41,7 @@ class CommandProcessor {
         });
       }
       case commands[4].name: {
-        if (admins.includes(interaction.user.id))
-          return this.processPost(interaction, postmngr);
-        else 
-          return await interaction.reply({
-            content: "**NOT YET AVAILABLE**",
-            ephemeral: true
-          });
+        return this.processPost(interaction, postmngr);
       }
     }
   }
@@ -89,16 +83,16 @@ class CommandProcessor {
    * @param {discord.js.Interaction} interaction 
    * @param {postManager} postmngr 
    */
-  async processPost(interaction, postmngr){
+  async processPost(interaction, postmngr) {
     const postType = interaction.options.getSubcommand(false);
-    switch(postType){
+    switch (postType) {
       case "new": this.processResults(interaction, await postmngr.newPostModal(interaction)); break;
-      case "edit": this.processResults(interaction,  await postmngr.editPostModal(interaction, "")); break;
-      case "sold": this.processResults(interaction,  await postmngr.soldPostModal(interaction, "")); break;
-      case "delete": this.processResults(interaction,  await postmngr.deletePostModal(interaction, "")); break;
-      case "list": this.processResults(interaction,  await postmngr.listPost(interaction)); break;
+      case "edit": this.processResults(interaction, await postmngr.editPostModal(interaction, "")); break;
+      case "sold": this.processResults(interaction, await postmngr.soldPostModal(interaction, "")); break;
+      case "delete": this.processResults(interaction, await postmngr.deletePostModal(interaction, "")); break;
+      case "list": this.processResults(interaction, await postmngr.listPost(interaction)); break;
     }
-    
+
   }
 
   /**
@@ -106,8 +100,8 @@ class CommandProcessor {
    * @param {discord.js.Interaction} interaction 
    * @param {Object} data 
    */
-  processResults(interaction, data){
-    const {success, content, isModal, modal} = data;
+  processResults(interaction, data) {
+    const { success, content, isModal, modal } = data;
     dUtil.postProcess(interaction, success, content, isModal, modal);
   }
 
