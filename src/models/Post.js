@@ -19,9 +19,9 @@ exports.savePostToFile = () => {
 exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate) => {
   let bumpDate = new Date(postDate);
   if (dev) // dev: 1 min bumps
-    bumpDate.setTime(postDate.getTime() + 60 * 1000);
+    bumpDate.setTime(bumpDate.getTime() + 60 * 1000);
   else // prod: 8 hour bumps
-    bumpDate.setTime(postDate.getTime() + 8 * 60 * 60 * 1000);
+    bumpDate.setTime(bumpDate.getTime() + 8 * 60 * 60 * 1000);
 
   post[postID] = {
     postID: postID,
