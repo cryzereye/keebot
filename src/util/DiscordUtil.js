@@ -163,3 +163,22 @@ exports.postProcess = async (interaction, success, content, isModal, modal) => {
     });
   }
 }
+
+/**
+ * Edits a message from target channel (id). client and guild instances are required
+ * @param {discord.js.Client} client 
+ * @param {Snowflake} guildID 
+ * @param {Snowflake} chid : Channel ID
+ * @param {Snowflake} msgid: Message ID
+ * @return {Boolean}: if sent successfully
+ */
+ exports.makeMessageSpoiler = async (client, guildID, chid, msgid) => {
+  let guild = await this.getGuildFromID(client, guildID).catch(console.error);
+  let fetchedMsg = await this.getMessageFromID(guild, chid, msgid);
+
+  if (fetchedMsg) {
+    let response = await fetchedMsg.edit(`||${fetchedMsg.content}||`).catch(console.error);
+    if (response) return true;
+  }
+  return false;
+}
