@@ -24,12 +24,11 @@ exports.sendMessageToChannel = async (client, guildID, chid, message) => {
     let guild = await this.getGuildFromID(client, guildID).catch(console.error);
     if (guild) {
       let channel = await this.getChannelFromID(guild, chid).catch(console.error);
-      if (channel && await channel.send(message).catch(console.error)){
-        return true;
+      if (channel){
+        return await channel.send(message).catch(console.error);
       }
     }
   }
-  return false;
 }
 
 /**
