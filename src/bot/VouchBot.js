@@ -15,7 +15,12 @@ const { ContextProcessor } = require('./ContextProcessor');
 class VouchBot {
   constructor() {
     this.client = new Client({
-      intents: [GatewayIntentBits.Guilds],
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages, 
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildPresences
+      ],
       partials: [Partials.Channel]
     });
 

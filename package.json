@@ -1,6 +1,6 @@
 {
   "name": "vouch-bot-js",
-  "version": "1.5.1",
+  "version": "1.5.1.1",
   "description": "NodeJS implementation for Keebisoria VouchBot",
   "main": "index.js",
   "scripts": {
