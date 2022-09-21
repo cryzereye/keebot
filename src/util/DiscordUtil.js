@@ -1,4 +1,4 @@
-const { channelID } = require('../json/config.json');
+const { channelsID } = require('../json/config.json');
 
 /**
  * returns the GuildMember equivalent of ID given
@@ -20,9 +20,15 @@ exports.getGuildMemberfromID = async (id, guild) => {
  * @return {discord.js.Message} sent message
  */
 exports.sendMessageToChannel = async (client, guildID, chid, message) => {
-  let guild = await this.getGuildFromID(client, guildID).catch(console.error);
-  let channel = await this.getChannelFromID(guild, chid).catch(console.error);
-  return await channel.send(message).catch(console.error);
+  while (true) {
+    let guild = await this.getGuildFromID(client, guildID).catch(console.error);
+    if (guild) {
+      let channel = await this.getChannelFromID(guild, chid).catch(console.error);
+      if (channel){
+        return await channel.send(message).catch(console.error);
+      }
+    }
+  }
 }
 
 /**
@@ -125,7 +131,7 @@ exports.getEmojiInstance = async (name, client, guildID) => {
 
 /**
  * returns a message instance from the given message id
- * @param {discord.js.Client} guild: guild instance
+ * @param {discord.js.Guild} guild: guild instance
  * @param {String} chid: channel id
  * @param {String} msgid: message id
  * @returns {discord.js.Message}
@@ -146,7 +152,7 @@ exports.getMessageFromID = async (guild, chid, msgid) => {
  */
 exports.postProcess = async (interaction, success, content, isModal, modal) => {
   if (!success)
-    await this.sendMessageToChannel(interaction.client, interaction.guild.id, channelID.keebotlogs, `<@${interaction.user.id}>\n${content}`);
+    await this.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.keebotlogs, `<@${interaction.user.id}>\n${content}`);
   if (isModal) {
     await interaction.showModal(modal).catch(console.error);
   }
@@ -156,4 +162,23 @@ exports.postProcess = async (interaction, success, content, isModal, modal) => {
       ephemeral: true
     });
   }
+}
+
+/**
+ * Edits a message from target channel (id). client and guild instances are required
+ * @param {discord.js.Client} client 
+ * @param {Snowflake} guildID 
+ * @param {Snowflake} chid : Channel ID
+ * @param {Snowflake} msgid: Message ID
+ * @return {Boolean}: if sent successfully
+ */
+ exports.makeMessageSpoiler = async (client, guildID, chid, msgid) => {
+  let guild = await this.getGuildFromID(client, guildID).catch(console.error);
+  let fetchedMsg = await this.getMessageFromID(guild, chid, msgid);
+
+  if (fetchedMsg) {
+    let response = await fetchedMsg.edit(`||${fetchedMsg.content}||`).catch(console.error);
+    if (response) return true;
+  }
+  return false;
 }
