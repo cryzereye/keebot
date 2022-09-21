@@ -7,7 +7,7 @@ const dUtil = require('../util/DiscordUtil');
 class CommandProcessor {
   constructor() { }
 
-  async processCommand(interaction, scorer, rolegivermngr, reportmngr, postmngr) {
+  async processCommand(interaction, scorer, rolegivermngr, reportmngr, postmngr, servicemngr) {
     const { commandName, user } = interaction;
     let fullName = `${user.username}#${user.discriminator}`;
     let interactionCHID = interaction.channel.id;
@@ -42,6 +42,9 @@ class CommandProcessor {
       }
       case commands[4].name: {
         return this.processPost(interaction, postmngr);
+      }
+      case command[9].name: {
+        return this.processService(interaction, servicemngr);
       }
     }
   }
@@ -103,6 +106,10 @@ class CommandProcessor {
   processResults(interaction, data) {
     const { success, content, isModal, modal } = data;
     dUtil.postProcess(interaction, success, content, isModal, modal);
+  }
+
+  processService(interaction, servicemngr){
+
   }
 
 }

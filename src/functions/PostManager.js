@@ -7,7 +7,8 @@ const { BumpManager } = require('./BumpManager');
 class PostManager {
   constructor(client) {
     this.bumpmngr = new BumpManager(client);
-    this.bumpmngr.startService();
+    if(!dev)
+      this.bumpmngr.startService();
   }
 
   async newPostModal(interaction) {

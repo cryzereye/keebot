@@ -201,6 +201,56 @@
         {
             "name": "Report Post/Message",
             "type": 3
+        },
+        {
+            "name": "service",
+            "description": "Service provider commands",
+            "options": [
+                {
+                    "name": "new",
+                    "type": 1,
+                    "description": "Register your service",
+                    "options": [
+                        {
+                            "name": "location",
+                            "description": "Service Location",
+                            "type": 3,
+                            "required": true,
+                            "choices":[]
+                        },
+                        {
+                            "name": "services",
+                            "description": "List of services that you offer",
+                            "type": 3,
+                            "required": true,
+                            "max_value": 25,
+                            "choices":[]
+                        }
+                    ]
+                },
+                {
+                    "name": "search",
+                    "type": 1,
+                    "description": "Find a service provider",
+                    "options": [
+                        {
+                            "name": "location",
+                            "type": 3,
+                            "description": "Service Location",
+                            "required": false,
+                            "choices":[]
+                        },
+                        {
+                            "name": "services",
+                            "type": 3,
+                            "description": "Services that you need",
+                            "required": false,
+                            "max_value": 25,
+                            "choices":[]
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

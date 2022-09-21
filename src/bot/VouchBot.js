@@ -2,11 +2,12 @@ const { Client, GatewayIntentBits, Partials, InteractionType } = require('discor
 const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
 const { discord_id, discord_token, channelsID, dev } = require('../json/config.json');
-const { commands } = require('../globals/commands.json');
+let { commands } = require('../globals/commands.json');
 const { Scorer } = require('../functions/Scorer');
 const { RoleGiverManager } = require('../functions/RoleGiverManager');
 const { ReportManager } = require('../functions/ReportManager');
 const { PostManager } = require('../functions/PostManager');
+const { ServiceManager } = require('../functions/ServiceManager');
 //const { DBManager } = require('../util/DBManager');
 const { CommandProcessor } = require('./CommandProcessor');
 const { ModalProcessor } = require('./ModalProcessor');
@@ -43,7 +44,7 @@ class VouchBot {
       if (interaction.isContextMenuCommand())
         this.contextproc.processContext(interaction, this.postmngr, this.reportmngr);
       else if (interaction.type === InteractionType.ApplicationCommand)
-        this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr, this.postmngr);
+        this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr, this.postmngr, this.servicemngr);
       else if (interaction.type === InteractionType.ModalSubmit)
         this.modalproc.processModal(interaction, this.postmngr);
       else
@@ -62,6 +63,7 @@ class VouchBot {
     this.scorer = new Scorer(); // removed this.dbmngr arg
     this.reportmngr = new ReportManager(this.client);
     this.postmngr = new PostManager(this.client);
+    this.servicemngr = new ServiceManager(this.client);
     this.cmdproc = new CommandProcessor();
     this.modalproc = new ModalProcessor();
     this.msgproc = new MessageProcessor();
@@ -73,6 +75,7 @@ class VouchBot {
    */
   async buildSlashCommands(){
     const rest = new REST({ version: '10' }).setToken(discord_token);
+    commands = this.servicemngr.buildCommands(commands); // adding some more command options which i do not want to type manually :)
 
     await rest.put(Routes.applicationGuildCommands(discord_id, channelsID.server), { body: commands })
       .then((data) => console.log(`Successfully registered ${data.length} application commands.`))
