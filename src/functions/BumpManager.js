@@ -37,7 +37,7 @@ class BumpManager {
           let url = Post.generateUrl(channel, currPost.postID);
           let message = await origPost.reply({
             content: `Bumping this post\n\n${url}`,
-            embeds: [this.getUserEmbed(origPost.mentions.users[0])]
+            embeds: [this.getUserEmbed(origPost.mentions.users.at(0))]
         }).catch(console.error);
 
           // updates to the post records or retries fails
