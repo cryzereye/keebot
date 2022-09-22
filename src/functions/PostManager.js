@@ -461,7 +461,7 @@ class PostManager {
       authorID == interaction.user.id;
     }
 
-    const records = Post.list(authorID, itemroleID);
+    let records = Post.list(authorID, itemroleID);
     let content = "";
     let channel;
 
@@ -474,6 +474,8 @@ class PostManager {
       }
     }
 
+    // now returns first 10 items only
+    records = records.slice(0, 10);
     records.map(x => {
       channel = Post.getChannelFromType(x.type);
       content += `<#${channel}> ${x.postID}\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\n\n`;
