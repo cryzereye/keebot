@@ -1,7 +1,8 @@
+const { EmbedBuilder } = require('discord.js');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const util = require('../util/Utilities');
-const { channelID, dev } = require('../json/config.json');
+const { channelsID, dev } = require('../json/config.json');
 
 class BumpManager {
   constructor(client) {
@@ -24,7 +25,7 @@ class BumpManager {
         // preps to get the original post message from channel
         let channel = Post.getChannelFromType(currPost.type);
         let origPost = await dUtil.getMessageFromID(
-          await dUtil.getGuildFromID(this.client, channelID.server),
+          await dUtil.getGuildFromID(this.client, channelsID.server),
           channel,
           currPost.postID
         ).catch(console.error);
@@ -34,9 +35,10 @@ class BumpManager {
 
           // the actual bump process
           let url = Post.generateUrl(channel, currPost.postID);
-          let message = await origPost.reply(
-            `Bumping this post\n\n${url}`
-          ).catch(console.error);
+          let message = await origPost.reply({
+            content: `Bumping this post\n\n${url}`,
+            embeds: [this.getUserEmbed(origPost.mentions.users.at(0))]
+        }).catch(console.error);
 
           // updates to the post records or retries fails
           if (message) {
@@ -55,6 +57,21 @@ class BumpManager {
       else
         await new Promise(resolve => setTimeout(resolve, util.getMinutes(5)));
     }
+  }
+
+  getUserEmbed(user){
+    const authorName = user.username + '#' + user.discriminator;
+    const avatarURL = user.displayAvatarURL();
+
+    const embedBuilder = new EmbedBuilder()
+      .setColor("DEFAULT")
+      .setAuthor({
+        name: authorName,
+        iconUrl: `${avatarURL}`
+      })
+      .setThumbnail(`${avatarURL}`);
+
+    return embedBuilder;
   }
 }
 

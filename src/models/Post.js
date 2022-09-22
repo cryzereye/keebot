@@ -2,7 +2,7 @@ const fs = require('fs');
 const fileName = '../json/post.json';
 const osFile = './src/json/post.json';
 let { post } = require(fileName);
-const { serverID, channelID, dev } = require('../json/config.json');
+const { channelsID, dev } = require('../json/config.json');
 
 exports.savePostToFile = () => {
   let dataStr = { "post": post };
@@ -19,13 +19,13 @@ exports.savePostToFile = () => {
 exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate) => {
   let bumpDate = new Date(postDate);
   if (dev) // dev: 1 min bumps
-    bumpDate.setTime(postDate.getTime() + 60 * 1000);
+    bumpDate.setTime(bumpDate.getTime() + 60 * 1000);
   else // prod: 8 hour bumps
-    bumpDate.setTime(postDate.getTime() + 8 * 60 * 60 * 1000);
+    bumpDate.setTime(bumpDate.getTime() + 8 * 60 * 60 * 1000);
 
   post[postID] = {
     postID: postID,
-    newListID: newListID,
+    newListID: [newListID],
     authorID: authorID,
     type: type,
     itemrole: itemrole,
@@ -52,10 +52,11 @@ exports.getAllNeedsBump = () => {
   return postArr.filter(post => !post.sold && !post.deleted && new Date(post.bumpDate) < currDate);
 }
 
-exports.edit = (postID, have, want, editDate) => {
+exports.edit = (postID, have, want, editDate, newListingID) => {
   post[postID].have = have;
   post[postID].want = want;
   post[postID].editDate = editDate;
+  post[postID].newListID.push(newListingID);
   this.savePostToFile();
 }
 
@@ -107,8 +108,8 @@ exports.list = (authorID, itemrole) => {
  * @param {String} msgid 
  * @returns {String} URL
  */
-exports.generateUrl = (channelID, msgid) => {
-  return `https://discord.com/channels/${serverID}/${channelID}/${msgid}`;
+exports.generateUrl = (chid, msgid) => {
+  return `https://discord.com/channels/${channelsID.server}/${chid}/${msgid}`;
 }
 
 /**
@@ -117,10 +118,10 @@ exports.generateUrl = (channelID, msgid) => {
  * @returns {String} channel ID
  */
 exports.getChannelFromType = (type) => {
-  if (dev) return channelID.test;
+  if (dev) return channelsID.test;
   switch (type) {
-    case "buy": return channelID.sell;
-    case "sell": return channelID.buy;
-    case "trade": return channelID.trade;
+    case "buy": return channelsID.buying;
+    case "sell": return channelsID.selling;
+    case "trade": return channelsID.trading;
   }
 }

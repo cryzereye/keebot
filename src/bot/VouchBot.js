@@ -1,7 +1,8 @@
 const { Client, GatewayIntentBits, Partials, InteractionType } = require('discord.js');
 const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
-const { discord_id, discord_token, serverID, commands, dev } = require('../json/config.json');
+const { discord_id, discord_token, channelsID, dev } = require('../json/config.json');
+const { commands } = require('../globals/commands.json');
 const { Scorer } = require('../functions/Scorer');
 const { RoleGiverManager } = require('../functions/RoleGiverManager');
 const { ReportManager } = require('../functions/ReportManager');
@@ -15,7 +16,12 @@ const { ContextProcessor } = require('./ContextProcessor');
 class VouchBot {
   constructor() {
     this.client = new Client({
-      intents: [GatewayIntentBits.Guilds],
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages, 
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildPresences
+      ],
       partials: [Partials.Channel]
     });
 
@@ -35,7 +41,7 @@ class VouchBot {
     // handles usage of slash commands
     this.client.on('interactionCreate', async interaction => {
       if (interaction.isContextMenuCommand())
-        this.contextproc.processContext(interaction, this.postmngr);
+        this.contextproc.processContext(interaction, this.postmngr, this.reportmngr);
       else if (interaction.type === InteractionType.ApplicationCommand)
         this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr, this.postmngr);
       else if (interaction.type === InteractionType.ModalSubmit)
@@ -54,7 +60,7 @@ class VouchBot {
     //this.dbmngr = new DBManager();
     this.rolegivermngr = new RoleGiverManager(this.client);
     this.scorer = new Scorer(); // removed this.dbmngr arg
-    this.reportmngr = new ReportManager();
+    this.reportmngr = new ReportManager(this.client);
     this.postmngr = new PostManager(this.client);
     this.cmdproc = new CommandProcessor();
     this.modalproc = new ModalProcessor();
@@ -68,7 +74,7 @@ class VouchBot {
   async buildSlashCommands(){
     const rest = new REST({ version: '10' }).setToken(discord_token);
 
-    await rest.put(Routes.applicationGuildCommands(discord_id, serverID), { body: commands })
+    await rest.put(Routes.applicationGuildCommands(discord_id, channelsID.server), { body: commands })
       .then((data) => console.log(`Successfully registered ${data.length} application commands.`))
       .catch(console.error);
   }

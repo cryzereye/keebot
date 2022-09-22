@@ -1,5 +1,5 @@
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const { relevant_roles, newListingsCHID, me_id } = require('../json/config.json');
+const { relevant_roles, channelsID, me_id, dev } = require('../json/config.json');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const { BumpManager } = require('./BumpManager');
@@ -60,7 +60,9 @@ class PostManager {
     msgURL = Post.generateUrl(channelID, message.id);
     newListContent += `${msgURL}`;
 
-    const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, newListingsCHID, newListContent);
+    let ch = channelsID.newListings;
+    if (dev) ch = channelsID.test;
+    const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, ch, newListContent);
 
     Post.new(
       message.id,
@@ -76,7 +78,7 @@ class PostManager {
     return {
       posted: true,
       url: msgURL,
-      newListingURL: Post.generateUrl(newListingsCHID, newListMsg.id),
+      newListingURL: Post.generateUrl(ch, newListMsg.id),
     };
   }
 
@@ -188,19 +190,34 @@ class PostManager {
       newListContent += `WANT: ~~${record.want}~~ ${data.want}\n`;
       newListContent += `${msgURL}`;
 
-      const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, newListingsCHID, newListContent).catch(console.error);
+      let ch = channelsID.newListings;
+      if (dev) ch = channelsID.test;
+      const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, ch, newListContent).catch(console.error);
 
-      Post.edit(
-        data.postID,
-        data.have,
-        data.want,
-        data.editDate
-      );
+      if (newListMsg) {
+        Post.edit(
+          data.postID,
+          data.have,
+          data.want,
+          data.editDate,
+          newListMsg.id
+        );
+      }
+      else {
+        Post.edit(
+          data.postID,
+          data.have,
+          data.want,
+          data.editDate,
+          ""
+        );
+      }
+
 
       return {
         edited: true,
         url: msgURL,
-        newListingURL: Post.generateUrl(newListingsCHID, newListMsg.id),
+        newListingURL: Post.generateUrl(ch, newListMsg.id),
         errorContent: ""
       };
     }
@@ -307,6 +324,12 @@ class PostManager {
         data.soldDate
       );
 
+      record.newListID.map(async (x) => {
+        let ch = channelsID.newListings;
+        if (dev) ch = channelsID.test;
+        await dUtil.makeMessageSpoiler(guild.client, guild.id, ch, x);
+      });
+
       return {
         sold: true,
         url: msgURL,
@@ -403,6 +426,12 @@ class PostManager {
         data.postID,
         data.deleteDate
       );
+
+      record.newListID.map(async (x) => {
+        let ch = channelsID.newListings;
+        if (dev) ch = channelsID.test;
+        await dUtil.makeMessageSpoiler(guild.client, guild.id, ch, x);
+      });
 
       return {
         deleted: true,
