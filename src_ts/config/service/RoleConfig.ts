@@ -1,4 +1,4 @@
-import { Config } from '../model/Config';
+import { Config } from '../interface/Config';
 import { Role } from '../model/type/Role';
 
 export class RoleConfig implements Config {
@@ -8,11 +8,11 @@ export class RoleConfig implements Config {
         this.setValue(data);
     }
 
-    getValue() {
+    getValue(): string {
         return this.id;
     }
 
-    setValue(data: Role) {
+    setValue(data: Role): void {
         this.id = data.id;
     }
 }

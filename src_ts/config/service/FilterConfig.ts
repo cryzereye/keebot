@@ -1,4 +1,4 @@
-import { Config } from '../model/Config';
+import { Config } from '../interface/Config';
 import { Filter } from '../model/type/Filter';
 
 export class FilterConfig implements Config {
@@ -10,11 +10,11 @@ export class FilterConfig implements Config {
         this.setValue(data);
     }
 
-    getValue(id: string) {
+    getValue(): number {
         return this.filter;
     }
 
-    setValue(data: Filter) {
+    setValue(data: Filter): void {
         this.id = data.id;
         this.role = data.role;
         this.filter = data.filter;

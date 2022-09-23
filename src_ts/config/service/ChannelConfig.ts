@@ -1,4 +1,4 @@
-import { Config } from '../model/Config';
+import { Config } from '../interface/Config';
 import { Channel } from '../model/type/Channel';
 
 export class ChannelConfig implements Config {
@@ -9,11 +9,11 @@ export class ChannelConfig implements Config {
         this.setValue(data);
     }
 
-    getValue() {
+    getValue(): string {
         return this.id;
     }
 
-    setValue(data: Channel) {
+    setValue(data: Channel): void {
         this.name = data.name;
         this.id = data.id;
     }

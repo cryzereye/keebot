@@ -1,4 +1,4 @@
-import { ConfigType } from "../model/enums/ConfigType";
+import { ServerConfig } from "../service/ServerConfig";
 
 const { MongoClient, Collection } = require('mongodb');
 const { connURI } = require('../../secrets');
@@ -17,9 +17,29 @@ export class ConfigRepository {
         }).catch(console.error);
     }
 
-    addConfig(serverID: string, data: Object){
-        
+    /**
+     * adds a new set of server config. should be called upon bot join
+     * @param { ServerConfig } data 
+     */
+    addNewServerConfig(data: ServerConfig): void {
+        this.config.findOneAndUpdate(
+            { serverID: data.serverID },
+            {
+                serverID: data.serverID,
+                channels: data.channels,
+                roles: data.roles,
+                filter: data.filters
+            },
+            {
+                upsert: true
+            }
+        ).catch(console.error);
     }
 
+    getServerConfig(serverID: string) {
+        return this.config.findOne(
+            { serverID: serverID },
+        ).catch(console.error);
+    }
 
 }

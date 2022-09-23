@@ -1,4 +1,7 @@
-import { Routes } from require('./controller/Routes');
+import ServerRoutes from './controller/ServerRoutes';
+import ChannelRoutes from './controller/ChannelRoutes';
+import RoleRoutes from './controller/RoleRoutes';
+import FilterRoutes from './controller/FilterRoutes';
 
 const express = require('express');
 const app = express();

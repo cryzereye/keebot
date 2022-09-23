@@ -1,4 +1,4 @@
 export interface Config {
-    getValue: (property: string) => any;
+    getValue: () => any;
     setValue: (data: any) => void;
 }
