@@ -5,15 +5,19 @@ router.get('/server/:serverID/channel', (req, res) => {
     
 });
 
-router.get('/server/:serverID/channel/:channel', (req, res) => {
+router.get('/server/:serverID/channel/:name', (req, res) => {
     
 });
 
-router.get('/server/:serverID/channel', (req, res) => {
+router.post('/server/:serverID/channel', (req, res) => {
     
 });
 
-router.get('/server/:serverID/channel/:channel', (req, res) => {
+router.put('/server/:serverID/channel/:name', (req, res) => {
+    
+});
+
+router.delete('/server/:serverID/channel/:name', (req, res) => {
     
 });
 
