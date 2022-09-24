@@ -451,12 +451,12 @@ class PostManager {
   async listPost(interaction) {
     const author = interaction.options.getUser("user");
     const itemrole = interaction.options.getRole("listitemrole");
-    let authorID;
-    let itemroleID;
+    let authorID = "";
+    let itemroleID = "";
     if (author) authorID = author.id;
     if (itemrole) itemroleID = itemrole.id;
 
-    if (authorID == null && itemroleID == null) {
+    if (authorID === "" && itemroleID === "") {
       authorID == interaction.user.id;
     }
 
