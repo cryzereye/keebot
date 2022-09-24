@@ -1,8 +1,7 @@
-import { Config } from "./Config";
-
 export interface BaseConfigValidator {
-    validateConfig(data: Config): boolean;
-    validateID(id: string): boolean;
-    validateName(name: string): boolean;
-    validateNumber(number: number): boolean;
+    validateNew(req: Request, res: Response): boolean;
+    validateUpdate(req: Request, res: Response): boolean;
+    validateDelete(req: Request, res: Response): boolean;
+    validateSearch(req: Request, res: Response): boolean;
+    validateSearchList(req: Request, res: Response): boolean;
 }

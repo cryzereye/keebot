@@ -2,16 +2,26 @@ import { BaseConfigValidator } from "../interface/BaseConfigValidator";
 import { ChannelConfig } from "../service/ChannelConfig";
 
 export class ChannelConfigValidator implements BaseConfigValidator {
-    validateConfig(data: ChannelConfig): boolean {
+    constructor(){}
+
+    validateNew(req: Request, res: Response): boolean {
         throw new Error("Method not implemented.");
     }
-    validateID(id: string): boolean {
+
+    validateUpdate(req: Request, res: Response): boolean {
         throw new Error("Method not implemented.");
     }
-    validateName(name: string): boolean {
+
+    validateDelete(req: Request, res: Response): boolean {
         throw new Error("Method not implemented.");
     }
-    validateNumber(number: number): boolean {
+    
+    validateSearch(req: Request, res: Response): boolean {
         throw new Error("Method not implemented.");
     }
+
+    validateSearchList(req: Request, res: Response): boolean {
+        throw new Error("Method not implemented.");
+    }
+
 }

@@ -2,16 +2,25 @@ import { BaseConfigValidator } from "../interface/BaseConfigValidator";
 import { ServerConfig } from "../service/ServerConfig";
 
 export class ServerConfigValidator implements BaseConfigValidator {
-    validateConfig(data: ServerConfig): boolean {
+    constructor() { }
+
+    validateNew(req: Request, res: Response): boolean {
         throw new Error("Method not implemented.");
     }
-    validateID(id: string): boolean {
+
+    validateUpdate(req: Request, res: Response): boolean {
         throw new Error("Method not implemented.");
     }
-    validateName(name: string): boolean {
+
+    validateDelete(req: Request, res: Response): boolean {
         throw new Error("Method not implemented.");
     }
-    validateNumber(number: number): boolean {
+
+    validateSearch(req: Request, res: Response): boolean {
+        throw new Error("Method not implemented.");
+    }
+
+    validateSearchList(req: Request, res: Response): boolean {
         throw new Error("Method not implemented.");
     }
 }
