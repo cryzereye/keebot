@@ -1,4 +1,4 @@
-import express from 'express';
+const express = require('express');
 import { ChannelConfigValidator } from '../validator/ChannelConfigValidator';
 
 const router = express.Router();

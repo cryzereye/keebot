@@ -1,4 +1,4 @@
-import express from 'express';
+const express = require('express');
 import { FilterConfigValidator } from '../validator/FilterConfigValidator';
 
 const router = express.Router();

@@ -1,3 +1,5 @@
+import { Request, Response } from 'express';
+
 export interface BaseConfigValidator {
     validateNew(req: Request, res: Response);
     validateUpdate(req: Request, res: Response);

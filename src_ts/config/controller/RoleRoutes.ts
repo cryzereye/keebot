@@ -1,4 +1,4 @@
-import express from 'express';
+const express = require('express');
 import { RoleConfigValidator } from '../validator/RoleConfigValidator';
 
 const router = express.Router();

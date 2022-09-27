@@ -1,4 +1,4 @@
-import express from 'express';
+import { Request, Response } from 'express';
 import { BaseConfigValidator } from "../interface/BaseConfigValidator";
 import { ServerConfig } from "../service/ServerConfig";
 import { validID, validChannelName, validFilter } from "../utils/Utilities";
@@ -6,41 +6,39 @@ import { validID, validChannelName, validFilter } from "../utils/Utilities";
 export class ServerConfigValidator implements BaseConfigValidator {
     constructor() { }
 
-    validateNew(req: express.Request, res: express.Response) {
-        req.json().then( async(reqJSON) => {
-            const serverID = "serverID" in reqJSON.body? reqJSON.body.serverID: "";
-            const channels = "channels" in reqJSON.body? reqJSON.body.channels: [];
-            const roles = "roles" in reqJSON.body? reqJSON.body.roles: [];
-            const filters = "filters" in reqJSON.body? reqJSON.body.filters: [];
-            if(!validID(serverID)){
-                return res.status(400).send('ERROR: Invalid server ID: ' + serverID);
-            }
+    async validateNew(req: Request, res: Response) {
+        const serverID = "serverID" in req.body ? req.body.serverID : "";
+        const channels = "channels" in req.body ? req.body.channels : [];
+        const roles = "roles" in req.body ? req.body.roles : [];
+        const filters = "filters" in req.body ? req.body.filters : [];
+        if (!validID(serverID)) {
+            return res.status(400).send('ERROR: Invalid server ID: ' + serverID);
+        }
 
-            channels.map(ch => {
-                if(!validChannelName(ch.name))
-                    return res.status(400).send('ERROR: Invalid channel name: ' + ch.name);
-                if(!validID(ch.id))
-                    return res.status(400).send('ERROR: Invalid channel ID: ' + ch.id);
-            });
-            
-            roles.map(r => {
-                if(!validID(r.id))
-                    return res.status(400).send('ERROR: Invalid role ID: ' + r.id);
-            });
-
-            filters.map(f => {
-                if(!validID(f.id))
-                    return res.status(400).send('ERROR: Invalid channel ID: ' + f.id);
-                if(!validID(f.role))
-                    return res.status(400).send('ERROR: Invalid role ID: ' + f.role);
-                if(!validFilter(f.filter))
-                    return res.status(400).send('ERROR: Invalid filter ID: ' + f.filter);
-            });
-
-            return await res.status(200).send(
-                new ServerConfig(serverID, channels, roles, filters)
-            );
+        channels.map(ch => {
+            if (!validChannelName(ch.name))
+                return res.status(400).send('ERROR: Invalid channel name: ' + ch.name);
+            if (!validID(ch.id))
+                return res.status(400).send('ERROR: Invalid channel ID: ' + ch.id);
         });
+
+        roles.map(r => {
+            if (!validID(r.id))
+                return res.status(400).send('ERROR: Invalid role ID: ' + r.id);
+        });
+
+        filters.map(f => {
+            if (!validID(f.id))
+                return res.status(400).send('ERROR: Invalid channel ID: ' + f.id);
+            if (!validID(f.role))
+                return res.status(400).send('ERROR: Invalid role ID: ' + f.role);
+            if (!validFilter(f.filter))
+                return res.status(400).send('ERROR: Invalid filter ID: ' + f.filter);
+        });
+
+        await res.status(200).send(
+            "nice"
+        );
     }
 
     validateUpdate(req: Request, res: Response) {
