@@ -69,8 +69,8 @@ class BumpManager {
         name: authorName,
         iconUrl: `${avatarURL}`
       })
-      .setThumbnail(`${avatarURL}`)
-      .addDescription(`HAVE: ${post.have}\n\nWANT: ${post.want}`);
+      .addDescription(`HAVE: ${post.have}\n\nWANT: ${post.want}`)
+      .setThumbnail(`${avatarURL}`);
 
     return embedBuilder;
   }
