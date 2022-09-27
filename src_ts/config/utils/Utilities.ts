@@ -13,3 +13,13 @@ export function validChannelName (ch: string): boolean {
 export function validroleName (role: string):boolean {
     return roleNameRegex.test(role);
 } 
+
+export function validFilter (filter: number):boolean {
+    try{
+        filter/1; // test if number
+        return (filter > 0); // test if valid filter value
+    }
+    catch(e){
+        return false
+    }
+} 

@@ -42,4 +42,12 @@ export class ConfigRepository {
         ).catch(console.error);
     }
 
+    getRoleConfig(serverID: string, roleID: string) {
+        return this.config.findOne(
+            {
+                serverID: serverID,
+                roles : [roleID]
+            },
+        ).catch(console.error);
+    }
 }

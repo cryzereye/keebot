@@ -1,7 +1,7 @@
 export interface BaseConfigValidator {
-    validateNew(req: Request, res: Response): boolean;
-    validateUpdate(req: Request, res: Response): boolean;
-    validateDelete(req: Request, res: Response): boolean;
-    validateSearch(req: Request, res: Response): boolean;
-    validateSearchList(req: Request, res: Response): boolean;
+    validateNew(req: Request, res: Response);
+    validateUpdate(req: Request, res: Response);
+    validateDelete(req: Request, res: Response);
+    validateSearch(req: Request, res: Response);
+    validateSearchList(req: Request, res: Response);
 }

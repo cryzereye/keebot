@@ -2,6 +2,9 @@ import ServerRoutes from './controller/ServerRoutes';
 import ChannelRoutes from './controller/ChannelRoutes';
 import RoleRoutes from './controller/RoleRoutes';
 import FilterRoutes from './controller/FilterRoutes';
+import { ConfigRepository } from './repo/ConfigRepository';
+
+export repo = new ConfigRepository();
 
 const express = require('express');
 const app = express();

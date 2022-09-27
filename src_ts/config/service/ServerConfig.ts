@@ -6,6 +6,7 @@ import { Channel } from '../model/type/Channel';
 import { Role } from '../model/type/Role';
 import { Filter } from '../model/type/Filter';
 import { Config } from '../interface/Config';
+import { ConfigRepository } from '../repo/ConfigRepository';
 
 export class ServerConfig implements Config{
     serverID: string;
@@ -13,8 +14,11 @@ export class ServerConfig implements Config{
     roles: Array<RoleConfig>;
     filters: Array<FilterConfig>;
 
-    constructor(data: ServerConfig) {
-        this.setValue(data);
+    constructor(serverID: string, channels: Array<ChannelConfig>, roles: Array<RoleConfig>, filters: Array<FilterConfig>) {
+        this.serverID = serverID;
+        this.channels = channels;
+        this.roles = roles;
+        this.filters = filters;
     }
 
     getValue(): ServerConfig {
