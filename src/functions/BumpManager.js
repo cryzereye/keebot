@@ -37,7 +37,7 @@ class BumpManager {
           let url = Post.generateUrl(channel, currPost.postID);
           let message = await origPost.reply({
             content: `Bumping this post\n\n${url}`,
-            embeds: [this.getUserEmbed(origPost.mentions.users.at(0))]
+            embeds: [this.getEmbed(origPost.mentions.users.at(0), currPost)]
         }).catch(console.error);
 
           // updates to the post records or retries fails
@@ -59,7 +59,7 @@ class BumpManager {
     }
   }
 
-  getUserEmbed(user){
+  getEmbed(user, post){
     const authorName = user.username + '#' + user.discriminator;
     const avatarURL = user.displayAvatarURL();
 
@@ -69,7 +69,8 @@ class BumpManager {
         name: authorName,
         iconUrl: `${avatarURL}`
       })
-      .setThumbnail(`${avatarURL}`);
+      .setThumbnail(`${avatarURL}`)
+      .addDescription(`HAVE: ${post.have}\n\nWANT: ${post.want}`);
 
     return embedBuilder;
   }
