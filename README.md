@@ -14,15 +14,14 @@ All features above will have future additions. Here's our list as of now:
 
 1. Streamlined vouch edits and deletes detection: subject to mod/admin double check
 2. Automated vouch verification against actual buy/sell/trade listings
-3. Help assistance scoring system
+3. Help assistance scoring system (Awaiting forums feature for the server)
 4. Service provider registry and search
 
-For the technical side:
+This is currently hosted in a VPS (CentOS 8).
 
-1. Full MongoDB implementation - currently solving async and transaction issues
-2. Unit testing implementation - Jest
-3. Bot dashboard - probably with React.js for practice
-4. Cloud hosting + Docker 
-
-For donations and tips:
-- [Paypal](https://paypal.me/cryzereye)
+### Future Major Releases are moved to [keebot-ts](https://github.com/cryzereye/keebot-ts)
+1. Microservice architecture via Express.js with TypeScript implementation
+2. Full MongoDB support
+3. Unit testing implementation - Jest
+4. Bot dashboard - probably with React.js for practice
+5. Dockerized cloud hosting 
