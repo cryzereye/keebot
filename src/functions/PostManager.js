@@ -2,6 +2,7 @@ const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = req
 const { relevant_roles, channelsID, me_id, dev } = require('../json/config.json');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
+const util = require('../util/Utilities');
 const { BumpManager } = require('./BumpManager');
 
 class PostManager {
@@ -64,6 +65,9 @@ class PostManager {
     if (dev) ch = channelsID.test;
     const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, ch, newListContent);
 
+    let bumpDate = util.addHours(postDate, 8 + Math.floor(Math.random() * 4)); // randoms 8-12 hours
+    let expiryDate = util.addHours(postDate, 8 * 24 * 30); // 30 days post expiry
+
     Post.new(
       message.id,
       newListMsg.id,
@@ -72,7 +76,9 @@ class PostManager {
       data.roleID,
       data.have,
       data.want,
-      postDate
+      postDate,
+      bumpDate,
+      expiryDate
     );
 
     return {

@@ -32,6 +32,10 @@ class BumpManager {
 
         // if the original post message as fetched
         if (origPost) {
+          if(currPost.expiryDate > Date.now()) {
+            Post.delete(currPost.postID, Date.now().toString());
+            continue;
+          }
 
           // the actual bump process
           let url = Post.generateUrl(channel, currPost.postID);
