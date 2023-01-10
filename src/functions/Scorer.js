@@ -68,7 +68,7 @@ class Scorer {
       })
       .setDescription(roles)
       .setThumbnail(`${avatarURL}`)
-      .addFields({ name: 'Transactions:', value: transStr })
+      .addFields({ name: 'Transactions (max 10):', value: transStr })
       .addFields({ name: 'Verified Reports Involved:', value: reportsCount })
       .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
       .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
