@@ -504,7 +504,7 @@ class PostManager {
       .setLabel("Have")
       .setStyle(TextInputStyle.Short)
       .setPlaceholder('H:')
-      .setMaxLength(200)
+      .setMaxLength(100)
       .setMinLength(1)
       .setRequired(true);
     if (value) have.setValue(value);
@@ -517,7 +517,7 @@ class PostManager {
       .setLabel("Want")
       .setStyle(TextInputStyle.Short)
       .setPlaceholder('W:')
-      .setMaxLength(200)
+      .setMaxLength(100)
       .setMinLength(1)
       .setRequired(true);
     if (value) want.setValue(value);
@@ -539,7 +539,7 @@ class PostManager {
       .setCustomId('details')
       .setLabel("Details")
       .setStyle(TextInputStyle.Paragraph)
-      .setMaxLength(1000)
+      .setMaxLength(1500)
       .setMinLength(1)
       .setPlaceholder('Enter post details here...')
       .setRequired(false);
