@@ -42,7 +42,7 @@ class BumpManager {
 
           // updates to the post records or retries fails
           if (message) {
-            let newBumpDate = util.addHours(Date.now(), 8);
+            let newBumpDate = util.addHours(Date.now(), 8 + (Math.random() * 4));
             Post.bumped(currPost.postID, newBumpDate);
             continue;
           }
