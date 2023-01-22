@@ -162,8 +162,8 @@ class PostManager {
       let content = postMsg.content.split('\n');
       let newContent = "";
       let newListContent = "";
-      let haveEdited = false;
-      let wantEdited = false;
+      let haveEdited = (record.have == data.have);
+      let wantEdited = (record.want == data.want);
 
       content.map(line => {
         if (line.startsWith("HAVE: ") && !haveEdited)
@@ -186,8 +186,9 @@ class PostManager {
       let msgURL = Post.generateUrl(message.channel.id, message.id);
 
       newListContent += `**UPDATED <#${channelID}> post from <@!${authorID}>**\n`;
-      newListContent += `HAVE: ~~${record.have}~~ ${data.have}\n`;
-      newListContent += `WANT: ~~${record.want}~~ ${data.want}\n`;
+      
+      newListContent += "HAVE: " + (haveEdited ? `~~${record.have}~~`: "") + `${data.have}\n`;
+      newListContent += "WANT: " + (wantEdited ? `~~${record.want}~~`: "") + `${data.want}\n`;
       newListContent += `${msgURL}`;
 
       let ch = channelsID.newListings;
