@@ -35,10 +35,16 @@ class ModalProcessor {
 
     data = this.cleanUserEntries(data);
 
-    const { posted, url, newListingURL } = await postmngr.newPost(
+    const { posted, url, newListingURL, errorContent } = await postmngr.newPost(
       interaction.client, interaction.guild, type, authorID, postDate, data
     );
-    dUtil.postProcess(interaction, posted, `Your item has been listed:\n${url}\nNew listing:${newListingURL}`, false, null);
+
+    if(posted)
+      postResult = `Your item has been listed:\n${url}\nNew listing:${newListingURL}`;
+    else
+      postResult = errorContent;
+
+    dUtil.postProcess(interaction, posted, postResult, false, null);
   }
 
   async processEditPostModal(interaction, postmngr) {
@@ -65,7 +71,7 @@ class ModalProcessor {
     else
       editResult = errorContent;
 
-      dUtil.postProcess(interaction, edited, editResult, false, null);
+    dUtil.postProcess(interaction, edited, editResult, false, null);
   }
 
   async processSoldPostModal(interaction, postmngr) {

@@ -1,4 +1,4 @@
-const { dev } = require('../json/config.json');
+const { dev, blacklisted_words } = require('../json/config.json');
 /**
  * from: https://www.codegrepper.com/code-examples/javascript/node+js+time+difference+in+hours
  * returns time difference from now to target
@@ -46,4 +46,23 @@ exports.addHours = (start, hours) => {
  */
  exports.getMinutes = (mins) => {
   return mins * 60 * 1000;
+}
+
+/**
+ * returns true if str is a digit string 
+ * @param {String} str 
+ * @returns {Boolean}
+ */
+exports.isAmount = (str) => {
+  let regexp = /^\d+$/i; 
+  return regexp.match(str);
+}
+
+/**
+ * returns true if the str contains a word included in the blacklist of words in config
+ * @param {String} str 
+ * @returns {Boolean}
+ */
+exports.isBlacklistedWord = (str) => {
+  return blacklisted_words.includes(str.toLowerCase());
 }
