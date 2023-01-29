@@ -107,7 +107,7 @@ class Scorer {
           return b[1] - a[1];
         });
 
-        for (let i = 0; i < sortedTrans.length; i++)
+        for (let i = 0; i < sortedTrans.length && i < 10; i++)
           transStr += `${sortedTrans[i][0]} : ${sortedTrans[i][1]}\n`;
       }
 
@@ -166,7 +166,7 @@ class Scorer {
       })
       .setDescription(roles)
       .setThumbnail(`${avatarURL}`)
-      .addFields({ name: 'Transactions:', value: transStr })
+      .addFields({ name: 'Transactions (max 10):', value: transStr })
       .addFields({ name: 'Verified Reports Involved:', value: reportsCount })
       .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
       .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
