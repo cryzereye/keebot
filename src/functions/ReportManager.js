@@ -85,6 +85,12 @@ class ReportManager {
           ephemeral: true
         });
       }
+      if (reportedID === authorID){
+        return await interaction.reply({
+          content: `**Why are you reporting yourself?**`,
+          ephemeral: true
+        });
+      }
 
       const reportID = Report.fileNewReport(
         authorID,
