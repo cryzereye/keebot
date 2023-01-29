@@ -16,13 +16,7 @@ exports.savePostToFile = () => {
   }
 }
 
-exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate) => {
-  let bumpDate = new Date(postDate);
-  if (dev) // dev: 1 min bumps
-    bumpDate.setTime(bumpDate.getTime() + 60 * 1000);
-  else // prod: 8 hour bumps
-    bumpDate.setTime(bumpDate.getTime() + 8 * 60 * 60 * 1000);
-
+exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate, bumpDate, expiryDate) => {
   post[postID] = {
     postID: postID,
     newListID: [newListID],
@@ -33,6 +27,7 @@ exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate
     want: want,
     postDate: new Date(postDate).toString(),
     bumpDate: bumpDate.toString(),
+    expiryDate: expiryDate.toString(),
     sold: false,
     soldToID: "",
     soldDate: "",
@@ -124,4 +119,15 @@ exports.getChannelFromType = (type) => {
     case "sell": return channelsID.selling;
     case "trade": return channelsID.trading;
   }
+}
+
+
+/**
+ * sets post's expiry
+ * @param {String} postID 
+ * @param {DateString} expiryDate 
+ */
+exports.setExpiry = (postID, expiryDate) => {
+  post[postID].expiryDate = expiryDate;
+  this.savePostToFile();
 }
