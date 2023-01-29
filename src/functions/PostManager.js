@@ -88,7 +88,7 @@ class PostManager {
     const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, ch, newListContent);
 
     let bumpDate = util.addHours(postDate, 8 + Math.floor(Math.random() * 4)); // randoms 8-12 hours
-    let expiryDate = util.addHours(postDate, 8 * 24 * 30); // 30 days post expiry
+    let expiryDate = util.addHours(postDate, 8 * 24 * 60); // 60 days post expiry
 
     Post.new(
       message.id,
