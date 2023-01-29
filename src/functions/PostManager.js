@@ -1,9 +1,8 @@
-const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, Utils } = require('discord.js');
+const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const { relevant_roles, channelsID, me_id, dev, admins } = require('../json/config.json');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const { BumpManager } = require('./BumpManager');
-const util = require('../util/Utilities');
 
 class PostManager {
   constructor(client) {
@@ -38,27 +37,6 @@ class PostManager {
     let content = "";
     let newListContent = "";
     let msgURL = "";
-
-    switch(type){
-      case "sell": {
-        if(!util.isAmount(data.want)){
-          return {
-            posted: false,
-            url: "",
-            errorContent: "WANT should be numbers only"
-          };
-        }
-      }
-      case "buy": {
-        if(!util.isAmount(data.have)){
-          return {
-            posted: false,
-            url: "",
-            errorContent: "HAVE should be numbers only"
-          };
-        }
-      }
-    }
 
     // goes into buy/sell/trade channel
     content += `**Post by <@!${authorID}>**\n\n`;
@@ -138,7 +116,7 @@ class PostManager {
         }
       }
 
-      let modal = this.generateModal("edit", editPost.type, null, postID, editPost.have, editPost.want);
+      let modal = this.generateModal("edit", "", null, postID, editPost.have, editPost.want);
       if (modal)
         return {
           success: true,
@@ -179,27 +157,6 @@ class PostManager {
           newListingURL: "",
           errorContent: "Unable to fetch message from channel."
         };
-      }
-
-      switch (record.type){
-        case "sell": {
-          if(!util.isAmount(data.want)){
-            return {
-              posted: false,
-              url: "",
-              errorContent: "WANT should be numbers only"
-            };
-          }
-        }
-        case "buy": {
-          if(!util.isAmount(data.have)){
-            return {
-              posted: false,
-              url: "",
-              errorContent: "HAVE should be numbers only"
-            };
-          }
-        }
       }
 
       let content = postMsg.content.split('\n');
@@ -309,7 +266,7 @@ class PostManager {
         }
       }
 
-      let modal = this.generateModal("sold", soldPost.type, null, postID, soldPost.have, soldPost.want);
+      let modal = this.generateModal("sold", "", null, postID, soldPost.have, soldPost.want);
       if (modal)
         return {
           success: true,
@@ -414,7 +371,7 @@ class PostManager {
         }
       }
 
-      let modal = this.generateModal("delete", deletePost.type, null, postID, deletePost.have, deletePost.want);
+      let modal = this.generateModal("delete", "", null, postID, deletePost.have, deletePost.want);
       if (modal)
         return {
           success: true,
@@ -547,6 +504,7 @@ class PostManager {
       .setCustomId('have')
       .setLabel("Have")
       .setStyle(TextInputStyle.Short)
+      .setPlaceholder('H:')
       .setMaxLength(200)
       .setMinLength(1)
       .setRequired(true);
@@ -559,6 +517,7 @@ class PostManager {
       .setCustomId('want')
       .setLabel("Want")
       .setStyle(TextInputStyle.Short)
+      .setPlaceholder('W:')
       .setMaxLength(200)
       .setMinLength(1)
       .setRequired(true);
@@ -601,33 +560,10 @@ class PostManager {
 
   generateModal(mode, type, itemrole, postID, have, want) {
     let modal = new ModalBuilder();
-    let haveField = this.buildHaveField(have);
-    let wantField = this.buildWantField(want);
-
-    switch (type) {
-      case "sell": {
-        haveField.setPlaceholder("Item name");
-        wantField.setPlaceholder("Amount/Number digits only: 1234567890");
-        break;
-      }
-      case "buy": {
-        haveField.setPlaceholder("Amount/Number digits only: 1234567890");
-        wantField.setPlaceholder("Item name");
-        break;
-      }
-      case "trade": {
-        haveField.setPlaceholder("Item name, no cash only");
-        wantField.setPlaceholder("Item name, no cash only");
-        break;
-      }
-    }
-
     let components = [
-      new ActionRowBuilder().addComponents(haveField),
-      new ActionRowBuilder().addComponents(wantField),
+      new ActionRowBuilder().addComponents(this.buildHaveField(have)),
+      new ActionRowBuilder().addComponents(this.buildWantField(want)),
     ];
-
-
 
     if (mode == "new") {
       components.push(new ActionRowBuilder().addComponents(this.buildImgurField()));
