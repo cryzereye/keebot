@@ -4,7 +4,6 @@ const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const util = require('../util/Utilities');
 const { BumpManager } = require('./BumpManager');
-const util = require('../util/Utilities');
 
 class PostManager {
   constructor(client) {
@@ -112,6 +111,12 @@ class PostManager {
 
   async editPostModal(interaction, argPostID) {
     let postID = argPostID;
+
+    // idiot proof: when user edits a bump post, it refers to the original post
+    let origID = dUtil.getIdOfRepliedMsg(interaction.guild, interaction.channel.id, argPostID);
+    if (origID !== "")
+      postID = origID;
+
     if (postID == "")
       postID = interaction.options.getString('editid');
     let editPost = Post.get(postID);
@@ -283,6 +288,12 @@ class PostManager {
 
   async soldPostModal(interaction, argPostID) {
     let postID = argPostID;
+    
+    // idiot proof: when user marks a bump post as sold, it refers to the original post
+    let origID = dUtil.getIdOfRepliedMsg(interaction.guild, interaction.channel.id, argPostID);
+    if (origID !== "")
+      postID = origID;
+
     if (postID == "")
       postID = interaction.options.getString('soldid');
     let soldPost = Post.get(postID);
@@ -397,6 +408,12 @@ class PostManager {
 
   async deletePostModal(interaction, argPostID) {
     let postID = argPostID;
+    
+    // idiot proof: when user deletes a bump post, it refers to the original post
+    let origID = dUtil.getIdOfRepliedMsg(interaction.guild, interaction.channel.id, argPostID);
+    if (origID !== "")
+      postID = origID;
+
     if (postID == "")
       postID = interaction.options.getString('deleteid');
     let deletePost = Post.get(postID);

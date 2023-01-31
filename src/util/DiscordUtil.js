@@ -182,3 +182,18 @@ exports.postProcess = async (interaction, success, content, isModal, modal) => {
   }
   return false;
 }
+
+
+/**
+ * Returns the ID of the message to which msgid replied to
+ * @param {discord.js.Client} client 
+ * @param {Snowflake} guildID 
+ * @param {Snowflake} chid : Channel ID
+ * @param {Snowflake} msgid: Message ID
+ * @return {Snowflake}: ID of message replied to
+ */
+exports.getIdOfRepliedMsg = async(guild, chid, msgid) => {
+  let reply = this.getMessageFromID(guild, chid, msgid);
+  if(reply) return reply.interaction.id;
+  return "";
+}
