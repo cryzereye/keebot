@@ -48,6 +48,7 @@ class PostManager {
             errorContent: "WANT should be a valid amount"
           };
         }
+        break;
       }
       case "buy": {
         if(!util.isValidAmount(data.have)){
@@ -57,6 +58,7 @@ class PostManager {
             errorContent: "HAVE should be a valid amount"
           };
         }
+        break;
       }
     }
 
@@ -201,6 +203,7 @@ class PostManager {
               errorContent: "WANT should be a valid amount"
             };
           }
+          break;
         }
         case "buy": {
           if(!util.isValidAmount(data.have)){
@@ -210,6 +213,7 @@ class PostManager {
               errorContent: "HAVE should be a valid amount"
             };
           }
+          break;
         }
       }
 
