@@ -62,8 +62,14 @@ class BumpManager {
               while(true) {
                 let user = await dUtil.getUserFromID(this.client, currPost.authorID);
                 if(user){
-                  let expiryMsg = await user.send(`${url}\n\nLast bump done for the post above. This will be automatically marked as expired on ${currPost.expiryDate}`);
-                  if(expiryMsg) {
+                  let expiryMsg;
+                  try{
+                    expiryMsg = await user.send(`${url}\n\nLast bump done for the post above. This will be automatically marked as expired on ${currPost.expiryDate}`);
+                  }
+                  catch(e){
+                    console.log(e);
+                  }
+                  finally{
                     Post.expired(currPost.postID);
                     break;
                   }
