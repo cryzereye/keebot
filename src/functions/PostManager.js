@@ -91,6 +91,11 @@ class PostManager {
     let bumpDate = util.addHours(postDate, 8 + Math.floor(Math.random() * 4)); // randoms 8-12 hours
     let expiryDate = util.addHours(postDate, 8 * 24 * 60); // 60 days post expiry
 
+    if(dev){
+      bumpDate = util.addHours(postDate, Math.floor(Math.random() * 4)); // randoms 0-4 minutes
+      expiryDate = util.addHours(postDate, 20); // 20 minutes post expiry
+    }
+
     Post.new(
       message.id,
       newListMsg.id,

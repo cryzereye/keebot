@@ -33,7 +33,7 @@ exports.getTimeDiff = (target) => {
 exports.addHours = (start, hours) => {
   let date = new Date(start);
   if(dev)
-    date.setTime(date.getTime() + 60 * 1000); // 1 min. for test purposes
+    date.setTime(date.getTime() + hours * 60 * 1000); // x mins for test purposes
   else
     date.setTime(date.getTime() + hours * 60 * 60 * 1000); // hours * 1 hour
   return date.toString();
