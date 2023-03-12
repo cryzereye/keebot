@@ -48,8 +48,13 @@ class BumpManager {
           if (message) {
             let newBumpDate = util.addHours(Date.now(), 8 + (Math.random() * 4)); // randoms 8-12 hours
             if(dev)
-              newBumpDate = util.addHours(postDate, Math.floor(Math.random() * 4)); // randoms 0-4 minutes
+              newBumpDate = util.addHours(Date.now(), Math.floor(Math.random() * 4)); // randoms 0-4 minutes
             Post.bumped(currPost.postID, newBumpDate);
+
+            // add 60-day expiry date for bumped records without expiry date
+            if(!origPost.expiryDate)
+              Post.setExpiry(origPost, util.addHours(newBumpDate, 8 * 24 * 60)); // 60 days post expiry
+
             continue;
           }
           else this.queue.push(currPost) //retry
