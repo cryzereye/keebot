@@ -8,11 +8,11 @@ class CommandProcessor {
   constructor() { }
 
   async processCommand(interaction, scorer, rolegivermngr, reportmngr, postmngr) {
-    const { commandName, user } = interaction;
+    const { commandName, user, guild } = interaction;
     let fullName = `${user.username}#${user.discriminator}`;
     let interactionCHID = interaction.channel.id;
 
-    if (interactionCHID != channelsID.bot && !admins.includes(interaction.user.id)) return await interaction.reply(`Use commands in <#${channelsID.bot}>`);
+    if (interactionCHID != channelsID.bot && !dUtil.isMod(guild, user)) return await interaction.reply(`Use commands in <#${channelsID.bot}>`);
     switch (commandName) {
       case commands[0].name: {
         const target = interaction.options.getUser('user');
@@ -22,7 +22,7 @@ class CommandProcessor {
       }
       case commands[1].name: {
         console.log('Checking if admin...');
-        if (!admins.includes(user.id))
+        if (!dUtil.isMod(guild, user))
           return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
         console.log('Data extraction from #verify-transactions starting...');
         let extractor = new MessageExtractor();
@@ -75,7 +75,7 @@ class CommandProcessor {
   }
 
   async processReport(interaction, reportmngr) {
-    await reportmngr.processReport(interaction);
+    return await reportmngr.processReport(interaction);
   }
 
   /**

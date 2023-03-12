@@ -1,4 +1,4 @@
-const { channelsID } = require('../json/config.json');
+const { channelsID, modRole } = require('../json/config.json');
 
 /**
  * returns the GuildMember equivalent of ID given
@@ -196,4 +196,15 @@ exports.getIdOfRepliedMsg = async(guild, chid, msgid) => {
   let reply = this.getMessageFromID(guild, chid, msgid);
   if(reply) return reply.interaction.id;
   return "";
+}
+
+/**
+ * returns true if user is a mod of the guild
+ * @param {discord.js.Guild} guild 
+ * @param {discord.js.User} user 
+ * @returns {boolean}
+ */
+exports.isMod = async(guild, user) => {
+  let gm = await this.getGuildMemberfromID(user.id, guild).catch(console.error);
+  return this.guildMemberHasRole(gm, modRole);
 }

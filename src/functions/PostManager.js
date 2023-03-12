@@ -124,7 +124,7 @@ class PostManager {
     let editPost = Post.get(postID);
 
     if (editPost) {
-      if (editPost.authorID !== interaction.user.id || !admins.includes(interaction.user.id)) {
+      if (editPost.authorID !== interaction.user.id || !dUtil.isMod(guild, user)) {
         return {
           success: false,
           content: `Invalid! Make sure you are editing your own post. Pinging <@!${me_id}>`,
@@ -303,7 +303,7 @@ class PostManager {
     let soldPost = Post.get(postID);
 
     if (soldPost) {
-      if (soldPost.authorID !== interaction.user.id || !admins.includes(interaction.user.id)) {
+      if (soldPost.authorID !== interaction.user.id || !dUtil.isMod(guild, user)) {
         return {
           success: false,
           content: `Invalid! Make sure you are marking your own post as sold. Pinging <@!${me_id}>`,
@@ -423,7 +423,7 @@ class PostManager {
     let deletePost = Post.get(postID);
 
     if (deletePost) {
-      if (deletePost.authorID !== interaction.user.id || !admins.includes(interaction.user.id)) {
+      if (deletePost.authorID !== interaction.user.id || !dUtil.isMod(guild, user)) {
         return {
           success: false,
           content: `Invalid! Make sure you are deleting your own post. Pinging <@!${me_id}>`,
