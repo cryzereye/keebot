@@ -90,6 +90,8 @@ class Scorer {
         if (relevant_roles.includes(r.name))
           roles += `<@&${r.id}> `;
       });
+      
+      if(roles == "") roles = "**NO ROLES**";
 
       if (record == null) {
         record = {}
