@@ -22,7 +22,7 @@ class BumpManager {
 
         let currPost = this.queue.shift();
         if(!currPost) break;
-        console.log("Processing bump/expiry " + currPost.have);
+        console.log("Processing bump/expiry " + currPost.have + "/" + currPost.want);
 
         // preps to get the original post message from channel
         let channel = Post.getChannelFromType(currPost.type);
