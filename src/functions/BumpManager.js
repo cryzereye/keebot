@@ -18,9 +18,11 @@ class BumpManager {
 
       // loop for queue content
       while (true) {
+        const currDate = new Date();
+
         let currPost = this.queue.shift();
         if(!currPost) break;
-        console.log("Bumping " + currPost.have);
+        console.log("Processing bump/expiry " + currPost.have);
 
         // preps to get the original post message from channel
         let channel = Post.getChannelFromType(currPost.type);
@@ -32,9 +34,10 @@ class BumpManager {
 
         // if the original post message as fetched
         if (origPost) {
+          let url = Post.generateUrl(channel, currPost.postID);
 
           // expired post processing
-          if(currPost.expiryDate > Date.now()){
+          if(new Date(currPost.expiryDate) < currDate){
             while(true) {
               let user = await dUtil.getUserFromID(this.client, currPost.authorID);
               if(user){
@@ -53,11 +56,9 @@ class BumpManager {
                 }
               }
             }
-
           }
 
           // the actual bump process
-          let url = Post.generateUrl(channel, currPost.postID);
           let message = await origPost.reply({
             content: `Bumping this post\n\n${url}`,
             embeds: [this.getEmbed(origPost.mentions.users.at(0), currPost)]
