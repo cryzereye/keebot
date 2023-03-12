@@ -38,23 +38,9 @@ class BumpManager {
 
           // expired post processing
           if(new Date(currPost.expiryDate) < currDate){
-            while(true) {
-              let user = await dUtil.getUserFromID(this.client, currPost.authorID);
-              if(user){
-                let expiryMsg;
-                try{
-                  expiryMsg = await user.send(`${url}\n\nLast bump done for the post above. This will be automatically marked as expired on ${currPost.expiryDate}`);
-                }
-                catch(e){
-                  console.log(e);
-                }
-                finally{
-                  if(await this.spoilExpiredPost(origPost, currPost)){
-                    Post.expired(currPost.postID);
-                    break;
-                  }
-                }
-              }
+            if(await this.spoilExpiredPost(origPost, currPost)){
+              Post.expired(currPost.postID);
+              break;
             }
           }
 
@@ -73,10 +59,24 @@ class BumpManager {
 
             // add 60-day expiry date for bumped records without expiry date
             if(!currPost.expiryDate) {
-              if(dev) Post.setExpiry(currPost.postID, util.addHours(Date.now(), 15)); // 20 mins post expiry
+              if(dev) Post.setExpiry(currPost.postID, util.addHours(Date.now(), 10)); // 10 mins post expiry
               else Post.setExpiry(currPost.postID, util.addHours(newBumpDate, 8 * 24 * 60)); // 60 days post expiry
             }
 
+            // notifies post owner that the post will be expired soon
+            if(new Date(newBumpDate) > new Date(currPost.expiryDate)){
+              let user = await dUtil.getUserFromID(this.client, currPost.authorID);
+              if(user){
+                let expiryMsg;
+                try{
+                  expiryMsg = await user.send(`${url}\n\nLast bump done for the post above. This will be automatically marked as expired on ${currPost.expiryDate}`);
+                }
+                catch(e){
+                  console.log(e);
+                }
+              }
+            }
+            
             continue;
           }
           else this.queue.push(currPost) //retry

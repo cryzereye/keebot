@@ -92,7 +92,7 @@ class PostManager {
 
     if(dev){
       bumpDate = util.addHours(postDate, Math.floor(Math.random() * 4)); // randoms 0-4 minutes
-      expiryDate = util.addHours(postDate, 20); // 20 minutes post expiry
+      expiryDate = util.addHours(postDate, 10); // 10 minutes post expiry
     }
 
     Post.new(
