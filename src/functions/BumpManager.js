@@ -34,10 +34,26 @@ class BumpManager {
         if (origPost) {
 
           // expired post processing
-          if(currPost.expiryDate > Date.now()
-          && await this.spoilExpiredPost(origPost, currPost)){
-            Post.expired(currPost.postID);
-            continue;
+          if(currPost.expiryDate > Date.now()){
+            while(true) {
+              let user = await dUtil.getUserFromID(this.client, currPost.authorID);
+              if(user){
+                let expiryMsg;
+                try{
+                  expiryMsg = await user.send(`${url}\n\nLast bump done for the post above. This will be automatically marked as expired on ${currPost.expiryDate}`);
+                }
+                catch(e){
+                  console.log(e);
+                }
+                finally{
+                  if(await this.spoilExpiredPost(origPost, currPost)){
+                    Post.expired(currPost.postID);
+                    break;
+                  }
+                }
+              }
+            }
+
           }
 
           // the actual bump process
@@ -58,22 +74,6 @@ class BumpManager {
             if(!currPost.expiryDate) {
               if(dev) Post.setExpiry(currPost.postID, util.addHours(Date.now(), 15)); // 20 mins post expiry
               else Post.setExpiry(currPost.postID, util.addHours(newBumpDate, 8 * 24 * 60)); // 60 days post expiry
-            }
-
-            // expiry notification for the user
-            if(newBumpDate > currPost.expiryDate){
-              while(true) {
-                let user = await dUtil.getUserFromID(this.client, currPost.authorID);
-                if(user){
-                  let expiryMsg;
-                  try{
-                    expiryMsg = await user.send(`${url}\n\nLast bump done for the post above. This will be automatically marked as expired on ${currPost.expiryDate}`);
-                  }
-                  catch(e){
-                    console.log(e);
-                  }
-                }
-              }
             }
 
             continue;

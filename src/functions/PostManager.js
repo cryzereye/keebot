@@ -116,10 +116,11 @@ class PostManager {
   }
 
   async editPostModal(interaction, argPostID) {
+    let {guild, user} = interaction;
     let postID = argPostID;
 
     // idiot proof: when user edits a bump post, it refers to the original post
-    let origID = dUtil.getIdOfRepliedMsg(interaction.guild, interaction.channel.id, argPostID);
+    let origID = await dUtil.getIdOfRepliedMsg(interaction.guild, interaction.channel.id, argPostID);
     if (origID !== "")
       postID = origID;
 
@@ -224,8 +225,8 @@ class PostManager {
       let content = postMsg.content.split('\n');
       let newContent = "";
       let newListContent = "";
-      let haveEdited = (record.have == data.have);
-      let wantEdited = (record.want == data.want);
+      let haveEdited = (record.have !== data.have);
+      let wantEdited = (record.want !== data.want);
 
       content.map(line => {
         if (line.startsWith("HAVE: ") && !haveEdited)
@@ -249,8 +250,8 @@ class PostManager {
 
       newListContent += `**UPDATED <#${channelID}> post from <@!${authorID}>**\n`;
       
-      newListContent += "HAVE: " + (haveEdited ? `~~${record.have}~~`: "") + `${data.have}\n`;
-      newListContent += "WANT: " + (wantEdited ? `~~${record.want}~~`: "") + `${data.want}\n`;
+      newListContent += "HAVE: " + (haveEdited ? `~~${record.have}~~`: "") + ` ${data.have}\n`;
+      newListContent += "WANT: " + (wantEdited ? `~~${record.want}~~`: "") + ` ${data.want}\n`;
       newListContent += `${msgURL}`;
 
       let ch = channelsID.newListings;
@@ -294,10 +295,11 @@ class PostManager {
   }
 
   async soldPostModal(interaction, argPostID) {
+    let {guild, user} = interaction;
     let postID = argPostID;
     
     // idiot proof: when user marks a bump post as sold, it refers to the original post
-    let origID = dUtil.getIdOfRepliedMsg(interaction.guild, interaction.channel.id, argPostID);
+    let origID = await dUtil.getIdOfRepliedMsg(interaction.guild, interaction.channel.id, argPostID);
     if (origID !== "")
       postID = origID;
 
@@ -413,10 +415,11 @@ class PostManager {
   }
 
   async deletePostModal(interaction, argPostID) {
+    let {guild, user} = interaction;
     let postID = argPostID;
     
     // idiot proof: when user deletes a bump post, it refers to the original post
-    let origID = dUtil.getIdOfRepliedMsg(interaction.guild, interaction.channel.id, argPostID);
+    let origID = await dUtil.getIdOfRepliedMsg(interaction.guild, interaction.channel.id, argPostID);
     if (origID !== "")
       postID = origID;
 
