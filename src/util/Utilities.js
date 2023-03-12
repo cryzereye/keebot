@@ -49,20 +49,11 @@ exports.addHours = (start, hours) => {
 }
 
 /**
- * returns true if str is a digit string 
+ * returns true if str is a digit string sandwiched in words
  * @param {String} str 
  * @returns {Boolean}
  */
-exports.isAmount = (str) => {
-  let regexp = /^\d+$/i; 
-  return regexp.match(str);
-}
-
-/**
- * returns true if the str contains a word included in the blacklist of words in config
- * @param {String} str 
- * @returns {Boolean}
- */
-exports.isBlacklistedWord = (str) => {
-  return blacklisted_words.includes(str.toLowerCase());
+exports.isValidAmount = (str) => {
+  let regexp = /\w*\d+\w*/gi; 
+  return regexp.test(str);
 }

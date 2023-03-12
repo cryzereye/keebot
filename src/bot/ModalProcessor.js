@@ -23,6 +23,7 @@ class ModalProcessor {
     const type = interaction.customId.replace("PostModal", "");
     const fields = interaction.fields.fields;
     let data = {};
+    let postResult;
 
     const roleID = fields.keys().next().value;
     if (roleID && roleID != "have")

@@ -41,20 +41,20 @@ class PostManager {
 
     switch(type){
       case "sell": {
-        if(!util.isAmount(data.want)){
+        if(!util.isValidAmount(data.want)){
           return {
             posted: false,
             url: "",
-            errorContent: "WANT should be numbers only"
+            errorContent: "WANT should be a valid amount"
           };
         }
       }
       case "buy": {
-        if(!util.isAmount(data.have)){
+        if(!util.isValidAmount(data.have)){
           return {
             posted: false,
             url: "",
-            errorContent: "HAVE should be numbers only"
+            errorContent: "HAVE should be a valid amount"
           };
         }
       }
@@ -194,20 +194,20 @@ class PostManager {
 
       switch (record.type){
         case "sell": {
-          if(!util.isAmount(data.want)){
+          if(!util.isValidAmount(data.want)){
             return {
               posted: false,
               url: "",
-              errorContent: "WANT should be numbers only"
+              errorContent: "WANT should be a valid amount"
             };
           }
         }
         case "buy": {
-          if(!util.isAmount(data.have)){
+          if(!util.isValidAmount(data.have)){
             return {
               posted: false,
               url: "",
-              errorContent: "HAVE should be numbers only"
+              errorContent: "HAVE should be a valid amount"
             };
           }
         }
