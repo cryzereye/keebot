@@ -208,3 +208,13 @@ exports.isMod = async(guild, user) => {
   let gm = await this.getGuildMemberfromID(user.id, guild).catch(console.error);
   return this.guildMemberHasRole(gm, modRole);
 }
+
+/**
+ * returns the User instance of using ID
+ * @param {Discord.js.Client} client 
+ * @param {Snowflake} userID 
+ * @returns {Discord.js.User}
+ */
+exports.getUserFromID = async(client, userID) => {
+  return await client.users.fetch(userID);
+}

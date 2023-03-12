@@ -52,8 +52,24 @@ class BumpManager {
             Post.bumped(currPost.postID, newBumpDate);
 
             // add 60-day expiry date for bumped records without expiry date
-            if(!origPost.expiryDate)
-              Post.setExpiry(currPost.postID, util.addHours(newBumpDate, 8 * 24 * 60)); // 60 days post expiry
+            if(!currPost.expiryDate) {
+              if(dev) Post.setExpiry(currPost.postID, util.addHours(Date.now(), 15)); // 20 mins post expiry
+              else Post.setExpiry(currPost.postID, util.addHours(newBumpDate, 8 * 24 * 60)); // 60 days post expiry
+            }
+
+            // expiry notification for the user
+            if(newBumpDate > currPost.expiryDate){
+              while(true) {
+                let user = await dUtil.getUserFromID(this.client, currPost.authorID);
+                if(user){
+                  let expiryMsg = await user.send(`${url}\n\nLast bump done for the post above. This will be automatically marked as expired on ${currPost.expiryDate}`);
+                  if(expiryMsg) {
+                    Post.expired(currPost.postID);
+                    break;
+                  }
+                }
+              }
+            }
 
             continue;
           }

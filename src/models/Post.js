@@ -31,7 +31,8 @@ exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate
     sold: false,
     soldToID: "",
     soldDate: "",
-    deleted: false
+    deleted: false,
+    expired: false
   };
   this.savePostToFile();
 }
@@ -44,7 +45,7 @@ exports.getAllNeedsBump = () => {
   let postArr = Object.values(post);
   const currDate = new Date();
 
-  return postArr.filter(post => !post.sold && !post.deleted && new Date(post.bumpDate) < currDate);
+  return postArr.filter(post => !post.sold && !post.deleted && !post.expired && new Date(post.bumpDate) < currDate);
 }
 
 exports.edit = (postID, have, want, editDate, newListingID) => {
@@ -69,6 +70,25 @@ exports.delete = (postID, deleteDate) => {
 
 exports.bumped = (postID, bumpDate) => {
   post[postID].bumpDate = bumpDate;
+  this.savePostToFile();
+}
+
+/**
+ * sets post's expiry date
+ * @param {String} postID 
+ * @param {DateString} expiryDate 
+ */
+exports.setExpiry = (postID, expiryDate) => {
+  post[postID].expiryDate = expiryDate;
+  this.savePostToFile();
+}
+
+/**
+ * Marks a post as expired
+ * @param {Snowflake} postID 
+ */
+exports.expired = (postID) => {
+  post[postID].expired = true;
   this.savePostToFile();
 }
 
@@ -118,15 +138,4 @@ exports.getChannelFromType = (type) => {
     case "sell": return channelsID.selling;
     case "trade": return channelsID.trading;
   }
-}
-
-
-/**
- * sets post's expiry
- * @param {String} postID 
- * @param {DateString} expiryDate 
- */
-exports.setExpiry = (postID, expiryDate) => {
-  post[postID].expiryDate = expiryDate;
-  this.savePostToFile();
 }
