@@ -53,7 +53,7 @@ class BumpManager {
 
             // add 60-day expiry date for bumped records without expiry date
             if(!origPost.expiryDate)
-              Post.setExpiry(origPost, util.addHours(newBumpDate, 8 * 24 * 60)); // 60 days post expiry
+              Post.setExpiry(currPost.postID, util.addHours(newBumpDate, 8 * 24 * 60)); // 60 days post expiry
 
             continue;
           }
