@@ -32,8 +32,11 @@ class BumpManager {
 
         // if the original post message as fetched
         if (origPost) {
-          if(currPost.expiryDate > Date.now()) {
-            Post.delete(currPost.postID, Date.now().toString());
+
+          // expired post processing
+          if(currPost.expiryDate > Date.now()
+          && await this.spoilExpiredPost(origPost, currPost)){
+            Post.expired(currPost.postID);
             continue;
           }
 
@@ -69,10 +72,6 @@ class BumpManager {
                   catch(e){
                     console.log(e);
                   }
-                  finally{
-                    Post.expired(currPost.postID);
-                    break;
-                  }
                 }
               }
             }
@@ -106,6 +105,21 @@ class BumpManager {
       .setThumbnail(`${avatarURL}`);
 
     return embedBuilder;
+  }
+
+  /**
+   * marks all posts and related items as spoilers
+   * @param {Discord.js.TextMessage} origPost 
+   * @param {Snowflake} currPost 
+   * @returns {Boolean} true
+   */
+  async spoilExpiredPost(origPost, currPost){
+    await origPost.edit(`||${origPost.content}||`).catch(console.error);
+    currPost.newListID.map(async (x) => {
+      let ch = channelsID.newListings;
+      await dUtil.makeMessageSpoiler(origPost.client, origPost.guild.id, ch, x);
+    });
+    return true;
   }
 }
 
