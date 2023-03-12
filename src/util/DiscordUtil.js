@@ -1,5 +1,4 @@
 const { channelsID, modRole } = require('../json/config.json');
-const { MessageType} = require('discord-api-types/v9');
 
 /**
  * returns the GuildMember equivalent of ID given
@@ -195,8 +194,8 @@ exports.postProcess = async (interaction, success, content, isModal, modal) => {
  */
 exports.getIdOfRepliedMsg = async(guild, chid, msgid) => {
   let reply = await this.getMessageFromID(guild, chid, msgid);
-  if(reply && reply.type === MessageType.REPLY)
-    return reply.interaction.id;
+  if(reply && reply.type == 19)
+    return reply.reference.messageId;
   return "";
 }
 
