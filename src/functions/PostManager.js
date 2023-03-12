@@ -634,11 +634,11 @@ class PostManager {
     switch (type) {
       case "sell": {
         haveField.setPlaceholder("Item name");
-        wantField.setPlaceholder("Amount/Number digits only: 1234567890");
+        wantField.setPlaceholder("Enter the actual amount");
         break;
       }
       case "buy": {
-        haveField.setPlaceholder("Amount/Number digits only: 1234567890");
+        haveField.setPlaceholder("Enter the actual amount");
         wantField.setPlaceholder("Item name");
         break;
       }
