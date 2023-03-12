@@ -85,7 +85,6 @@ class PostManager {
     newListContent += `${msgURL}`;
 
     let ch = channelsID.newListings;
-    if (dev) ch = channelsID.test;
     const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, ch, newListContent);
 
     let bumpDate = util.addHours(postDate, 8 + Math.floor(Math.random() * 4)); // randoms 8-12 hours
@@ -255,7 +254,6 @@ class PostManager {
       newListContent += `${msgURL}`;
 
       let ch = channelsID.newListings;
-      if (dev) ch = channelsID.test;
       const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, ch, newListContent).catch(console.error);
 
       if (newListMsg) {
@@ -396,7 +394,6 @@ class PostManager {
 
       record.newListID.map(async (x) => {
         let ch = channelsID.newListings;
-        if (dev) ch = channelsID.test;
         await dUtil.makeMessageSpoiler(guild.client, guild.id, ch, x);
       });
 
@@ -505,7 +502,6 @@ class PostManager {
 
       record.newListID.map(async (x) => {
         let ch = channelsID.newListings;
-        if (dev) ch = channelsID.test;
         await dUtil.makeMessageSpoiler(guild.client, guild.id, ch, x);
       });
 

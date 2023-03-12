@@ -1,4 +1,4 @@
-const { dev, blacklisted_words } = require('../json/config.json');
+const { dev } = require('../json/config.json');
 /**
  * from: https://www.codegrepper.com/code-examples/javascript/node+js+time+difference+in+hours
  * returns time difference from now to target
