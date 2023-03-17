@@ -51,12 +51,9 @@ class CommandProcessor {
     const statsHelp = `/stats <optional user>: see your stats or your target user's stats`;
     const reportsHelp = `/report file <user> <category> <summary>: file a report regarding a transaction incident within Keebisoria`;
     const postNewHelp = `/post new <buy/sell/trade> <optional item role>: lets you create a new buy/sell/trade post. If item role is entered, there will be an item role ping for you listing upon creation. **Note** that the ID that will be given afterwards is your reference ID for your post`;
-    const postEditHelp = `/post edit <editid>: lets you edit the post that corresponds to the given ID. You can also do 'Right-click > Apps > Edit post' on your target post`;
-    const postSoldHelp = `/post sold <soldid>: will mark the post that corresponds to the given ID as sold. You can also do 'Right-click > Apps > Mark as sold' on your target post`;
-    const postDeleteHelp = `/post delete <deleteid>: will delete the post that corresponds to the given ID. You can also do 'Right-click > Apps > Delete post' on your target post`;
     const postListHelp = `/post list <optional user> <optional item role>: Lets you see your own posts list. You can also add <user> to see the posts of the target user, or add <item role> to see items under the given item role. Both can be used at the same time.`;
     const extractHelp = `For admin use only`;
-    const bugsHelp = `Please DM <@${me_id}>`;
+    const bugsHelp = `DM <@${me_id}>`;
     const embedBuilder = new EmbedBuilder()
       .setColor("DEFAULT")
       .setTitle(`Help | ${username}`)
