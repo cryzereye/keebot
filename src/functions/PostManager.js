@@ -488,6 +488,15 @@ class PostManager {
         };
       }
 
+      const deletedPostMsg = await dUtil.sendMessageToChannel(guild.client, guild.idm, channelsID.deletedPost, `<@${record.authorID} deleted ${record.postID}\n\n${postMsg.content}`);
+      if(!deletedPostMsg){
+        return {
+          deleted: false,
+          url: "",
+          errorContent: "Unable to delete post message"
+        };
+      }
+
       const message = await postMsg.delete().catch(console.error);
       if (!message) {
         return {
