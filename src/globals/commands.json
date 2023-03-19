@@ -127,45 +127,6 @@
                     ]
                 },
                 {
-                    "name": "edit",
-                    "type": 1,
-                    "description": "Edit post",
-                    "options": [
-                        {
-                            "name": "editid",
-                            "description": "Post ID",
-                            "type": 3,
-                            "required": true
-                        }
-                    ]
-                },
-                {
-                    "name": "delete",
-                    "type": 1,
-                    "description": "Delete post",
-                    "options": [
-                        {
-                            "name": "deleteid",
-                            "description": "Post ID",
-                            "type": 3,
-                            "required": true
-                        }
-                    ]
-                },
-                {
-                    "name": "sold",
-                    "type": 1,
-                    "description": "Mark post as sold",
-                    "options": [
-                        {
-                            "name": "soldid",
-                            "description": "Post ID",
-                            "type": 3,
-                            "required": true
-                        }
-                    ]
-                },
-                {
                     "name": "list",
                     "type": 1,
                     "description": "List posts of current user. Can be targeted to the specified user or item role.",

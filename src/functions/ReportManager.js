@@ -10,6 +10,7 @@ class ReportManager {
   }
 
   async processReport(interaction) {
+    const {guild, user} = interaction;
     const reportType = interaction.options.getSubcommand(false);
     const author = interaction.user;
     const authorName = author.username + "#" + author.discriminator;
@@ -36,7 +37,7 @@ class ReportManager {
       }
       case "verify": {
         let reply = "";
-        if (!(admins.includes(author.id.toString()))) {
+        if (!(dUtil.isMod(guild, user))) {
           reply = `**${authorName} not authorized to verify reports!**`;
         }
         else {
@@ -82,6 +83,12 @@ class ReportManager {
       if (reportedID === this.client.user.id) {
         return await interaction.reply({
           content: `**Invalid report!** Refer to the original post. Not on the bumps`,
+          ephemeral: true
+        });
+      }
+      if (reportedID === authorID){
+        return await interaction.reply({
+          content: `**Why are you reporting yourself?**`,
           ephemeral: true
         });
       }
