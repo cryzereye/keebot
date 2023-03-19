@@ -69,8 +69,16 @@ exports.getGuildFromID = async (client, guildID) => {
  * @returns {discord.js.Channel}
  */
 exports.getChannelFromID = async (guild, channelID) => {
-  return await guild.channels.cache.get(channelID) ||
-    await guild.channels.fetch(channelID).catch(console.error);
+  let channel;
+  try {
+    channel = await guild.channels.cache.get(channelID);
+  }
+  catch (e) {
+    channel = await guild.channels.fetch(channelID).catch(console.error);
+  }
+  finally {
+    return channel;
+  }
 }
 
 /**

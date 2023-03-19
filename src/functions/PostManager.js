@@ -488,7 +488,7 @@ class PostManager {
         };
       }
 
-      const deletedPostMsg = await dUtil.sendMessageToChannel(guild.client, guild.idm, channelsID.deletedPost, `<@${record.authorID} deleted ${record.postID}\n\n${postMsg.content}`);
+      const deletedPostMsg = await dUtil.sendMessageToChannel(guild.client, guild.id, channelsID.deletedPost, `<@${record.authorID}> deleted ${record.postID}\n\n${postMsg.content}`);
       if(!deletedPostMsg){
         return {
           deleted: false,
