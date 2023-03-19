@@ -8,11 +8,11 @@ class CommandProcessor {
   constructor() { }
 
   async processCommand(interaction, scorer, rolegivermngr, reportmngr, postmngr) {
-    const { commandName, user } = interaction;
+    const { commandName, user, guild } = interaction;
     let fullName = `${user.username}#${user.discriminator}`;
     let interactionCHID = interaction.channel.id;
 
-    if (interactionCHID != channelsID.bot && !admins.includes(interaction.user.id)) return await interaction.reply(`Use commands in <#${channelsID.bot}>`);
+    if (interactionCHID != channelsID.bot && !dUtil.isMod(guild, user)) return await interaction.reply(`Use commands in <#${channelsID.bot}>`);
     switch (commandName) {
       case commands[0].name: {
         const target = interaction.options.getUser('user');
@@ -22,7 +22,7 @@ class CommandProcessor {
       }
       case commands[1].name: {
         console.log('Checking if admin...');
-        if (!admins.includes(user.id))
+        if (!dUtil.isMod(guild, user))
           return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
         console.log('Data extraction from #verify-transactions starting...');
         let extractor = new MessageExtractor();
@@ -51,12 +51,9 @@ class CommandProcessor {
     const statsHelp = `/stats <optional user>: see your stats or your target user's stats`;
     const reportsHelp = `/report file <user> <category> <summary>: file a report regarding a transaction incident within Keebisoria`;
     const postNewHelp = `/post new <buy/sell/trade> <optional item role>: lets you create a new buy/sell/trade post. If item role is entered, there will be an item role ping for you listing upon creation. **Note** that the ID that will be given afterwards is your reference ID for your post`;
-    const postEditHelp = `/post edit <editid>: lets you edit the post that corresponds to the given ID. You can also do 'Right-click > Apps > Edit post' on your target post`;
-    const postSoldHelp = `/post sold <soldid>: will mark the post that corresponds to the given ID as sold. You can also do 'Right-click > Apps > Mark as sold' on your target post`;
-    const postDeleteHelp = `/post delete <deleteid>: will delete the post that corresponds to the given ID. You can also do 'Right-click > Apps > Delete post' on your target post`;
     const postListHelp = `/post list <optional user> <optional item role>: Lets you see your own posts list. You can also add <user> to see the posts of the target user, or add <item role> to see items under the given item role. Both can be used at the same time.`;
     const extractHelp = `For admin use only`;
-    const bugsHelp = `Please DM <@${me_id}>`;
+    const bugsHelp = `DM <@${me_id}>`;
     const embedBuilder = new EmbedBuilder()
       .setColor("DEFAULT")
       .setTitle(`Help | ${username}`)
@@ -64,9 +61,6 @@ class CommandProcessor {
       .addFields({ name: '/stats:', value: statsHelp })
       .addFields({ name: '/report file:', value: reportsHelp })
       .addFields({ name: '/post new:', value: postNewHelp })
-      .addFields({ name: '/post edit:', value: postEditHelp })
-      .addFields({ name: '/post sold:', value: postSoldHelp })
-      .addFields({ name: '/post delete:', value: postDeleteHelp })
       .addFields({ name: '/post list:', value: postListHelp })
       .addFields({ name: '/extract:', value: extractHelp })
       .addFields({ name: 'For bugs and data in accuracies', value: bugsHelp });
@@ -75,7 +69,7 @@ class CommandProcessor {
   }
 
   async processReport(interaction, reportmngr) {
-    await reportmngr.processReport(interaction);
+    return await reportmngr.processReport(interaction);
   }
 
   /**
