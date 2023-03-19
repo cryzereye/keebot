@@ -4,10 +4,15 @@ class MessageExtractor {
   async extractAllMessages(channel, scorer, rolegivermngr){
     let count = 0;
     let hasMoreMessages = true;
-    let lastMessageID = channel.lastMessageId;
+    let lastMessageID;
     scorer.clearScores();
     while(hasMoreMessages) {
-      await channel.messages.fetch({ limit: 100, before: lastMessageID }).then(msglist => {
+
+      // from https://stackoverflow.com/questions/55153125/fetch-more-than-100-messages
+      let options = { limit: 100 };
+      if(lastMessageID) options.before = lastMessageID;
+
+      await channel.messages.fetch(options).then(msglist => {
         let owner;
         msglist.forEach(msg =>{
           try {

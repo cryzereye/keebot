@@ -1,4 +1,4 @@
-const { channelsID } = require('../json/config.json');
+const { channelsID, modRole } = require('../json/config.json');
 
 /**
  * returns the GuildMember equivalent of ID given
@@ -69,8 +69,16 @@ exports.getGuildFromID = async (client, guildID) => {
  * @returns {discord.js.Channel}
  */
 exports.getChannelFromID = async (guild, channelID) => {
-  return await guild.channels.cache.get(channelID) ||
-    await guild.channels.fetch(channelID).catch(console.error);
+  let channel;
+  try {
+    channel = await guild.channels.cache.get(channelID);
+  }
+  catch (e) {
+    channel = await guild.channels.fetch(channelID).catch(console.error);
+  }
+  finally {
+    return channel;
+  }
 }
 
 /**
@@ -181,4 +189,41 @@ exports.postProcess = async (interaction, success, content, isModal, modal) => {
     if (response) return true;
   }
   return false;
+}
+
+
+/**
+ * Returns the ID of the message to which msgid replied to
+ * @param {discord.js.Client} client 
+ * @param {Snowflake} guildID 
+ * @param {Snowflake} chid : Channel ID
+ * @param {Snowflake} msgid: Message ID
+ * @return {Snowflake}: ID of message replied to
+ */
+exports.getIdOfRepliedMsg = async(guild, chid, msgid) => {
+  let reply = await this.getMessageFromID(guild, chid, msgid);
+  if(reply && reply.type == 19)
+    return reply.reference.messageId;
+  return "";
+}
+
+/**
+ * returns true if user is a mod of the guild
+ * @param {discord.js.Guild} guild 
+ * @param {discord.js.User} user 
+ * @returns {boolean}
+ */
+exports.isMod = async(guild, user) => {
+  let gm = await this.getGuildMemberfromID(user.id, guild).catch(console.error);
+  return this.guildMemberHasRole(gm, modRole);
+}
+
+/**
+ * returns the User instance of using ID
+ * @param {Discord.js.Client} client 
+ * @param {Snowflake} userID 
+ * @returns {Discord.js.User}
+ */
+exports.getUserFromID = async(client, userID) => {
+  return await client.users.fetch(userID);
 }
