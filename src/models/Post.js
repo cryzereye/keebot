@@ -16,13 +16,7 @@ exports.savePostToFile = () => {
   }
 }
 
-exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate) => {
-  let bumpDate = new Date(postDate);
-  if (dev) // dev: 1 min bumps
-    bumpDate.setTime(bumpDate.getTime() + 60 * 1000);
-  else // prod: 8 hour bumps
-    bumpDate.setTime(bumpDate.getTime() + 8 * 60 * 60 * 1000);
-
+exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate, bumpDate, expiryDate) => {
   post[postID] = {
     postID: postID,
     newListID: [newListID],
@@ -33,10 +27,12 @@ exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate
     want: want,
     postDate: new Date(postDate).toString(),
     bumpDate: bumpDate.toString(),
+    expiryDate: expiryDate.toString(),
     sold: false,
     soldToID: "",
     soldDate: "",
-    deleted: false
+    deleted: false,
+    expired: false
   };
   this.savePostToFile();
 }
@@ -49,7 +45,7 @@ exports.getAllNeedsBump = () => {
   let postArr = Object.values(post);
   const currDate = new Date();
 
-  return postArr.filter(post => !post.sold && !post.deleted && new Date(post.bumpDate) < currDate);
+  return postArr.filter(post => !post.sold && !post.deleted && !post.expired && new Date(post.bumpDate) < currDate);
 }
 
 exports.edit = (postID, have, want, editDate, newListingID) => {
@@ -74,6 +70,25 @@ exports.delete = (postID, deleteDate) => {
 
 exports.bumped = (postID, bumpDate) => {
   post[postID].bumpDate = bumpDate;
+  this.savePostToFile();
+}
+
+/**
+ * sets post's expiry date
+ * @param {String} postID 
+ * @param {DateString} expiryDate 
+ */
+exports.setExpiry = (postID, expiryDate) => {
+  post[postID].expiryDate = expiryDate;
+  this.savePostToFile();
+}
+
+/**
+ * Marks a post as expired
+ * @param {Snowflake} postID 
+ */
+exports.expired = (postID) => {
+  post[postID].expired = true;
   this.savePostToFile();
 }
 
@@ -118,7 +133,6 @@ exports.generateUrl = (chid, msgid) => {
  * @returns {String} channel ID
  */
 exports.getChannelFromType = (type) => {
-  if (dev) return channelsID.test;
   switch (type) {
     case "buy": return channelsID.buying;
     case "sell": return channelsID.selling;

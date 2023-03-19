@@ -24,7 +24,12 @@ class MessageExtractor {
 
     await dbmngr.deleteAllVouch();
     while(hasMoreMessages) {
-      await channel.messages.fetch({ limit: 100, before: lastMessageID }).then(msglist => {
+
+      // from https://stackoverflow.com/questions/55153125/fetch-more-than-100-messages
+      let options = { limit: 100 };
+      if(lastMessageID) options.before = lastMessageID;
+
+      await channel.messages.fetch(options).then(msglist => {
         let owner;
         msglist.forEach(msg =>{
           try {
