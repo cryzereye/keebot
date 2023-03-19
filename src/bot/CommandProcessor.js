@@ -61,9 +61,6 @@ class CommandProcessor {
       .addFields({ name: '/stats:', value: statsHelp })
       .addFields({ name: '/report file:', value: reportsHelp })
       .addFields({ name: '/post new:', value: postNewHelp })
-      .addFields({ name: '/post edit:', value: postEditHelp })
-      .addFields({ name: '/post sold:', value: postSoldHelp })
-      .addFields({ name: '/post delete:', value: postDeleteHelp })
       .addFields({ name: '/post list:', value: postListHelp })
       .addFields({ name: '/extract:', value: extractHelp })
       .addFields({ name: 'For bugs and data in accuracies', value: bugsHelp });
