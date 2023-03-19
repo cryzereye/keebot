@@ -97,16 +97,16 @@ exports.list = (authorID, itemrole) => {
   let matchedAuthorID;
   let matchedItemRole;
   Object.keys(post).map(x => {
-    if (post[x].sold || post[x].deleted) return;
+    if (post[x].sold || post[x].deleted || post[x].expired) return;
     matchedAuthorID = true;
     matchedItemRole = true;
 
-    if (authorID != null) {
+    if (authorID) {
       if (post[x].authorID === authorID) matchedAuthorID = true;
       else matchedAuthorID = false;
     }
 
-    if (itemrole != null) {
+    if (itemrole) {
       if (post[x].itemrole === itemrole) matchedItemRole = true;
       else matchedItemRole = false;
     }
