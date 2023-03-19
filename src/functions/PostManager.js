@@ -543,7 +543,6 @@ class PostManager {
     if (authorID === "" && itemroleID === "") {
       authorID == interaction.user.id;
     }
-
     let records = Post.list(authorID, itemroleID);
     let content = "";
     let channel;
