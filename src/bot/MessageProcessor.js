@@ -1,4 +1,4 @@
-const { dev, me_id, command_sign, channelsID } = require('../json/config.json');
+const { dev, me_id, command_sign, channelsID, discord_id } = require('../json/config.json');
 class MessageProcessor {
   constructor() { }
 
@@ -9,7 +9,12 @@ class MessageProcessor {
     let authorName = message.author.username + '#' + message.author.discriminator;
     let messageCHID = message.channel.id;
     let currentlyTesting = (messageCHID == channelsID.test && dev);
-    if(message.content.startsWith(command_sign)){
+    if(this.isMarketChannel(messageCHID) && authorID !== discord_id){
+      return message.delete()
+            .then(console.log(`Deleted message from ${authorID}`))
+            .catch(console.error);
+    }
+    else if(message.content.startsWith(command_sign)){
       return await message.reply("```Slash commands are now implemented! Please use /help for more details```");
     }
     else if (messageCHID == channelsID.verify && !dev || currentlyTesting) { // only for vouch channel
@@ -34,6 +39,11 @@ class MessageProcessor {
       if (!dev)
         rolegivermngr.roleCheck(scorer.getScore(authorID), message);
     }
+  }
+
+  isMarketChannel(channel){
+    let marketChannels = [channelsID.selling, channelsID.buying, channelsID.trading];
+    return (marketChannels.includes(channel));
   }
 }
 
