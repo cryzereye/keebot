@@ -556,11 +556,11 @@ class PostManager {
       }
     }
 
-    // now returns first 10 items only
-    records = records.slice(0, 10);
     records.map(x => {
       channel = Post.getChannelFromType(x.type);
-      content += `<#${channel}> ${x.postID}\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\n\n`;
+      let newContent = `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\nExpires ${x.expiryDate}\n\n`;
+      if(content.length + newContent.length <= 2000)
+        content += newContent;
     });
 
     return {
