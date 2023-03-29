@@ -558,7 +558,7 @@ class PostManager {
 
     records.map(x => {
       channel = Post.getChannelFromType(x.type);
-      let newContent = `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\n$Expires {x.expiryDate}\n\n`;
+      let newContent = `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\nExpires ${x.expiryDate}\n\n`;
       if(content.length + newContent.length <= 2000)
         content += newContent;
     });
