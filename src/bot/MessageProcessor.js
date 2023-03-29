@@ -1,4 +1,4 @@
-const { dev, me_id, command_sign, channelsID } = require('../json/config.json');
+const { dev, me_id, command_sign, channelsID, discord_id } = require('../json/config.json');
 class MessageProcessor {
   constructor(dbmngr) {
     this.dbmngr = dbmngr;
