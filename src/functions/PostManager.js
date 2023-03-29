@@ -560,7 +560,7 @@ class PostManager {
     records = records.slice(0, 10);
     records.map(x => {
       channel = Post.getChannelFromType(x.type);
-      content += `<#${channel}> ${x.postID}\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\n\n`;
+      content += `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\n\n`;
     });
 
     return {
