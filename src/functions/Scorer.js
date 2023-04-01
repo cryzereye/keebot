@@ -160,7 +160,7 @@ class Scorer {
    */
   generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration) {
     const embedBuilder = new EmbedBuilder()
-      .setColor("DEFAULT")
+      .setColor("DarkAqua")
       .setTitle(`${points} Points`)
       .setAuthor({
         name: fullName,

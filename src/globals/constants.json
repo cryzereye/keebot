@@ -1,0 +1,28 @@
+{
+    "constants": {
+        "selfReport_success" : {
+            "success": false,
+            "content": "Self-reported",
+            "isModal": false,
+            "modal": null
+          },
+          "selfReport_fail" : {
+            "success": false,
+            "content": "Already self-reported",
+            "isModal": false,
+            "modal": null
+          },
+        "postReport_success" : {
+            "success": true,
+            "content": "Post reported",
+            "isModal": false,
+            "modal": null
+        },
+        "postReport_fail" : {
+            "success": true,
+            "content": "Post already reported",
+            "isModal": false,
+            "modal": null
+          }
+    }
+}
