@@ -165,10 +165,13 @@ exports.postProcess = async (interaction, success, content, isModal, modal) => {
     await interaction.showModal(modal).catch(console.error);
   }
   else {
-    await interaction.reply({
-      content: content,
-      ephemeral: true
-    });
+    try{
+      await interaction.reply({
+        content: content,
+        ephemeral: true
+      });
+    }
+    catch(e){}
   }
 }
 
