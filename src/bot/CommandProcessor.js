@@ -55,7 +55,7 @@ class CommandProcessor {
     const extractHelp = `For admin use only`;
     const bugsHelp = `DM <@${me_id}>`;
     const embedBuilder = new EmbedBuilder()
-      .setColor("DEFAULT")
+      .setColor("Default")
       .setTitle(`Help | ${username}`)
       .addFields({ name: '#verify-transaction:', value: verifyHelp })
       .addFields({ name: '/stats:', value: statsHelp })
