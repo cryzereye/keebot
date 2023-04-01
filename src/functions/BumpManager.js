@@ -97,7 +97,7 @@ class BumpManager {
     const avatarURL = user.displayAvatarURL();
 
     const embedBuilder = new EmbedBuilder()
-      .setColor("DEFAULT")
+      .setColor("Default")
       .setAuthor({
         name: authorName,
         iconUrl: `${avatarURL}`
