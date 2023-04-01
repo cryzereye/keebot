@@ -142,6 +142,26 @@
                             "description": "Role ping for items",
                             "type": 8,
                             "required": false
+                        },
+                        {
+                            "name": "type",
+                            "description": "Post type",
+                            "type": 3,
+                            "required": false,
+                            "choices": [
+                                {
+                                    "name": "Buy",
+                                    "value": "buy"
+                                },
+                                {
+                                    "name": "Sell",
+                                    "value": "sell"
+                                },
+                                {
+                                    "name": "Trade",
+                                    "value": "trade"
+                                }
+                            ]
                         }
                     ]
                 }

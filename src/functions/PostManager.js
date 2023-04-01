@@ -535,6 +535,7 @@ class PostManager {
   async listPost(interaction) {
     const author = interaction.options.getUser("user");
     const itemrole = interaction.options.getRole("listitemrole");
+    const type = interaction.options.getString("type");
     let authorID = "";
     let itemroleID = "";
     if (author) authorID = author.id;
@@ -543,7 +544,7 @@ class PostManager {
     if (authorID == "" && itemroleID == "") {
       authorID = interaction.user.id;
     }
-    let records = Post.list(authorID, itemroleID);
+    let records = Post.list(authorID, itemroleID, type);
     let content = "";
     let channel;
 
