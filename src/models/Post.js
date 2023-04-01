@@ -92,14 +92,16 @@ exports.expired = (postID) => {
   this.savePostToFile();
 }
 
-exports.list = (authorID, itemrole) => {
+exports.list = (authorID, itemrole, type) => {
   let records = [];
   let matchedAuthorID;
   let matchedItemRole;
+  let matchedType;
   Object.keys(post).map(x => {
     if (post[x].sold || post[x].deleted || post[x].expired) return;
     matchedAuthorID = true;
     matchedItemRole = true;
+    matchedType = true;
 
     if (authorID) {
       if (post[x].authorID === authorID) matchedAuthorID = true;
@@ -111,7 +113,12 @@ exports.list = (authorID, itemrole) => {
       else matchedItemRole = false;
     }
 
-    if (matchedAuthorID && matchedItemRole)
+    if (type) {
+      if (post[x].type === type) matchedType = true;
+      else matchedType = false;
+    }
+
+    if (matchedAuthorID && matchedItemRole && matchedType)
       records.push(post[x]);
   });
   return records;

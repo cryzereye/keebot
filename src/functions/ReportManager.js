@@ -3,6 +3,7 @@ const Report = require('../models/Report');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const { admins, channelsID, reportTypes } = require('../json/config.json');
+const { constants } = require('../globals/constants.json');
 
 class ReportManager {
   constructor(client) {
@@ -72,6 +73,7 @@ class ReportManager {
       // default is users post the sales. before bot feature
       let reportedName = message.author.username + "#" + message.author.discriminator;
       let reportedID = message.author.id;
+      let replied;
       const mentioned = message.mentions.users.values().next().value;
 
       // for bot-posted sales
@@ -80,17 +82,17 @@ class ReportManager {
         reportedID = mentioned.id;
       }
 
-      if (reportedID === this.client.user.id) {
-        return await interaction.reply({
-          content: `**Invalid report!** Refer to the original post. Not on the bumps`,
-          ephemeral: true
-        });
-      }
       if (reportedID === authorID){
-        return await interaction.reply({
-          content: `**Why are you reporting yourself?**`,
-          ephemeral: true
-        });
+        try {
+          replied = await interaction.reply({
+            content: `**Why are you reporting yourself?**`,
+            ephemeral: true
+          });
+          if(replied) return constants.selfReport_success;
+        }
+        catch(e){
+          return  constants.selfReport_fail;
+        }
       }
 
       const reportID = Report.fileNewReport(
@@ -107,11 +109,18 @@ class ReportManager {
 
       let content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${reportedID}>\n${Post.generateUrl(channelID, targetID)}`;
       let filedReport = await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.reports, content);
+
       if (filedReport) {
-        return await interaction.reply({
-          content: `Report filed ID ${reportID}`,
-          ephemeral: true
-        });
+        try{
+          replied = await interaction.reply({
+            content: `Report filed ID ${reportID}`,
+            ephemeral: true
+          });
+          if(replied) return constants.postReport_success;
+        }
+        catch(e){
+          return constants.postReport_fail;
+        }
       }
     }
 
