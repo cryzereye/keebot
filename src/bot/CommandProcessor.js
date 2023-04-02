@@ -21,13 +21,13 @@ class CommandProcessor {
         return scorer.getStatsEmbed(interaction, user, reportmngr);
       }
       case commands[1].name: {
-        console.log('Checking if admin...');
+        console.log(`[${new Date().toLocaleString()}] Checking if admin...`);
         if (!dUtil.isMod(guild, user))
           return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
-        console.log('Data extraction from #verify-transactions starting...');
+        console.log(`[${new Date().toLocaleString()}] Data extraction from #verify-transactions starting...`);
         let extractor = new MessageExtractor();
         extractor.extractAllMessages(interaction.channel, scorer, rolegivermngr)
-          .then(console.log('Extraction started'))
+          .then(console.log(`[${new Date().toLocaleString()}] Extraction started`))
           .catch(console.error);
         return;
       }

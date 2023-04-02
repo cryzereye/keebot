@@ -31,7 +31,7 @@ class VouchBot {
       this.buildDependencies();
       this.buildSlashCommands(); // client.application is null until client is ready
       this.updatePresence();
-      console.log("bot is ready"); 
+      console.log(`[${new Date().toLocaleString()}] bot is ready`); 
     });
 
     // handles incoming messages
@@ -77,7 +77,7 @@ class VouchBot {
     const rest = new REST({ version: '10' }).setToken(discord_token);
 
     await rest.put(Routes.applicationGuildCommands(discord_id, channelsID.server), { body: commands })
-      .then((data) => console.log(`Successfully registered ${data.length} application commands.`))
+      .then((data) => console.log(`[${new Date().toLocaleString()}] Successfully registered ${data.length} application commands.`))
       .catch(console.error);
   }
 

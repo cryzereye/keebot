@@ -105,7 +105,7 @@ class ReportManager {
         new Date(interaction.createdAt).toString()
       );
 
-      console.log(`Report for ${reportedName} saved`);
+      console.log(`[${new Date().toLocaleString()}] Report for ${reportedName} saved`);
 
       let content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${reportedID}>\n${Post.generateUrl(channelID, targetID)}`;
       let filedReport = await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.reports, content);

@@ -37,7 +37,6 @@ class BackupService extends BaseService {
     }
 
     saveNextBackup(){
-        console.log(state.next_backup_timedate);
         const next = util.addHours(state.next_backup_timedate, 6);
         State.updateState("next_backup_timedate", next.toString());
     }

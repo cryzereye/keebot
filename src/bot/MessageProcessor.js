@@ -11,14 +11,14 @@ class MessageProcessor {
     let currentlyTesting = (messageCHID == channelsID.test && dev);
     if(this.isMarketChannel(messageCHID) && authorID !== discord_id){
       return message.delete()
-            .then(console.log(`Deleted message from ${authorID}`))
+            .then(console.log(`[${new Date().toLocaleString()}] Deleted message from ${authorID}`))
             .catch(console.error);
     }
     else if(message.content.startsWith(command_sign)){
       return await message.reply("```Slash commands are now implemented! Please use /help for more details```");
     }
     else if (messageCHID == channelsID.verify && !dev || currentlyTesting) { // only for vouch channel
-      console.log("Processing vouch msg from " + authorName);
+      console.log(`[${new Date().toLocaleString()}] Processing vouch msg from ${authorName}`);
       // process all verifications
       // id1 sender, id2 mentioned
 

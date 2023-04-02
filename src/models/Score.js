@@ -18,7 +18,7 @@ class Score {
       let trans = record.transactions;
 
       if(trans[target] == null) {
-        console.log("New transaction for " + name + " with " + target);
+        console.log(`[${new Date().toLocaleString()}] New transaction for ${name} with ${target}`);
         trans[target] = 0;
       }
       trans[target]++;
@@ -45,7 +45,7 @@ class Score {
    * @param {string} [target] username of targer discord user
    */
   newRecord(id, name, target) {
-    console.log("New record for " + name + " with " + target);
+    console.log(`[${new Date().toLocaleString()}] New record for ${name} with ${target}`);
     let str = `{
       "discordID": "${id}",
       "username": "${name}",

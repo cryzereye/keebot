@@ -25,7 +25,7 @@ class MessageExtractor {
             });
           }
           catch(e){
-            console.log('Error with extracting data for ' + owner);
+            console.log(`[${new Date().toLocaleString()}] Error with extracting data for ${owner}`);
             console.log(e);
           }
           count++;
@@ -35,7 +35,7 @@ class MessageExtractor {
       })
       .catch(console.error); 
     }
-    console.log('Message count: ' + count);
+    console.log(`[${new Date().toLocaleString()}] Message count: ${count}`);
     return true;
   }
 
