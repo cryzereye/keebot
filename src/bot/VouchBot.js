@@ -12,6 +12,7 @@ const { CommandProcessor } = require('./CommandProcessor');
 const { ModalProcessor } = require('./ModalProcessor');
 const { MessageProcessor } = require('./MessageProcessor');
 const { ContextProcessor } = require('./ContextProcessor');
+const { BackupService } = require('../service/BackupService');
 
 class VouchBot {
   constructor() {
@@ -66,6 +67,7 @@ class VouchBot {
     this.modalproc = new ModalProcessor();
     this.msgproc = new MessageProcessor();
     this.contextproc = new ContextProcessor();
+    this.backupservice = new BackupService(this.client);
   }
 
   /**

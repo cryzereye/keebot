@@ -4,3 +4,4 @@ src/json/*
 *.orig
 *.zip
 vouch-bot-js.code-workspace
+backups/*
