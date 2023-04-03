@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { me_id, admins, channelsID } = require('../../json/config.json');
 const { commands } = require('../globals/commands.json');
+const { constants } = require('../globals/constants.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
 const dUtil = require('../util/DiscordUtil');
 
@@ -47,23 +48,13 @@ class CommandProcessor {
   }
 
   generateHelp(username) {
-    const verifyHelp = `This is where you send vouches for the people that you have transacted with **within the server**. For vouch confirmation, please reply to the vouch where you got mentioned, else you would not be scored for it.`;
-    const statsHelp = `/stats <optional user>: see your stats or your target user's stats`;
-    const reportsHelp = `/report file <user> <category> <summary>: file a report regarding a transaction incident within Keebisoria`;
-    const postNewHelp = `/post new <buy/sell/trade> <optional item role>: lets you create a new buy/sell/trade post. If item role is entered, there will be an item role ping for you listing upon creation. **Note** that the ID that will be given afterwards is your reference ID for your post`;
-    const postListHelp = `/post list <optional user> <optional item role>: Lets you see your own posts list. You can also add <user> to see the posts of the target user, or add <item role> to see items under the given item role. Both can be used at the same time.`;
-    const extractHelp = `For admin use only`;
-    const bugsHelp = `DM <@${me_id}>`;
     const embedBuilder = new EmbedBuilder()
       .setColor("Default")
-      .setTitle(`Help | ${username}`)
-      .addFields({ name: '#verify-transaction:', value: verifyHelp })
-      .addFields({ name: '/stats:', value: statsHelp })
-      .addFields({ name: '/report file:', value: reportsHelp })
-      .addFields({ name: '/post new:', value: postNewHelp })
-      .addFields({ name: '/post list:', value: postListHelp })
-      .addFields({ name: '/extract:', value: extractHelp })
-      .addFields({ name: 'For bugs and data in accuracies', value: bugsHelp });
+      .setTitle(`Help | ${username}`);
+
+    constants.helpinfo.forEach((info) => {
+      embedBuilder.addFields(info);
+    })
 
     return embedBuilder;
   }
