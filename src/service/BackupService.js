@@ -29,7 +29,7 @@ class BackupService extends BaseService {
 
     doBackup() {
         const now = new Date();
-        const src = 'src/json/';
+        const src = 'json/';
         const dest = `backups/${now.getMonth() + 1}_${now.getDate()}_${now.getFullYear()}`;
 
         util.createFolder('backups');

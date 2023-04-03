@@ -1,6 +1,6 @@
 node_modules/*
 .env
-src/json/*
+json/*
 *.orig
 *.zip
 vouch-bot-js.code-workspace
