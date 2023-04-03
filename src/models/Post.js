@@ -92,6 +92,16 @@ exports.expired = (postID) => {
   this.savePostToFile();
 }
 
+/**
+ * Gets postID from associated newListID
+ * @param {Snowflake} newListID 
+ * @returns {Object} post[]
+ */
+exports.getPostFromNewListID = (newListID) => {
+  let postArr = Object.values(post);
+  return postArr.filter((currentPost) => currentPost.newListID.includes(newListID))[0];
+} 
+
 exports.list = (authorID, itemrole, type) => {
   let records = [];
   let matchedAuthorID;

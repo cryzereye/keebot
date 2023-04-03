@@ -12,7 +12,7 @@ class CommandProcessor {
     let fullName = `${user.username}#${user.discriminator}`;
     let interactionCHID = interaction.channel.id;
 
-    if (interactionCHID != channelsID.bot && !dUtil.isMod(guild, user)) return await interaction.reply(`Use commands in <#${channelsID.bot}>`);
+    if (interactionCHID != channelsID.bot && !dUtil.isMod(guild, user.id)) return await interaction.reply(`Use commands in <#${channelsID.bot}>`);
     switch (commandName) {
       case commands[0].name: {
         const target = interaction.options.getUser('user');
@@ -22,7 +22,7 @@ class CommandProcessor {
       }
       case commands[1].name: {
         console.log(`[${new Date().toLocaleString()}] Checking if admin...`);
-        if (!dUtil.isMod(guild, user))
+        if (!dUtil.isMod(guild, user.id))
           return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
         console.log(`[${new Date().toLocaleString()}] Data extraction from #verify-transactions starting...`);
         let extractor = new MessageExtractor();

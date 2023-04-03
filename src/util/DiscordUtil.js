@@ -1,3 +1,4 @@
+const { MessageType } = require('discord-api-types/v10');
 const { channelsID, modRole } = require('../json/config.json');
 
 /**
@@ -205,9 +206,9 @@ exports.postProcess = async (interaction, success, content, isModal, modal) => {
  */
 exports.getIdOfRepliedMsg = async(guild, chid, msgid) => {
   let reply = await this.getMessageFromID(guild, chid, msgid);
-  if(reply && reply.type == 19)
-    return reply.reference.messageId;
-  return "";
+  let origpost = await reply.fetchReference();
+  console.log(origpost.id);
+  if(origpost) return origpost.id;
 }
 
 /**
@@ -216,8 +217,8 @@ exports.getIdOfRepliedMsg = async(guild, chid, msgid) => {
  * @param {discord.js.User} user 
  * @returns {boolean}
  */
-exports.isMod = async(guild, user) => {
-  let gm = await this.getGuildMemberfromID(user.id, guild).catch(console.error);
+exports.isMod = async(guild, userID) => {
+  let gm = await this.getGuildMemberfromID(userID, guild).catch(console.error);
   return this.guildMemberHasRole(gm, modRole);
 }
 

@@ -38,7 +38,7 @@ class ReportManager {
       }
       case "verify": {
         let reply = "";
-        if (!(dUtil.isMod(guild, user))) {
+        if (!(dUtil.isMod(guild, user.id))) {
           reply = `**${authorName} not authorized to verify reports!**`;
         }
         else {
