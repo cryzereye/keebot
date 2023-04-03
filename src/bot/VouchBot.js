@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, Partials, InteractionType } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, InteractionType, ActivityType } = require('discord.js');
 const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
 const { discord_id, discord_token, channelsID, dev } = require('../json/config.json');
@@ -87,21 +87,13 @@ class VouchBot {
   async updatePresence(){
     let presence = {
       activities:[{
-        type: "PLAYING",
-        platform: "desktop",
-        url: "https://github.com/cryzereye/vouch-bot-js"
+        type: ActivityType.Playing,
+        url: "https://github.com/cryzereye/keebot-js",
+        state: "https://github.com/cryzereye/keebot-js"
       }],
       status : "online"
     }
-    
-    if(dev){
-      presence.activities[0].name = "IN DEVELOPMENT";
-      presence.status = "dnd";
-    }
-    else{
-      presence.activities[0].name = "/help for more details";
-      presence.status = "online";
-    }
+    presence.activities[0].name = "ping @gego for bugs";
     this.client.user.setPresence({
       activities: presence.activities,
       status: presence.status
