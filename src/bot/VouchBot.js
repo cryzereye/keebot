@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits, Partials, InteractionType, ActivityType } = require('discord.js');
 const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
-const { discord_id, discord_token, channelsID, dev } = require('../json/config.json');
+const { discord_id, discord_token, channelsID, dev } = require('../../json/config.json');
 const { commands } = require('../globals/commands.json');
 const { Scorer } = require('../functions/Scorer');
 const { RoleGiverManager } = require('../functions/RoleGiverManager');

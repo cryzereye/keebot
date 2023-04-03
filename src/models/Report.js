@@ -1,6 +1,6 @@
 const fs = require('fs');
-const fileName = '../json/reports.json';
-const osFile = './src/json/reports.json';
+const fileName = '../../json/reports.json';
+const osFile = './json/reports.json';
 let { reports } = require(fileName);
 
 exports.saveReportToFile = () => {

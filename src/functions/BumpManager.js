@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const util = require('../util/Utilities');
-const { channelsID, dev } = require('../json/config.json');
+const { channelsID, dev } = require('../../json/config.json');
 
 class BumpManager {
   constructor(client) {

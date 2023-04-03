@@ -1,5 +1,5 @@
 const { MessageType } = require('discord-api-types/v10');
-const { channelsID, modRole } = require('../json/config.json');
+const { channelsID, modRole } = require('../../json/config.json');
 
 /**
  * returns the GuildMember equivalent of ID given

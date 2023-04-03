@@ -1,4 +1,4 @@
-const { dev } = require('../json/config.json');
+const { dev } = require('../../json/config.json');
 const fs = require('fs');
 const path = require('path');
 /**

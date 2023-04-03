@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { me_id, admins, channelsID } = require('../json/config.json');
+const { me_id, admins, channelsID } = require('../../json/config.json');
 const { commands } = require('../globals/commands.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
 const dUtil = require('../util/DiscordUtil');

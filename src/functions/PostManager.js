@@ -1,5 +1,5 @@
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const { relevant_roles, channelsID, me_id, dev, admins } = require('../json/config.json');
+const { relevant_roles, channelsID, me_id, dev, admins } = require('../../json/config.json');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const util = require('../util/Utilities');
@@ -93,7 +93,7 @@ class PostManager {
   async editPostModal(interaction, argPostID) {
     let {guild, user, channelId} = interaction;
     let editPost = await this.getValidPostRecord(argPostID, channelId, guild);
-    
+
     if (editPost) {
       const errors = this.postUpdatePreValidations(editPost, user.id, editPost.authorID, guild);
       if(errors) return errors;

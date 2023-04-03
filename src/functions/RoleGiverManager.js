@@ -1,4 +1,4 @@
-const { roles, serverID } = require('../json/config.json');
+const { roles, serverID } = require('../../json/config.json');
 const dUtil = require('../util/DiscordUtil');
 class RoleGiverManager {
   constructor(client){

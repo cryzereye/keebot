@@ -1,4 +1,4 @@
-const { state } = require('../json/state.json');
+const { state } = require('../../json/state.json');
 const State = require('../models/State');
 const BaseService = require('./BaseService');
 const util = require('../util/Utilities');

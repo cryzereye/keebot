@@ -1,9 +1,9 @@
 const { EmbedBuilder } = require('discord.js');
 //const { DBManager } = require('../util/DBManager');
-const { relevant_roles } = require('../json/config.json');
+const { relevant_roles } = require('../../json/config.json');
 const fs = require('fs');
-const fileName = '../json/scores.json';
-const osFile = './src/json/scores.json';
+const fileName = '../../json/scores.json';
+const osFile = './json/scores.json';
 let { scores } = require(fileName);
 const util = require('../util/Utilities');
 const dUtil = require('../util/DiscordUtil');

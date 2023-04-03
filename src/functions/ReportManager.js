@@ -2,7 +2,7 @@ const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = req
 const Report = require('../models/Report');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
-const { admins, channelsID, reportTypes } = require('../json/config.json');
+const { admins, channelsID, reportTypes } = require('../../json/config.json');
 const { constants } = require('../globals/constants.json');
 
 class ReportManager {
