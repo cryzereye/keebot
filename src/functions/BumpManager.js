@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const util = require('../util/Utilities');
-const { channelsID, dev } = require('../json/config.json');
+const { channelsID, dev } = require('../../json/config.json');
 
 class BumpManager {
   constructor(client) {
@@ -11,7 +11,7 @@ class BumpManager {
   }
 
   async startService() {
-    console.log("Bump service started..");
+    console.log(`[${new Date().toLocaleString()}] Bump service started...`);
     // loop for check intervals
     while (true) {
       this.queue = Post.getAllNeedsBump();
@@ -22,7 +22,7 @@ class BumpManager {
 
         let currPost = this.queue.shift();
         if(!currPost) break;
-        console.log("Processing bump/expiry " + currPost.have + "/" + currPost.want);
+        console.log(`[${new Date().toLocaleString()}] Processing bump/expiry ${currPost.have}/${currPost.want}`);
 
         // preps to get the original post message from channel
         let channel = Post.getChannelFromType(currPost.type);
