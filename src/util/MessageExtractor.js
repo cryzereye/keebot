@@ -31,7 +31,7 @@ class MessageExtractor {
 
       await channel.messages.fetch(options).then(msglist => {
         let owner;
-        msglist.forEach(msg =>{
+        msglist.forEach(async(msg) =>{
           try {
             owner = msg.author.username + '#' + msg.author.discriminator;
             let mentions = msg.mentions.users; // mentioned by initial vouch
@@ -41,11 +41,12 @@ class MessageExtractor {
             });
           }
           catch(e){
-            console.log('Error with extracting data for ' + owner);
+            console.log(`[${new Date().toLocaleString()}] Error with extracting data for ${owner}`);
             console.log(e);
           }
           count++;
           lastMessageID = msg.id;
+          await new Promise(resolve => setTimeout(resolve, 50)); // 50 ms delay in between
         });
         if(count > 0 && count % 100 != 0) hasMoreMessages = false;
       })

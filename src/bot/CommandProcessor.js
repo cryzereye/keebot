@@ -27,7 +27,7 @@ class CommandProcessor {
         console.log('Checking if admin...');
         if (user.id != me_id)
           return await interaction.reply(`Command not available for ${fullName}`).catch(console.error);
-        console.log('Data extraction from #verify-transactions starting...');
+        console.log(`[${new Date().toLocaleString()}] Data extraction from #verify-transactions starting...`);
         let extractor = new MessageExtractor();
         extractor.extractAllVouches(interaction.channel, scorer, rolegivermngr)
           .then(console.log('Extraction started'))

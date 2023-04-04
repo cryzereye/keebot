@@ -1,4 +1,5 @@
-const { channelsID, modRole } = require('../json/config.json');
+const { MessageType } = require('discord-api-types/v10');
+const { channelsID, modRole, serviceProviderRole } = require('../../json/config.json');
 
 /**
  * returns the GuildMember equivalent of ID given
@@ -66,10 +67,9 @@ exports.getChannelFromID = async (guild, channelID) => {
  * @param {discord.js.Role} role 
  * @returns {Boolean}
  */
-exports.guildMemberHasRole = async (gm, role) => {
-  if (gm != undefined && role != undefined) {
-    if (gm.roles.cache.find(r => r.name === role.name))
-      return true;
+exports.guildMemberHasRole = async (gm, role) => {  
+  if (gm && role) {
+    return (gm._roles.includes(role));
   }
   return false;
 }
@@ -84,7 +84,7 @@ exports.addRoleToUser = async (user, guild, role) => {
   let gm = await this.getGuildMemberfromID(user.id, guild).catch(console.error);
   if (gm != undefined && !(await this.guildMemberHasRole(gm, role).catch(console.error))) { // if member already has role, then do not put the role
     gm.roles.add(role).catch((e) => console.log(e.message));
-    console.log(role.name + " added from " + user.username);
+    console.log(`[${new Date().toLocaleString()}] ${role.name} added to ${user.username}`);
   }
 }
 
@@ -98,7 +98,7 @@ exports.removeRoleToUser = async (user, guild, role) => {
   let gm = await this.getGuildMemberfromID(user.id, guild).catch(console.error);
   if (gm != undefined && await this.guildMemberHasRole(gm, role).catch(console.error)) { // if member already has role, then do not put the role
     gm.roles.remove(role).catch((e) => console.log(e.message));
-    console.log(role.name + " removed from " + user.username);
+    console.log(`[${new Date().toLocaleString()}] ${role.name} removed from ${user.username}`);
   }
 }
 

@@ -1,4 +1,4 @@
-const { dev, me_id, command_sign, channelsID, discord_id } = require('../json/config.json');
+const { dev, me_id, command_sign, channelsID, discord_id } = require('../../json/config.json');
 class MessageProcessor {
   constructor(dbmngr) {
     this.dbmngr = dbmngr;
@@ -15,7 +15,7 @@ class MessageProcessor {
       await message.reply("```Slash commands are now implemented! Please use /help for more details```");
     }
     else if (messageCHID == channelsID.verify && !dev || currentlyTesting) { // only for vouch channel
-      console.log("Processing vouch msg from " + authorName);
+      console.log(`[${new Date().toLocaleString()}] Processing vouch msg from ${authorName}`);
       // process all verifications
       // id1 sender, id2 mentioned
 

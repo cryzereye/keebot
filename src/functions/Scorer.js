@@ -39,11 +39,13 @@ class Scorer {
           user.displayAvatarURL(),
           roles,
           transStr,
-          reportsCount.toString(),
+          reports,
           creaStr,
           creaDur,
           joinStr,
-          joinDur
+          joinDur,
+          isServiceProvider,
+          feedbackCount
         )]
       }).catch(console.error);
     });
@@ -58,8 +60,8 @@ class Scorer {
    * @param {Object} transStr 
    * @returns {discordjs.MessageEmbed}
    */
-  generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration) {
-    const embedBuilder = new EmbedBuilder()
+  generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration, isServiceProvider, feedbackCount) {
+    let embedBuilder = new EmbedBuilder()
       .setColor("DarkAqua")
       .setTitle(`${points} Points`)
       .setAuthor({
@@ -68,8 +70,12 @@ class Scorer {
       })
       .setDescription(roles)
       .setThumbnail(`${avatarURL}`)
-      .addFields({ name: 'Transactions (max 10):', value: transStr })
-      .addFields({ name: 'Verified Reports Involved:', value: reportsCount })
+      .addFields({ name: 'Transactions (max 10):', value: transStr });
+
+    if(isServiceProvider)
+      embedBuilder.addFields({ name: 'Service Feedback Count:', value: feedbackCount });
+
+    embedBuilder.addFields({ name: 'Verified Reports Involved:', value: reportsCount })
       .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
       .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
 
