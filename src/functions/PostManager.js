@@ -1,5 +1,5 @@
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const { relevant_roles, channelsID, me_id, dev, admins } = require('../json/config.json');
+const { relevant_roles, channelsID, me_id, dev, admins } = require('../../json/config.json');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const util = require('../util/Utilities');
@@ -18,12 +18,7 @@ class PostManager {
 
     let modal = this.generateModal("new", type, itemrole);
     if (modal)
-      return {
-        success: true,
-        content: "",
-        isModal: true,
-        modal: modal
-      }
+      return this.successModal(modal);
     else {
       return {
         success: false,
@@ -40,28 +35,8 @@ class PostManager {
     let newListContent = "";
     let msgURL = "";
 
-    switch(type){
-      case "sell": {
-        if(!util.isValidAmount(data.want)){
-          return {
-            posted: false,
-            url: "",
-            errorContent: "WANT should be a valid amount"
-          };
-        }
-        break;
-      }
-      case "buy": {
-        if(!util.isValidAmount(data.have)){
-          return {
-            posted: false,
-            url: "",
-            errorContent: "HAVE should be a valid amount"
-          };
-        }
-        break;
-      }
-    }
+    const errors = this.haveWantValidation(type, data.have, data.want);
+    if(errors) return errors;
 
     // goes into buy/sell/trade channel
     content += `**Post by <@!${authorID}>**\n\n`;
@@ -89,7 +64,7 @@ class PostManager {
     const newListMsg = await dUtil.sendMessageToChannel(client, guild.id, ch, newListContent);
 
     let bumpDate = util.addHours(postDate, 8 + Math.floor(Math.random() * 4)); // randoms 8-12 hours
-    let expiryDate = util.addHours(postDate, 8 * 24 * 60); // 60 days post expiry
+    let expiryDate = util.addHours(postDate, 24 * 60); // 60 days post expiry
 
     if(dev){
       bumpDate = util.addHours(postDate, Math.floor(Math.random() * 4)); // randoms 0-4 minutes
@@ -117,71 +92,18 @@ class PostManager {
   }
 
   async editPostModal(interaction, argPostID) {
-    let {guild, user} = interaction;
-    let postID = argPostID;
-
-    // idiot proof: when user edits a bump post, it refers to the original post
-    let origID = await dUtil.getIdOfRepliedMsg(interaction.guild, interaction.channel.id, argPostID);
-    if (origID !== "")
-      postID = origID;
-
-    if (postID == "")
-      postID = interaction.options.getString('editid');
-    let editPost = Post.get(postID);
+    let {guild, user, channelId} = interaction;
+    let editPost = await this.getValidPostRecord(argPostID, channelId, guild);
 
     if (editPost) {
-      if (editPost.authorID !== interaction.user.id || !dUtil.isMod(guild, user)) {
-        return {
-          success: false,
-          content: `Invalid! Make sure you are editing your own post. Pinging <@!${me_id}>`,
-          isModal: false,
-          modal: null
-        }
-      }
+      const errors = await this.postUpdatePreValidations(editPost, user.id, editPost.authorID, guild);
+      if(errors) return errors;
 
-      if (editPost.sold) {
-        return {
-          success: false,
-          content: `Invalid! Post is already marked as sold`,
-          isModal: false,
-          modal: null
-        }
-      }
-
-      if (editPost.deleted) {
-        return {
-          success: false,
-          content: `Invalid! Post is already deleted`,
-          isModal: false,
-          modal: null
-        }
-      }
-
-      let modal = this.generateModal("edit", editPost.type, null, postID, editPost.have, editPost.want);
-      if (modal)
-        return {
-          success: true,
-          content: "",
-          isModal: true,
-          modal: modal
-        }
-      else {
-        return {
-          success: false,
-          content: `Error in editing post. Pinging <@!${me_id}>`,
-          isModal: false,
-          modal: null
-        }
-      }
+      let modal = this.generateModal("edit", editPost.type, null, editPost.postID, editPost.have, editPost.want);
+      if (modal) return this.successModal(modal);
+      else return this.failModal();
     }
-    else {
-      return {
-        success: false,
-        content: `Invalid! Post/ID does not exist.`,
-        isModal: false,
-        modal: null
-      }
-    }
+    else return this.invalidPost();
   }
 
   async editPost(client, guild, authorID, data) {
@@ -200,28 +122,8 @@ class PostManager {
         };
       }
 
-      switch (record.type){
-        case "sell": {
-          if(!util.isValidAmount(data.want)){
-            return {
-              posted: false,
-              url: "",
-              errorContent: "WANT should be a valid amount"
-            };
-          }
-          break;
-        }
-        case "buy": {
-          if(!util.isValidAmount(data.have)){
-            return {
-              posted: false,
-              url: "",
-              errorContent: "HAVE should be a valid amount"
-            };
-          }
-          break;
-        }
-      }
+      const errors = this.haveWantValidation(record.type, data.have, data.want);
+      if(errors) return errors;
 
       let content = postMsg.content.split('\n');
       let newContent = "";
@@ -249,7 +151,10 @@ class PostManager {
       }
       let msgURL = Post.generateUrl(message.channel.id, message.id);
 
-      newListContent += `**UPDATED <#${channelID}> post from <@!${authorID}>**\n`;
+      if(record.authorID !== authorID)
+        newListContent += `**UPDATED <#${channelID}> post by Mod <@!${authorID}> in behalf of <@${record.authorID}>**\n`;
+      else
+        newListContent += `**UPDATED <#${channelID}> post from <@!${authorID}>**\n`;
       
       newListContent += "HAVE: " + (haveEdited ? `~~${record.have}~~`: "") + ` ${data.have}\n`;
       newListContent += "WANT: " + (wantEdited ? `~~${record.want}~~`: "") + ` ${data.want}\n`;
@@ -296,71 +201,18 @@ class PostManager {
   }
 
   async soldPostModal(interaction, argPostID) {
-    let {guild, user} = interaction;
-    let postID = argPostID;
-    
-    // idiot proof: when user marks a bump post as sold, it refers to the original post
-    let origID = await dUtil.getIdOfRepliedMsg(interaction.guild, interaction.channel.id, argPostID);
-    if (origID !== "")
-      postID = origID;
-
-    if (postID == "")
-      postID = interaction.options.getString('soldid');
-    let soldPost = Post.get(postID);
+    let {guild, user, channelId} = interaction;
+    let soldPost = await this.getValidPostRecord(argPostID, channelId, guild);
 
     if (soldPost) {
-      if (soldPost.authorID !== interaction.user.id || !dUtil.isMod(guild, user)) {
-        return {
-          success: false,
-          content: `Invalid! Make sure you are marking your own post as sold. Pinging <@!${me_id}>`,
-          isModal: false,
-          modal: null
-        }
-      }
+      const errors = this.postUpdatePreValidations(soldPost, user.id, soldPost.authorID, guild);
+      if(errors) return errors;
 
-      if (soldPost.sold) {
-        return {
-          success: false,
-          content: `Invalid! Post is already marked as sold`,
-          isModal: false,
-          modal: null
-        }
-      }
-
-      if (soldPost.deleted) {
-        return {
-          success: false,
-          content: `Invalid! Post is already deleted`,
-          isModal: false,
-          modal: null
-        }
-      }
-
-      let modal = this.generateModal("sold", soldPost.type, null, postID, soldPost.have, soldPost.want);
-      if (modal)
-        return {
-          success: true,
-          content: "",
-          isModal: true,
-          modal: modal
-        }
-      else {
-        return {
-          success: false,
-          content: `Error in marking post as sold. Pinging <@!${me_id}>`,
-          isModal: false,
-          modal: null
-        }
-      }
+      let modal = this.generateModal("sold", soldPost.type, null, soldPost.postID, soldPost.have, soldPost.want);
+      if (modal) return this.successModal(modal);
+      else return this.failModal();
     }
-    else {
-      return {
-        success: false,
-        content: `Invalid! Post/ID does not exist.`,
-        isModal: false,
-        modal: null
-      }
-    }
+    else return this.invalidPost();
   }
 
   async soldPost(guild, data) {
@@ -416,62 +268,18 @@ class PostManager {
   }
 
   async deletePostModal(interaction, argPostID) {
-    let {guild, user} = interaction;
-    let postID = argPostID;
-    
-    // idiot proof: when user deletes a bump post, it refers to the original post
-    let origID = await dUtil.getIdOfRepliedMsg(interaction.guild, interaction.channel.id, argPostID);
-    if (origID !== "")
-      postID = origID;
-
-    if (postID == "")
-      postID = interaction.options.getString('deleteid');
-    let deletePost = Post.get(postID);
+    let {guild, user, channelId} = interaction;
+    let deletePost = await this.getValidPostRecord(argPostID, channelId, guild);
 
     if (deletePost) {
-      if (deletePost.authorID !== interaction.user.id || !dUtil.isMod(guild, user)) {
-        return {
-          success: false,
-          content: `Invalid! Make sure you are deleting your own post. Pinging <@!${me_id}>`,
-          isModal: false,
-          modal: null
-        }
-      }
+      const errors = this.postUpdatePreValidations(deletePost, user.id, deletePost.authorID, guild);
+      if(errors) return errors;
 
-      if (deletePost.deleted) {
-        return {
-          success: false,
-          content: `Invalid! Post is already deleted`,
-          isModal: false,
-          modal: null
-        }
-      }
-
-      let modal = this.generateModal("delete", deletePost.type, null, postID, deletePost.have, deletePost.want);
-      if (modal)
-        return {
-          success: true,
-          content: "",
-          isModal: true,
-          modal: modal
-        }
-      else {
-        return {
-          success: false,
-          content: `Error in deleting post. Pinging <@!${me_id}>`,
-          isModal: false,
-          modal: null
-        }
-      }
+      let modal = this.generateModal("delete", deletePost.type, null, deletePost.postID, deletePost.have, deletePost.want);
+      if (modal) return this.successModal(modal);
+      else return this.failModal();
     }
-    else {
-      return {
-        success: false,
-        content: `Invalid! Post/ID does not exist.`,
-        isModal: false,
-        modal: null
-      }
-    }
+    else return this.invalidPost();
   }
 
   async deletePost(guild, data) {
@@ -706,6 +514,111 @@ class PostManager {
       case "buy": return { id: "buyPostModal", title: "Buy" };
       case "sell": return { id: "sellPostModal", title: "Sell" };
       case "trade": return { id: "tradePostModal", title: "Trade" };
+    }
+  }
+
+  async getValidPostRecord(msgID, channelID, guild){
+    // related #new-listing message interaction
+    if(channelID == channelsID.newListings)
+      return Post.getPostFromNewListID(msgID);
+    else {
+      let record = Post.get(msgID); // original
+      if(record) return record;
+      else {
+        // bumps
+        const origID = await dUtil.getIdOfRepliedMsg(guild, channelID, msgID);
+        record = Post.get(origID);
+        if(record) return record;
+      }
+    }
+
+    return null;
+  }
+
+  async isValidPostEditor(userID, authorID, guild) {
+    let isMod = await dUtil.isMod(guild, userID);
+    return (authorID == userID || isMod);
+  }
+
+  async postUpdatePreValidations(postRecord, userID, authorID, guild) {
+    let validEditor = await this.isValidPostEditor(userID, authorID, guild);
+    if (!validEditor) {
+      return {
+        success: false,
+        content: `Invalid! Make sure you are editing your own post. Pinging <@!${me_id}>`,
+        isModal: false,
+        modal: null
+      }
+    }
+
+    if (postRecord.sold) {
+      return {
+        success: false,
+        content: `Invalid! Post is already marked as sold`,
+        isModal: false,
+        modal: null
+      }
+    }
+
+    if (postRecord.deleted) {
+      return {
+        success: false,
+        content: `Invalid! Post is already deleted`,
+        isModal: false,
+        modal: null
+      }
+    }
+  }
+
+  haveWantValidation(type, have, want) {
+    switch(type){
+      case "sell": {
+        if(!util.isValidAmount(want)){
+          return {
+            posted: false,
+            url: "",
+            errorContent: "WANT should be a valid amount"
+          };
+        }
+        break;
+      }
+      case "buy": {
+        if(!util.isValidAmount(have)){
+          return {
+            posted: false,
+            url: "",
+            errorContent: "HAVE should be a valid amount"
+          };
+        }
+        break;
+      }
+    }
+  }
+
+  successModal(modal){
+    return {
+      success: true,
+      content: "",
+      isModal: true,
+      modal: modal
+    }
+  }
+
+  failModal(){
+    return {
+      success: false,
+      content: `Error in post modal generation. Pinging <@!${me_id}>`,
+      isModal: false,
+      modal: null
+    }
+  }
+
+  invalidPost() {
+    return {
+      success: false,
+      content: `Invalid! Post/ID does not exist.`,
+      isModal: false,
+      modal: null
     }
   }
 }
