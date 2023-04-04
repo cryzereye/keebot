@@ -2,7 +2,7 @@ const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = req
 const Report = require('../models/Report');
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
-const { admins, channelsID, reportTypes } = require('../json/config.json');
+const { admins, channelsID, reportTypes } = require('../../json/config.json');
 const { constants } = require('../globals/constants.json');
 
 class ReportManager {
@@ -38,7 +38,7 @@ class ReportManager {
       }
       case "verify": {
         let reply = "";
-        if (!(dUtil.isMod(guild, user))) {
+        if (!(await dUtil.isMod(guild, user.id))) {
           reply = `**${authorName} not authorized to verify reports!**`;
         }
         else {
@@ -105,7 +105,7 @@ class ReportManager {
         new Date(interaction.createdAt).toString()
       );
 
-      console.log(`Report for ${reportedName} saved`);
+      console.log(`[${new Date().toLocaleString()}] Report for ${reportedName} saved`);
 
       let content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${reportedID}>\n${Post.generateUrl(channelID, targetID)}`;
       let filedReport = await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.reports, content);
@@ -126,8 +126,15 @@ class ReportManager {
 
   }
 
-  getVerifiedReportsCount(id) {
-    return Report.countVerifiedReportsForUser(id);
+  getVerifiedReportsMatrix(id) {
+    let reports = Report.getVerifiedReportsForUser(id);
+    let reportStats = "";
+    reportTypes.forEach(type =>{
+      let fetched = reports.filter((entry) => entry.category === type);
+      if(fetched.length > 0)
+        reportStats += `${type}: ${fetched.length}\n`;
+    });
+    return reportStats;
   }
 
   generateModal(target) {

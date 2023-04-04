@@ -1,4 +1,4 @@
-const { roles, serverID } = require('../json/config.json');
+const { roles, serverID } = require('../../json/config.json');
 const dUtil = require('../util/DiscordUtil');
 class RoleGiverManager {
   constructor(client){
@@ -13,7 +13,7 @@ class RoleGiverManager {
     let server = this.client.guilds.resolve(serverID);
 
     for(let i = 0; i < len; i++){
-      console.log("Cleaning " + roles[i].role + "...");
+      console.log(`[${new Date().toLocaleString()}] Cleaning ${roles[i].role} ...`);
       role = this.getRoleInst(message, roles[i].role);
       filter = roles[i].filter;
       await server.members.fetch(mList => mList.roles.cache.has(id)).catch(console.error);
@@ -22,7 +22,7 @@ class RoleGiverManager {
         //if(scorer.getScore(m.id) < filter)
           //  this.rolegiver.removeRoleFromUser(m, message.guild, role);
       })
-      console.log("Done cleaning " + roles[i].role + "!!");
+      console.log(`[${new Date().toLocaleString()}] Done cleaning ${roles[i].role} !!`);
     }
   }
 
