@@ -150,7 +150,10 @@ class PostManager {
       }
       let msgURL = Post.generateUrl(message.channel.id, message.id);
 
-      newListContent += `**UPDATED <#${channelID}> post from <@!${authorID}>**\n`;
+      if(record.authorID !== authorID)
+        newListContent += `**UPDATED <#${channelID}> post by Mod <@!${authorID}> in behalf of <@${record.authorID}>**\n`;
+      else
+        newListContent += `**UPDATED <#${channelID}> post from <@!${authorID}>**\n`;
       
       newListContent += "HAVE: " + (haveEdited ? `~~${record.have}~~`: "") + ` ${data.have}\n`;
       newListContent += "WANT: " + (wantEdited ? `~~${record.want}~~`: "") + ` ${data.want}\n`;
