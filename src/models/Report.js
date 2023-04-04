@@ -47,14 +47,14 @@ exports.getReportCountFromFile = () => {
   return Object.keys(reports).length;
 }
 
-exports.countVerifiedReportsForUser = (targetid) => {
-  let count = 0;
+exports.getVerifiedReportsForUser = (targetid) => {
+  let verifiedReports = [];
   Object.keys(reports).forEach((key) => {
     if (reports[key].targetID === targetid && reports[key].verified) {
-      count++;
+      verifiedReports.push(reports[key]);
     }
   });
-  return count;
+  return verifiedReports;
 }
 
 /**

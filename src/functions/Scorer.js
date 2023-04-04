@@ -74,7 +74,8 @@ class Scorer {
       let gm = await dUtil.getGuildMemberfromID(user.id, interaction.guild).catch(console.error);
       let joinStr = gm.joinedAt.toString();
       let joinDur = "";
-      let reportsCount = reportmngr.getVerifiedReportsCount(user.id.toString());
+      let reports = reportmngr.getVerifiedReportsMatrix(user.id.toString());
+      if(reports == "") reports = "CLEAN RECORD";
 
       Object.keys(dateData).forEach((x) => {
         creaDur += `${dateData[x]} `;
@@ -120,7 +121,7 @@ class Scorer {
           user.displayAvatarURL(),
           roles,
           transStr,
-          reportsCount.toString(),
+          reports,
           creaStr,
           creaDur,
           joinStr,
@@ -174,6 +175,10 @@ class Scorer {
       .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
 
     return embedBuilder;
+  }
+
+  reportsForUser(){
+
   }
 }
 

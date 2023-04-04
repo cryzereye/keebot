@@ -126,8 +126,15 @@ class ReportManager {
 
   }
 
-  getVerifiedReportsCount(id) {
-    return Report.countVerifiedReportsForUser(id);
+  getVerifiedReportsMatrix(id) {
+    let reports = Report.getVerifiedReportsForUser(id);
+    let reportStats = "";
+    reportTypes.forEach(type =>{
+      let fetched = reports.filter((entry) => entry.category === type);
+      if(fetched.length > 0)
+        reportStats += `${type}: ${fetched.length}\n`;
+    });
+    return reportStats;
   }
 
   generateModal(target) {
