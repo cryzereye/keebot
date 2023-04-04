@@ -95,7 +95,7 @@ class PostManager {
     let editPost = await this.getValidPostRecord(argPostID, channelId, guild);
 
     if (editPost) {
-      const errors = this.postUpdatePreValidations(editPost, user.id, editPost.authorID, guild);
+      const errors = await this.postUpdatePreValidations(editPost, user.id, editPost.authorID, guild);
       if(errors) return errors;
 
       let modal = this.generateModal("edit", editPost.type, null, editPost.postID, editPost.have, editPost.want);
@@ -531,12 +531,14 @@ class PostManager {
     return null;
   }
 
-  isValidPostEditor(userID, authorID, guild) {
-    return (authorID == userID || dUtil.isMod(guild, userID));
+  async isValidPostEditor(userID, authorID, guild) {
+    let isMod = await dUtil.isMod(guild, userID);
+    return (authorID == userID || isMod);
   }
 
-  postUpdatePreValidations(postRecord, userID, authorID, guild) {
-    if (!this.isValidPostEditor(userID, authorID, guild)) {
+  async postUpdatePreValidations(postRecord, userID, authorID, guild) {
+    let validEditor = await this.isValidPostEditor(userID, authorID, guild);
+    if (!validEditor) {
       return {
         success: false,
         content: `Invalid! Make sure you are editing your own post. Pinging <@!${me_id}>`,

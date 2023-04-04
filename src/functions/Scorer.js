@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 //const { DBManager } = require('../util/DBManager');
-const { relevant_roles } = require('../../json/config.json');
+const { relevant_roles, channelsID } = require('../../json/config.json');
 const fs = require('fs');
 const fileName = '../../json/scores.json';
 const osFile = './json/scores.json';
@@ -64,6 +64,8 @@ class Scorer {
  */
   getStatsEmbed(interaction, user, reportmngr) {
     (async () => {
+      //interaction.deferReply().then(console.log).catch(console.error);
+
       let record = scores[user.id];
       let fullName = `${user.username}#${user.discriminator}`;
       let transStr = "";
@@ -74,8 +76,14 @@ class Scorer {
       let gm = await dUtil.getGuildMemberfromID(user.id, interaction.guild).catch(console.error);
       let joinStr = gm.joinedAt.toString();
       let joinDur = "";
+
       let reports = reportmngr.getVerifiedReportsMatrix(user.id.toString());
       if(reports == "") reports = "CLEAN RECORD";
+
+      let feedbackCount = "";
+      let isServiceProvider = await dUtil.isServiceProvider(interaction.guild, user.id);
+      if(isServiceProvider)
+        feedbackCount = await this.countFeedbackForUser(interaction.client, interaction.guild, user.id);
 
       Object.keys(dateData).forEach((x) => {
         creaDur += `${dateData[x]} `;
@@ -125,7 +133,9 @@ class Scorer {
           creaStr,
           creaDur,
           joinStr,
-          joinDur
+          joinDur,
+          isServiceProvider,
+          feedbackCount
         )]
       }).catch(console.error);
     })();
@@ -159,8 +169,8 @@ class Scorer {
    * @param {Object} transStr 
    * @returns {discordjs.MessageEmbed}
    */
-  generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration) {
-    const embedBuilder = new EmbedBuilder()
+  generateScoreCard(fullName, points, avatarURL, roles, transStr, reportsCount, creationStr, creationDuration, joinStr, joinDuration, isServiceProvider, feedbackCount) {
+    let embedBuilder = new EmbedBuilder()
       .setColor("DarkAqua")
       .setTitle(`${points} Points`)
       .setAuthor({
@@ -169,16 +179,21 @@ class Scorer {
       })
       .setDescription(roles)
       .setThumbnail(`${avatarURL}`)
-      .addFields({ name: 'Transactions (max 10):', value: transStr })
-      .addFields({ name: 'Verified Reports Involved:', value: reportsCount })
+      .addFields({ name: 'Transactions (max 10):', value: transStr });
+
+    if(isServiceProvider)
+      embedBuilder.addFields({ name: 'Service Feedback Count:', value: feedbackCount });
+
+    embedBuilder.addFields({ name: 'Verified Reports Involved:', value: reportsCount })
       .addFields({ name: 'Account creation date:', value: `${creationStr}\n${creationDuration} from now` })
       .addFields({ name: 'Server join date:', value: `${joinStr}\n${joinDuration} from now` });
 
     return embedBuilder;
   }
 
-  reportsForUser(){
-
+  async countFeedbackForUser(client, guild, userID){
+    let feedback = await dUtil.fetchAllMessagesMentionsUser(client, guild, userID, channelsID.serviceFeedback);
+    return feedback.length.toString();
   }
 }
 
