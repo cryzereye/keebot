@@ -1,7 +1,7 @@
-const { Client, GatewayIntentBits, Partials, InteractionType } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, InteractionType, ActivityType } = require('discord.js');
 const { Routes} = require('discord-api-types/v9');
 const { REST } = require('@discordjs/rest');
-const { discord_id, discord_token, channelsID, dev } = require('../json/config.json');
+const { discord_id, discord_token, channelsID, dev } = require('../../json/config.json');
 const { commands } = require('../globals/commands.json');
 const { Scorer } = require('../functions/Scorer');
 const { RoleGiverManager } = require('../functions/RoleGiverManager');
@@ -12,6 +12,7 @@ const { CommandProcessor } = require('./CommandProcessor');
 const { ModalProcessor } = require('./ModalProcessor');
 const { MessageProcessor } = require('./MessageProcessor');
 const { ContextProcessor } = require('./ContextProcessor');
+const { BackupService } = require('../service/BackupService');
 
 class VouchBot {
   constructor() {
@@ -30,7 +31,7 @@ class VouchBot {
       this.buildDependencies();
       this.buildSlashCommands(); // client.application is null until client is ready
       this.updatePresence();
-      console.log("bot is ready"); 
+      console.log(`[${new Date().toLocaleString()}] bot is ready`); 
     });
 
     // handles incoming messages
@@ -66,6 +67,7 @@ class VouchBot {
     this.modalproc = new ModalProcessor();
     this.msgproc = new MessageProcessor();
     this.contextproc = new ContextProcessor();
+    this.backupservice = new BackupService(this.client);
   }
 
   /**
@@ -75,7 +77,7 @@ class VouchBot {
     const rest = new REST({ version: '10' }).setToken(discord_token);
 
     await rest.put(Routes.applicationGuildCommands(discord_id, channelsID.server), { body: commands })
-      .then((data) => console.log(`Successfully registered ${data.length} application commands.`))
+      .then((data) => console.log(`[${new Date().toLocaleString()}] Successfully registered ${data.length} application commands.`))
       .catch(console.error);
   }
 
@@ -85,21 +87,13 @@ class VouchBot {
   async updatePresence(){
     let presence = {
       activities:[{
-        type: "PLAYING",
-        platform: "desktop",
-        url: "https://github.com/cryzereye/vouch-bot-js"
+        type: ActivityType.Playing,
+        url: "https://github.com/cryzereye/keebot-js",
+        state: "https://github.com/cryzereye/keebot-js"
       }],
       status : "online"
     }
-    
-    if(dev){
-      presence.activities[0].name = "IN DEVELOPMENT";
-      presence.status = "dnd";
-    }
-    else{
-      presence.activities[0].name = "/help for more details";
-      presence.status = "online";
-    }
+    presence.activities[0].name = "ping @gego for bugs";
     this.client.user.setPresence({
       activities: presence.activities,
       status: presence.status

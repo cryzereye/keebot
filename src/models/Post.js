@@ -1,8 +1,8 @@
 const fs = require('fs');
-const fileName = '../json/post.json';
-const osFile = './src/json/post.json';
+const fileName = '../../json/post.json';
+const osFile = './json/post.json';
 let { post } = require(fileName);
-const { channelsID, dev } = require('../json/config.json');
+const { channelsID, dev } = require('../../json/config.json');
 
 exports.savePostToFile = () => {
   let dataStr = { "post": post };
@@ -91,6 +91,16 @@ exports.expired = (postID) => {
   post[postID].expired = true;
   this.savePostToFile();
 }
+
+/**
+ * Gets postID from associated newListID
+ * @param {Snowflake} newListID 
+ * @returns {Object} post[]
+ */
+exports.getPostFromNewListID = (newListID) => {
+  let postArr = Object.values(post);
+  return postArr.filter((currentPost) => currentPost.newListID.includes(newListID))[0];
+} 
 
 exports.list = (authorID, itemrole, type) => {
   let records = [];
