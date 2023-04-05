@@ -1,6 +1,6 @@
 {
   "name": "keebot-js",
-  "version": "1.6.3",
+  "version": "1.6.3.1",
   "description": "Keebisoria Marketplace Bot",
   "main": "index.js",
   "scripts": {
