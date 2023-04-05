@@ -205,7 +205,7 @@ class PostManager {
     let soldPost = await this.getValidPostRecord(argPostID, channelId, guild);
 
     if (soldPost) {
-      const errors = this.postUpdatePreValidations(soldPost, user.id, soldPost.authorID, guild);
+      const errors = await this.postUpdatePreValidations(soldPost, user.id, soldPost.authorID, guild);
       if(errors) return errors;
 
       let modal = this.generateModal("sold", soldPost.type, null, soldPost.postID, soldPost.have, soldPost.want);
@@ -270,12 +270,11 @@ class PostManager {
   async deletePostModal(interaction, argPostID) {
     let {guild, user, channelId} = interaction;
     let deletePost = await this.getValidPostRecord(argPostID, channelId, guild);
-
     if (deletePost) {
-      const errors = this.postUpdatePreValidations(deletePost, user.id, deletePost.authorID, guild);
+      const errors = await this.postUpdatePreValidations(deletePost, user.id, deletePost.authorID, guild);
       if(errors) return errors;
-
       let modal = this.generateModal("delete", deletePost.type, null, deletePost.postID, deletePost.have, deletePost.want);
+
       if (modal) return this.successModal(modal);
       else return this.failModal();
     }
@@ -559,7 +558,7 @@ class PostManager {
         modal: null
       }
     }
-
+    
     if (postRecord.deleted) {
       return {
         success: false,
