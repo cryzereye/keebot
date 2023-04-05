@@ -10,14 +10,10 @@ This is the bot that manages the marketplace system of the Discord server Keebis
 - Has a report command which users can use to report transaction-related incidents within the server. As of writing this, all discussions are done via DMs. Upon verification of the report, admin/mods can flag the report as verified and a 'verified report count' will be added to the user's stats.
 - For admins (me, statically coded from the config), there is a data extraction function that reprocesses all the sent vouches. This is for data accuracy.
 
-All features above will have future additions. Here's our list as of now:
+Development tracking board available here:
+https://cryzereye.notion.site/b9e4fe70387a4f1a993e5b6d84d04516?v=a54cfda2f01f48a4a854cf9688d0f05e 
 
-1. Streamlined vouch edits and deletes detection: subject to mod/admin double check
-2. Automated vouch verification against actual buy/sell/trade listings
-3. Help assistance scoring system (Awaiting forums feature for the server)
-4. Service provider registry and search
-
-This is currently hosted in a VPS (CentOS 8).
+This is currently hosted in a VPS (CentOS 8) + pm2.
 
 ### Future Major Releases are moved to [keebot-ts](https://github.com/cryzereye/keebot-ts)
 1. Microservice architecture via Express.js with TypeScript implementation
