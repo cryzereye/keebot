@@ -1,11 +1,14 @@
 class MessageExtractor {
   constructor(){}
 
-  async extractAllMessages(channel, scorer, rolegivermngr){
+  async extractAllMessages(interaction, scorer, rolegivermngr){
+    const channel = interaction.channel;
     let count = 0;
     let hasMoreMessages = true;
     let lastMessageID;
+
     scorer.clearScores();
+
     while(hasMoreMessages) {
 
       // from https://stackoverflow.com/questions/55153125/fetch-more-than-100-messages
@@ -37,7 +40,11 @@ class MessageExtractor {
       .catch(console.error); 
     }
     console.log(`[${new Date().toLocaleString()}] Message count: ${count}`);
-    return true;
+    
+    await interaction.reply({
+      content: "Extraction complete",
+      ephemeral: true
+    }).catch(console.error);
   }
 
 }

@@ -6,13 +6,14 @@ const { commands } = require('../globals/commands.json');
 const { Scorer } = require('../functions/Scorer');
 const { RoleGiverManager } = require('../functions/RoleGiverManager');
 const { ReportManager } = require('../functions/ReportManager');
-const { PostManager } = require('../functions/PostManager');
 //const { DBManager } = require('../util/DBManager');
 const { CommandProcessor } = require('./CommandProcessor');
 const { ModalProcessor } = require('./ModalProcessor');
 const { MessageProcessor } = require('./MessageProcessor');
 const { ContextProcessor } = require('./ContextProcessor');
 const { BackupService } = require('../service/BackupService');
+const { BumpService } = require('../service/BumpService');
+const { PostFactory } = require('../functions/post/PostFactory');
 
 class VouchBot {
   constructor() {
@@ -42,11 +43,11 @@ class VouchBot {
     // handles usage of slash commands
     this.client.on('interactionCreate', async interaction => {
       if (interaction.isContextMenuCommand())
-        this.contextproc.processContext(interaction, this.postmngr, this.reportmngr);
+        this.contextproc.processContext(interaction, this.reportmngr);
       else if (interaction.type === InteractionType.ApplicationCommand)
-        this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr, this.postmngr);
+        this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr, this.postfactory);
       else if (interaction.type === InteractionType.ModalSubmit)
-        this.modalproc.processModal(interaction, this.postmngr);
+        this.modalproc.processModal(interaction);
       else
         return;
     });
@@ -62,12 +63,13 @@ class VouchBot {
     this.rolegivermngr = new RoleGiverManager(this.client);
     this.scorer = new Scorer(); // removed this.dbmngr arg
     this.reportmngr = new ReportManager(this.client);
-    this.postmngr = new PostManager(this.client);
     this.cmdproc = new CommandProcessor();
     this.modalproc = new ModalProcessor();
     this.msgproc = new MessageProcessor();
     this.contextproc = new ContextProcessor();
     this.backupservice = new BackupService(this.client);
+    this.bumpservice = new BumpService(this.client);
+    this.postfactory = new PostFactory(this.client);
   }
 
   /**

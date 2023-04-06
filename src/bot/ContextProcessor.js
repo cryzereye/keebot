@@ -4,7 +4,7 @@ const dUtil = require('../util/DiscordUtil');
 class ContextProcessor {
   constructor() { }
 
-  async processContext(interaction, postmngr, reportmngr) {
+  async processContext(interaction, reportmngr) {
     const { commandName, targetId } = interaction;
     switch (commandName) {
       case commands[5].name: this.processResults(interaction, await postmngr.editPostModal(interaction, targetId)); break;

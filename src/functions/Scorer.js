@@ -64,7 +64,6 @@ class Scorer {
  */
   getStatsEmbed(interaction, user, reportmngr) {
     (async () => {
-      //interaction.deferReply().then(console.log).catch(console.error);
 
       let record = scores[user.id];
       let fullName = `${user.username}#${user.discriminator}`;

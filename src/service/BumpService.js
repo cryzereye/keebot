@@ -9,6 +9,7 @@ class BumpService extends BaseService {
   constructor(client) {
     super(client);
     this.queue = [];
+    this.startService();
   }
 
   async startService() {
