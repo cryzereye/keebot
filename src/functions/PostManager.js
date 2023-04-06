@@ -3,12 +3,12 @@ const { relevant_roles, channelsID, me_id, dev, admins } = require('../../json/c
 const Post = require('../models/Post');
 const dUtil = require('../util/DiscordUtil');
 const util = require('../util/Utilities');
-const { BumpManager } = require('./BumpManager');
+const { BumpService } = require('../service/BumpService');
 
 class PostManager {
   constructor(client) {
-    this.bumpmngr = new BumpManager(client);
-    this.bumpmngr.startService();
+    this.bumpserv = new BumpService(client);
+    this.bumpserv.startService();
   }
 
   async newPostModal(interaction) {
