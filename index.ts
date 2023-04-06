@@ -1,3 +1,3 @@
-const { VouchBot } = require('./src/bot/VouchBot')
+import { Bot } from './src/Bot';
 
-let bot = new VouchBot();
+let bot = new Bot();

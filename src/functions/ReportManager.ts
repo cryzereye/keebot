@@ -5,7 +5,7 @@ const dUtil = require('../util/DiscordUtil');
 const { admins, channelsID, reportTypes } = require('../../json/config.json');
 const { constants } = require('../globals/constants.json');
 
-class ReportManager {
+export class ReportManager {
   constructor(client) {
     this.client = client;
   }
@@ -175,5 +175,3 @@ class ReportManager {
     return summary;
   }
 }
-
-module.exports = { ReportManager };

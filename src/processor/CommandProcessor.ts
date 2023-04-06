@@ -5,7 +5,7 @@ const { constants } = require('../globals/constants.json');
 const { MessageExtractor } = require('../util/MessageExtractor');
 const dUtil = require('../util/DiscordUtil');
 
-class CommandProcessor {
+export class CommandProcessor {
 	constructor() { }
 
 	async processCommand(interaction, scorer, rolegivermngr, reportmngr, postfactory) {
@@ -76,5 +76,3 @@ class CommandProcessor {
 	}
 
 }
-
-module.exports = { CommandProcessor }

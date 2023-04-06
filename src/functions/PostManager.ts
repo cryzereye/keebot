@@ -5,7 +5,7 @@ const dUtil = require('../util/DiscordUtil');
 const util = require('../util/Utilities');
 const { BumpService } = require('../service/BumpService');
 
-class PostManager {
+export class PostManager {
   constructor(client) {
     this.bumpserv = new BumpService(client);
     this.bumpserv.startService();
@@ -620,5 +620,3 @@ class PostManager {
     }
   }
 }
-
-module.exports = { PostManager }

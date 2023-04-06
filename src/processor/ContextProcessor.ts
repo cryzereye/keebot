@@ -1,7 +1,7 @@
 const { commands } = require('../globals/commands.json');
 const dUtil = require('../util/DiscordUtil');
 
-class ContextProcessor {
+export class ContextProcessor {
   constructor() { }
 
   async processContext(interaction, reportmngr) {
@@ -24,5 +24,3 @@ class ContextProcessor {
     dUtil.postProcess(interaction, success, content, isModal, modal);
   }
 }
-
-module.exports = { ContextProcessor }

@@ -1,4 +1,4 @@
-module.exports = class Manager {
+export class Manager {
     constructor(client) {
         this.client = client;
     }

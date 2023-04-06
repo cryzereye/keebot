@@ -1,7 +1,7 @@
 const { channelsID } = require('../../json/config.json');
 const dUtil = require('../util/DiscordUtil');
 
-class StatsManager {
+export class StatsManager {
     constructor(client){
         this.client = client;
     }
@@ -11,5 +11,3 @@ class StatsManager {
 
     }
 }
-
-module.exports = { StatsManager }

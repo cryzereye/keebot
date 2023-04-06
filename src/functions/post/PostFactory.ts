@@ -4,7 +4,7 @@ const { SoldPostManager } = require('./SoldPostManager');
 const { DeletePostManager } = require('./DeletePostManager');
 const { ListPostManager } = require('./ListPostManager');
 
-class PostFactory {
+export class PostFactory {
     constructor(client) {
         this.newPostManager = new NewPostManager(client);
         this.editPostManager = new EditPostManager(client);
@@ -45,5 +45,3 @@ class PostFactory {
         dUtil.postProcess(interaction, success, content, isModal, modal);
     }
 }
-
-module.exports = { PostFactory }

@@ -5,7 +5,7 @@ const dUtil = require('../util/DiscordUtil');
 const util = require('../util/Utilities');
 const { channelsID, dev } = require('../../json/config.json');
 
-class BumpService extends BaseService {
+export class BumpService extends BaseService {
   constructor(client) {
     super(client);
     this.queue = [];
@@ -129,5 +129,3 @@ class BumpService extends BaseService {
       await new Promise(resolve => setTimeout(resolve, util.getMinutes(5)));
   }
 }
-
-module.exports = { BumpService }

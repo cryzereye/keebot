@@ -1,6 +1,6 @@
 const { roles, serverID } = require('../../json/config.json');
 const dUtil = require('../util/DiscordUtil');
-class RoleGiverManager {
+export class RoleGiverManager {
   constructor(client){
     this.client = client;
   }
@@ -41,5 +41,3 @@ class RoleGiverManager {
     return message.guild.roles.cache.find((r) => r.name == roleName);
   }
 }
-
-module.exports = { RoleGiverManager }

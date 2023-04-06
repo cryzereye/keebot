@@ -1,5 +1,5 @@
 const { dev, me_id, command_sign, channelsID, discord_id } = require('../../json/config.json');
-class MessageProcessor {
+export class MessageProcessor {
   constructor() { }
 
   async processMessage(message, clientID, scorer, rolegivermngr) {
@@ -46,5 +46,3 @@ class MessageProcessor {
     return (marketChannels.includes(channel));
   }
 }
-
-module.exports = { MessageProcessor }

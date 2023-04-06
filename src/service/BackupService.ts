@@ -3,7 +3,7 @@ const State = require('../models/State');
 const BaseService = require('./BaseService');
 const util = require('../util/Utilities');
 
-class BackupService extends BaseService {
+export class BackupService extends BaseService {
     constructor(client) {
         super(client);
         this.startService();
@@ -41,5 +41,3 @@ class BackupService extends BaseService {
         State.updateState("next_backup_timedate", next.toString());
     }
 }
-
-module.exports = { BackupService }

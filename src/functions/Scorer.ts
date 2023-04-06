@@ -8,7 +8,7 @@ let { scores } = require(fileName);
 const util = require('../util/Utilities');
 const dUtil = require('../util/DiscordUtil');
 
-class Scorer {
+export class Scorer {
   // removed dbmngr arg
   constructor() {
     //this.dbmngr = dbmngr;
@@ -195,5 +195,3 @@ class Scorer {
     return feedback.length.toString();
   }
 }
-
-module.exports = { Scorer }
