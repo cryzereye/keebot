@@ -10,9 +10,10 @@
   "author": "cryzereye",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/rest": "^0.5.0",
-    "discord-api-types": "^0.36.3",
-    "discord.js": "^14.8.0",
-    "mongodb": "^4.9.1"
+    "@discordjs/rest": "^1.7.0",
+    "discord-api-types": "^0.37.37",
+    "discord.js": "^14.9.0",
+    "mongodb": "^5.2.0",
+    "typescript": "^5.0.3"
   }
 }
