@@ -1,10 +1,12 @@
+import { Client } from "discord.js";
+import { Service } from "./Service";
+
 const { state } = require('../../json/state.json');
 const State = require('../models/State');
-const BaseService = require('./BaseService');
 const util = require('../util/Utilities');
 
-export class BackupService extends BaseService {
-    constructor(client) {
+export class BackupService extends Service {
+    constructor(client: Client) {
         super(client);
         this.startService();
     }
