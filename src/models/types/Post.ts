@@ -4,7 +4,7 @@ export type Post = {
 	postID: Snowflake,
 	newListID: Array<Snowflake>,
 	authorID: Snowflake,
-	type: TradeType,
+	type: TransactionType,
 	itemrole: Snowflake,
 	have: string,
 	want: string,

@@ -1,38 +1,42 @@
+import fs = require('fs');
+import path = require('path');
+import { TimeDiff } from "./types/TimeDiff";
+
 const { dev } = require('../../json/config.json');
-const fs = require('fs');
-const path = require('path');
+
 /**
  * from: https://www.codegrepper.com/code-examples/javascript/node+js+time+difference+in+hours
  * returns time difference from now to target
  * @param {Date} target 
  */
-exports.getTimeDiff = (target) => {
-	let result = {}
-	let now = Date.now();
-	let ms = (now - target); // milliseconds between now & target 
+export function getTimeDiff (target: Date) : TimeDiff {
+	const now = Date.now(); // already in milliseconds
+	const ms = (now - target.getMilliseconds());
 
-	let years = Math.floor(ms / 31557600000);
-	let months = Math.floor((ms % 31557600000) / 2629800000);
-	let days = Math.floor(((ms % 31557600000) % 2629800000) / 86400000);
-	let hours = Math.floor((((ms % 31557600000) % 2629800000) % 86400000) / 3600000);
-	let mins = Math.round(((((ms % 31557600000) % 2629800000) % 86400000) % 3600000) / 60000);
+	const years : number = Math.floor(ms / 31557600000);
+	const months : number = Math.floor((ms % 31557600000) / 2629800000);
+	const days : number = Math.floor(((ms % 31557600000) % 2629800000) / 86400000);
+	const hours : number = Math.floor((((ms % 31557600000) % 2629800000) % 86400000) / 3600000);
+	const mins : number = Math.round(((((ms % 31557600000) % 2629800000) % 86400000) % 3600000) / 60000);
 
-	if (years != 0) result["years"] = `${years} years`;
-	if (months != 0) result["months"] = `${months} months`;
-	if (days != 0) result["days"] = `${days} days`;
-	if (hours != 0) result["hours"] = `${hours} hours`;
-	if (mins != 0) result["mins"] = `${mins} mins`;
+	const result: TimeDiff = {
+		years : (years > 0 ? `${years} years` : ""),
+		months : (months > 0 ? `${months} months` : ""),
+		days : (days > 0 ? `${days} days` : ""),
+		hours : (hours > 0 ? `${hours} hours` : ""),
+		mins : (mins > 0 ? `${mins} mins` : "")
+	}
 
 	return result;
 }
 
 /**
  * returns date equivalent or adding x hours to the date start
- * @param {Date} start 
- * @param {Number} hours 
- * @returns {Date}
+ * @param {string} start 
+ * @param {number} hours 
+ * @returns {string}
  */
-exports.addHours = (start, hours) => {
+export function addHours (start: string, hours: number) : string {
 	let date = new Date(start);
 	if (dev)
 		date.setTime(date.getTime() + hours * 60 * 1000); // x mins for test purposes
@@ -43,38 +47,38 @@ exports.addHours = (start, hours) => {
 
 /**
  * get ms equivalent of arg mins for js date/time usages
- * @param {Number} mins 
- * @returns {Number} ms in mins
+ * @param {number} mins 
+ * @returns {number} ms in mins
  */
-exports.getMinutes = (mins) => {
+export function getMinutes (mins: number) : number {
 	return mins * 60 * 1000;
 }
 
 /**
  * returns true if str is a digit string sandwiched in words
- * @param {String} str 
+ * @param {string} str 
  * @returns {Boolean}
  */
-exports.isValidAmount = (str) => {
-	let regexp = /\w*\d+\w*/gi;
+export function isValidAmount (str: string) : Boolean {
+	const regexp = /\w*\d+\w*/gi;
 	return regexp.test(str);
 }
 
-exports.copyAllFiles = (src, dest) => {
-	this.createFolder(dest);
+export function copyAllFiles (src: string, dest: string) : void {
+	createFolder(dest);
 
 	// Get list of files in source directory
 	const files = fs.readdirSync(src);
 
 	// Copy each file to the destination directory
-	files.forEach(file => {
+	files.forEach((file: any) => {
 		const srcPath = path.join(src, file);
 		const destPath = path.join(dest, file);
 		fs.copyFileSync(srcPath, destPath);
 	});
 }
 
-exports.createFolder = (dest) => {
+export function createFolder (dest: string) : void {
 	if (!fs.existsSync(dest)) {
 		fs.mkdirSync(dest);
 	}
