@@ -1,15 +1,16 @@
+import { Channel, Client, CommandInteraction, Emoji, FetchMessageOptions, Guild, GuildBasedChannel, GuildMember, Interaction, Message, ModalBuilder, ModalSubmitInteraction, Options, Role, Snowflake, TextBasedChannel, TextChannel, User } from "discord.js";
+
 const { MessageType } = require('discord-api-types/v10');
 const { channelsID, modRole, serviceProviderRole } = require('../../json/config.json');
 
 /**
  * returns the GuildMember equivalent of ID given
  * @param {Snowflake} id : User id
- * @param {discord.js.Guild} guild 
- * @returns {discord.js.GuildMember}
+ * @param {Guild} guild 
+ * @returns {GuildMember}
  */
-exports.getGuildMemberfromID = async (id, guild) => {
-  return await guild.members.cache.get((gm) => gm.id == id) ||
-    await guild.members.fetch(id).catch(console.error);
+export async function getGuildMemberfromID (targetID: Snowflake, guild: Guild) : Promise<GuildMember | void>  {
+	return guild.members.cache.get(targetID) || await guild.members.fetch(targetID).catch(console.error);
 }
 
 /**
@@ -20,16 +21,16 @@ exports.getGuildMemberfromID = async (id, guild) => {
  * @param {String} message 
  * @return {discord.js.Message} sent message
  */
-exports.sendMessageToChannel = async (client, guildID, chid, message) => {
-  while (true) {
-    let guild = await this.getGuildFromID(client, guildID).catch(console.error);
-    if (guild) {
-      let channel = await this.getChannelFromID(guild, chid).catch(console.error);
-      if (channel) {
-        return await channel.send(message).catch(console.error);
-      }
-    }
-  }
+export async function sendMessageToChannel (client: Client, guildID: Snowflake, chid: Snowflake, message: string) : Promise<Message | void> {
+	while (true) {
+		let guild = await getGuildFromID(client, guildID).catch(console.error);
+		if (guild) {
+			let channel = await getTextChannelFromID(guild, chid).catch(console.error);
+			if (channel) {
+				return await channel.send(message).catch(console.error);
+			}
+		}
+	}
 }
 
 /**
@@ -41,15 +42,17 @@ exports.sendMessageToChannel = async (client, guildID, chid, message) => {
  * @param {String} content 
  * @return {Boolean}: if sent successfully
  */
-exports.editMessageInChannel = async (client, guildID, chid, msgid, content) => {
-  let guild = await this.getGuildFromID(client, guildID).catch(console.error);
-  let fetchedMsg = await this.getMessageFromID(guild, chid, msgid);
+export async function editMessageInChannel (client: Client, guildID: Snowflake, chid: Snowflake, msgid: Snowflake, content: string) : Promise<Boolean> {
+	let guild = await getGuildFromID(client, guildID).catch(console.error);
+	if(!guild) return false;
 
-  if (fetchedMsg) {
-    let response = await fetchedMsg.edit(content).catch(console.error);
-    if (response) return true;
-  }
-  return false;
+	let fetchedMsg = await getMessageFromID(guild, chid, msgid);
+
+	if (fetchedMsg) {
+		let response = await fetchedMsg.edit(content).catch(console.error);
+		if (response) return true;
+	}
+	return false;
 }
 
 /**
@@ -58,9 +61,8 @@ exports.editMessageInChannel = async (client, guildID, chid, msgid, content) => 
  * @param {Snowflake} guildID 
  * @returns {discord.js.Guild}
  */
-exports.getGuildFromID = async (client, guildID) => {
-  return await client.guilds.cache.get((g) => g.id == guildID) ||
-    await client.guilds.fetch(guildID).catch(console.error);
+export async function getGuildFromID (client: Client, guildID: Snowflake) : Promise<Guild | void> {
+	return await client.guilds.cache.get(guildID) || await client.guilds.fetch(guildID).catch(console.error);
 }
 
 /**
@@ -69,17 +71,9 @@ exports.getGuildFromID = async (client, guildID) => {
  * @param {Snowflake} channelID 
  * @returns {discord.js.Channel}
  */
-exports.getChannelFromID = async (guild, channelID) => {
-  let channel;
-  try {
-    channel = await guild.channels.cache.get(channelID);
-  }
-  catch (e) {
-    channel = await guild.channels.fetch(channelID).catch(console.error);
-  }
-  finally {
-    return channel;
-  }
+export async function getTextChannelFromID (guild: Guild, channelID: Snowflake) : Promise<TextChannel | void | null> {
+	let channel = guild.channels.cache.get(channelID) || await guild.channels.fetch(channelID).catch(console.error);
+	if(channel instanceof TextChannel) return channel;
 }
 
 /**
@@ -88,11 +82,13 @@ exports.getChannelFromID = async (guild, channelID) => {
  * @param {discord.js.Role} role 
  * @returns {Boolean}
  */
-exports.guildMemberHasRole = async (gm, role) => {  
-  if (gm && role) {
-    return (gm._roles.includes(role));
-  }
-  return false;
+export async function guildMemberHasRole(gm: GuildMember, role: Role): Promise<Boolean> {
+	let targetRole: Role | undefined;
+	if (gm && role) {
+		targetRole = gm.roles.cache.get(role.id);
+		if(targetRole) return true;
+	}
+	return false;
 }
 
 /**
@@ -101,12 +97,12 @@ exports.guildMemberHasRole = async (gm, role) => {
  * @param {discord.js.Guild} guild 
  * @param {discord.js.Role} role 
  */
-exports.addRoleToUser = async (user, guild, role) => {
-  let gm = await this.getGuildMemberfromID(user.id, guild).catch(console.error);
-  if (gm != undefined && !(await this.guildMemberHasRole(gm, role).catch(console.error))) { // if member already has role, then do not put the role
-    gm.roles.add(role).catch((e) => console.log(e.message));
-    console.log(`[${new Date().toLocaleString()}] ${role.name} added to ${user.username}`);
-  }
+export async function addRoleToUser(user: User, guild: Guild, role: Role): Promise<void> {
+	let gm = await getGuildMemberfromID(user.id, guild).catch(console.error);
+	if (gm && !(await guildMemberHasRole(gm, role).catch(console.error))) {
+		gm.roles.add(role).catch((e) => console.log(e.message));
+		console.log(`[${new Date().toLocaleString()}] ${role.name} added to ${user.username}`);
+	}
 }
 
 /**
@@ -115,12 +111,12 @@ exports.addRoleToUser = async (user, guild, role) => {
  * @param {discord.js.Guild} guild 
  * @param {discord.js.Role} role 
  */
-exports.removeRoleToUser = async (user, guild, role) => {
-  let gm = await this.getGuildMemberfromID(user.id, guild).catch(console.error);
-  if (gm != undefined && await this.guildMemberHasRole(gm, role).catch(console.error)) { // if member already has role, then do not put the role
-    gm.roles.remove(role).catch((e) => console.log(e.message));
-    console.log(`[${new Date().toLocaleString()}] ${role.name} removed from ${user.username}`);
-  }
+export async function removeRoleToUser (user: User, guild: Guild, role: Role): Promise<void> {
+	let gm = await getGuildMemberfromID(user.id, guild).catch(console.error);
+	if (gm && await guildMemberHasRole(gm, role).catch(console.error)) {
+		gm.roles.remove(role).catch((e) => console.log(e.message));
+		console.log(`[${new Date().toLocaleString()}] ${role.name} removed from ${user.username}`);
+	}
 }
 
 /**
@@ -130,11 +126,11 @@ exports.removeRoleToUser = async (user, guild, role) => {
  * @param {Snowflake} guildID 
  * @returns {discord.js.Emoji}
  */
-exports.getEmojiInstance = async (name, client, guildID) => {
-  let guild = await this.getGuildFromID(client, guildID).catch(console.error);
-  if (guild != undefined) {
-    return guild.emojis.cache.get((e) => e.name == name);
-  }
+export async function getEmojiInstance (name: string, client: Client, guildID: Snowflake): Promise<Emoji | undefined> {
+	let guild = await getGuildFromID(client, guildID).catch(console.error);
+	if (guild != undefined) {
+		return guild.emojis.cache.get(name);
+	}
 }
 
 /**
@@ -144,119 +140,115 @@ exports.getEmojiInstance = async (name, client, guildID) => {
  * @param {String} msgid: message id
  * @returns {discord.js.Message}
  */
-exports.getMessageFromID = async (guild, chid, msgid) => {
-  let channel = await this.getChannelFromID(guild, chid).catch(console.error);
-  return channel.messages.cache.get(msgid) ||
-    await channel.messages.fetch(msgid).catch(console.error);
+export async function getMessageFromID(guild: Guild, chid: Snowflake, msgid: Snowflake): Promise<Message | void> {
+	let channel = await getTextChannelFromID(guild, chid).catch(console.error);
+	if(channel instanceof TextChannel){
+		return channel.messages.cache.get(msgid) || await channel.messages.fetch(msgid).catch(console.error);
+	}
 }
 
 /**
  * does the replies and logging after user interactions
- * @param {discord.js.Interaction} interaction 
+ * @param {CommandInteraction} interaction 
  * @param {Boolean} success 
  * @param {String} content 
  * @param {Boolean} isModal
  * @param {discord.js.Modal} modal
  */
-exports.postProcess = async (interaction, success, content, isModal, modal) => {
-  if (!success)
-    await this.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.keebotlogs, `<@${interaction.user.id}>\n${content}`);
-  if (isModal) {
-    await interaction.showModal(modal).catch(console.error);
-  }
-  else {
-    try {
-      await interaction.reply({
-        content: content,
-        ephemeral: true
-      });
-    }
-    catch (e) { }
-  }
+export async function postProcess(interaction: CommandInteraction, success: Boolean, content: string, isModal: Boolean, modal: ModalBuilder): Promise<void> {
+	if (!success && interaction.guild)
+		await sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.keebotlogs, `<@${interaction.user.id}>\n${content}`);
+	if (isModal) {
+		await interaction.showModal(modal).catch(console.error);
+	}
+	else {
+		try {
+			await interaction.reply({
+				content: content,
+				ephemeral: true
+			});
+		}
+		catch (e) { }
+	}
 }
 
 /**
  * Edits a message from target channel (id). client and guild instances are required
- * @param {discord.js.Client} client 
+ * @param {Client} client 
  * @param {Snowflake} guildID 
  * @param {Snowflake} chid : Channel ID
  * @param {Snowflake} msgid: Message ID
  * @return {Boolean}: if sent successfully
  */
-exports.makeMessageSpoiler = async (client, guildID, chid, msgid) => {
-  let guild = await this.getGuildFromID(client, guildID).catch(console.error);
-  let fetchedMsg = await this.getMessageFromID(guild, chid, msgid);
+export async function makeMessageSpoiler(client: Client, guildID: Snowflake, chid: Snowflake, msgid: Snowflake): Promise<Boolean> {
+	let guild = await getGuildFromID(client, guildID).catch(console.error);
+	if(!guild) return false;
+	let fetchedMsg = await getMessageFromID(guild, chid, msgid);
 
-  if (fetchedMsg) {
-    let response = await fetchedMsg.edit(`||${fetchedMsg.content}||`).catch(console.error);
-    if (response) return true;
-  }
-  return false;
+	if (fetchedMsg) {
+		let response = await fetchedMsg.edit(`||${fetchedMsg.content}||`).catch(console.error);
+		if (response) return true;
+	}
+	return false;
 }
 
 
 /**
  * Returns the ID of the message to which msgid replied to
- * @param {discord.js.Client} client 
+ * @param {Client} client 
  * @param {Snowflake} guildID 
  * @param {Snowflake} chid : Channel ID
  * @param {Snowflake} msgid: Message ID
  * @return {Snowflake}: ID of message replied to
  */
-exports.getIdOfRepliedMsg = async (guild, chid, msgid) => {
-  let reply = await this.getMessageFromID(guild, chid, msgid);
-  let origpost = await reply.fetchReference();
-  if (origpost) return origpost.id;
+export async function getIdOfRepliedMsg(guild: Guild, chid: Snowflake, msgid: Snowflake): Promise<Snowflake | void> {
+	let reply = await getMessageFromID(guild, chid, msgid);
+	if(!reply) return;
+	let origpost = await reply.fetchReference();
+	if (origpost) return origpost.id;
 }
 
-/**
- * returns true if user is a mod of the guild
- * @param {discord.js.Guild} guild 
- * @param {discord.js.User} user 
- * @returns {boolean}
- */
-exports.isMod = async (guild, userID) => {
-  let gm = await this.getGuildMemberfromID(userID, guild).catch(console.error);
-  let result = this.guildMemberHasRole(gm, modRole.id);
-  return result;
+export async function isMod(guild: Guild, userID: Snowflake): Promise<Boolean> {
+	let gm = await getGuildMemberfromID(userID, guild).catch(console.error);
+	if(!gm) return false;
+	let result = guildMemberHasRole(gm, modRole.id);
+	return result;
 }
 
-exports.isServiceProvider = async (guild, userID) => {
-  let gm = await this.getGuildMemberfromID(userID, guild).catch(console.error);
-  return this.guildMemberHasRole(gm, serviceProviderRole.id);
+export async function isServiceProvider(guild: Guild, userID: Snowflake): Promise<Boolean> {
+	let gm = await getGuildMemberfromID(userID, guild).catch(console.error);
+	if(!gm) return false;
+	let result = guildMemberHasRole(gm, serviceProviderRole.id);
+	return result;
 }
 
-/**
- * returns the User instance of using ID
- * @param {Discord.js.Client} client 
- * @param {Snowflake} userID 
- * @returns {Discord.js.User}
- */
-exports.getUserFromID = async (client, userID) => {
-  return await client.users.fetch(userID);
+export async function getUserFromID(client: Client, userID: Snowflake): Promise<User | void> {
+	return await client.users.fetch(userID);
 }
 
-exports.fetchAllMessagesMentionsUser = async (client, guild, userID, channelID) => {
-  const channel = await this.getChannelFromID(guild, channelID);
-  let hasMoreMessages = true;
-  let lastMessageID;
-  let userMentionsMessages = [];
+export async function fetchAllMessagesMentionsUser(client: Client, guild: Guild, userID: Snowflake, channelID: Snowflake): Promise<Array<Message> | void> {
+	const channel = await getTextChannelFromID(guild, channelID);
+	if(!channel) return;
 
-  while (hasMoreMessages) {
-    let options = { limit: 100 };
-    if (lastMessageID) options.before = lastMessageID;
+	let hasMoreMessages = true;
+	let lastMessageID;
+	let userMentionsMessages = new Array<Message>;
 
-    const messages = await channel.messages.fetch(options).catch(console.error);
-    if(messages.length == 0) break;
+	while (hasMoreMessages) {
+		let options:any = { limit: 100, before: ""};
+		if (lastMessageID) options.before = lastMessageID;
 
-    messages.forEach(msg => {
-      console.log(msg);
-      if(msg.mentions.users.has(userID))
-        userMentionsMessages.push(msg);
-      lastMessageID = msg.id;
-    });
+		const messages = await channel.messages.fetch(options).catch(console.error);
+		if(!(messages instanceof Array<Message>) || messages.length == 0) break;
 
-    if (messages.length % 100 != 0) hasMoreMessages = false;
-  }
-  return userMentionsMessages;
+		messages.forEach(msg => {
+			console.log(msg);
+			if (msg.mentions.users.has(userID))
+				userMentionsMessages.push(msg);
+			lastMessageID = msg.id;
+		});
+
+		if (messages.length % 100 != 0) hasMoreMessages = false;
+	}
+	return userMentionsMessages;
 }

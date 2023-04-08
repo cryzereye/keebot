@@ -1,4 +1,4 @@
-const { relevant_roles, channelsID, me_id, dev } = require('../../../json/config.json');
+const { relevant_roles, me_id, dev } = require('../../../json/config.json');
 const Post = require('../../models/Post');
 const dUtil = require('../../util/DiscordUtil');
 const util = require('../../util/Utilities');
