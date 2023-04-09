@@ -26,8 +26,6 @@ export default class Bot {
 	private modalproc: ModalProcessor;
 	private msgproc: MessageProcessor;
 	private contextproc: ContextProcessor;
-	private backupservice: BackupService;
-	private bumpservice: BumpService;
 	private postfactory: PostFactory;
 
 	private botUser: ClientUser | any;
@@ -50,9 +48,11 @@ export default class Bot {
 		this.modalproc = new ModalProcessor();
 		this.msgproc = new MessageProcessor();
 		this.contextproc = new ContextProcessor();
-		this.backupservice = new BackupService(this.client);
-		this.bumpservice = new BumpService(this.client);
 		this.postfactory = new PostFactory(this.client);
+
+		// floating services
+		new BackupService(this.client);
+		new BumpService(this.client);
 
 		this.declareListeners();
 		this.client.login(discord_token);
