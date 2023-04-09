@@ -13,6 +13,7 @@ import { ReportManager } from './functions/ReportManager';
 import { BackupService } from './service/BackupService';
 import { BumpService } from './service/BumpService';
 import { PostFactory } from './functions/post/PostFactory';
+import { DiscordUtilities } from './util/DiscordUtilities';
 
 const { discord_id, discord_token, channelsID } = require('../json/config.json');
 const { commands } = require('./globals/commands.json');
@@ -27,6 +28,7 @@ export default class Bot {
 	private msgproc: MessageProcessor;
 	private contextproc: ContextProcessor;
 	private postfactory: PostFactory;
+	private dUtil: DiscordUtilities;
 
 	private botUser: ClientUser | any;
 
@@ -41,14 +43,16 @@ export default class Bot {
 			partials: [Partials.Channel]
 		});
 
+		this.dUtil = new DiscordUtilities(this.client);
 		this.rolegivermngr = new RoleGiverManager(this.client);
 		this.scorer = new Scorer();
 		this.reportmngr = new ReportManager(this.client);
-		this.cmdproc = new CommandProcessor();
-		this.modalproc = new ModalProcessor();
-		this.msgproc = new MessageProcessor();
-		this.contextproc = new ContextProcessor();
 		this.postfactory = new PostFactory(this.client);
+
+		this.msgproc = new MessageProcessor(this.client, this.scorer, this.rolegivermngr);
+		this.modalproc = new ModalProcessor();
+		this.cmdproc = new CommandProcessor(this.dUtil, this.scorer, this.reportmngr, this.postfactory);
+		this.contextproc = new ContextProcessor(this.postfactory, this.reportmngr);
 
 		// floating services
 		new BackupService(this.client);
@@ -69,14 +73,14 @@ export default class Bot {
 		});
 
 		this.client.on('messageCreate', message => { 
-			this.msgproc.processMessage(message, this.botUser.id, this.scorer, this.rolegivermngr);
+			this.msgproc.processMessage(message);
 		});
 
 		this.client.on('interactionCreate', async interaction => {
-			if (interaction.isContextMenuCommand())
-				this.contextproc.processContext(interaction, this.reportmngr);
+			if (interaction.isMessageContextMenuCommand())
+				this.contextproc.processContext(interaction);
 			else if (interaction.isChatInputCommand())
-				this.cmdproc.processCommand(interaction, this.scorer, this.rolegivermngr, this.reportmngr, this.postfactory);
+				this.cmdproc.processCommand(interaction);
 			else if (interaction .isModalSubmit())
 				this.modalproc.processModal(interaction, this.postfactory);
 		});
