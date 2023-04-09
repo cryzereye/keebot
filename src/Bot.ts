@@ -50,9 +50,9 @@ export default class Bot {
 		this.postfactory = new PostFactory(this.client);
 
 		this.msgproc = new MessageProcessor(this.client, this.scorer, this.rolegivermngr);
-		this.modalproc = new ModalProcessor();
-		this.cmdproc = new CommandProcessor(this.dUtil, this.scorer, this.reportmngr, this.postfactory);
-		this.contextproc = new ContextProcessor(this.postfactory, this.reportmngr);
+		this.modalproc = new ModalProcessor(this.client);
+		this.cmdproc = new CommandProcessor(this.client, this.dUtil, this.scorer, this.reportmngr, this.postfactory);
+		this.contextproc = new ContextProcessor(this.client, this.postfactory, this.reportmngr);
 
 		// floating services
 		new BackupService(this.client);
