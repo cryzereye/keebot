@@ -1,17 +1,17 @@
 import { Client, Message, MessageType, Snowflake } from "discord.js";
-import { Scorer } from "../functions/Scorer";
+import { ScoreManager } from "../functions/ScoreManager";
 import { RoleGiverManager } from "../functions/RoleGiverManager";
 import { BaseProcessor } from "./BaseProcessor";
 
 const { dev, me_id, command_sign, channelsID, discord_id } = require('../../json/config.json');
 
 export class MessageProcessor extends BaseProcessor {
-  private scorer: Scorer;
+  private scoremngr: ScoreManager;
   private rolegivermngr: RoleGiverManager;
 
-  constructor(client: Client, scorer: Scorer, rolegivermngr: RoleGiverManager) {
+  constructor(client: Client, scoremngr: ScoreManager, rolegivermngr: RoleGiverManager) {
     super(client);
-    this.scorer = scorer;
+    this.scoremngr = scoremngr;
     this.rolegivermngr = rolegivermngr;
   }
 
@@ -45,18 +45,18 @@ export class MessageProcessor extends BaseProcessor {
 
         let replyto = repliedUser.username + '#' + repliedUser.discriminator;
         if(authorName == replyto) message.reply(`**DO NOT CONFIRM FOR YOURSELF!** pinging <@${me_id}>`);
-        else this.scorer.addPoint(authorID, authorName, replyto);
+        else this.scoremngr.addPoint(authorID, authorName, replyto);
       }
       else {
         // initial send
         message.mentions.users.map(x => {
           let mentioned = x.username + '#' + x.discriminator;
           if(authorName == mentioned) message.reply(`**DO NOT VOUCH YOURSELF!** pinging <@${me_id}>`);
-          else this.scorer.addPoint(authorID, authorName, mentioned);
+          else this.scoremngr.addPoint(authorID, authorName, mentioned);
         });
       }
       if (!dev)
-        this.rolegivermngr.roleCheck(this.scorer.getScore(authorID), message);
+        this.rolegivermngr.roleCheck(this.scoremngr.getScore(authorID), message);
     }
   }
 

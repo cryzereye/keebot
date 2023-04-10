@@ -7,13 +7,14 @@ import { ModalProcessor } from './processor/ModalProcessor';
 import { MessageProcessor } from './processor/MessageProcessor';
 import { ContextProcessor } from './processor/ContextProcessor';
 
-import { Scorer } from './functions/Scorer';
+import { StatsManager } from './functions/StatsManager';
 import { RoleGiverManager } from './functions/RoleGiverManager';
 import { ReportManager } from './functions/ReportManager';
 import { BackupService } from './service/BackupService';
 import { BumpService } from './service/BumpService';
 import { PostFactory } from './functions/post/PostFactory';
 import { DiscordUtilities } from './util/DiscordUtilities';
+import { ScoreManager } from './functions/ScoreManager';
 
 const { discord_id, discord_token, channelsID } = require('../json/config.json');
 const { commands } = require('./globals/commands.json');
@@ -21,7 +22,8 @@ const { commands } = require('./globals/commands.json');
 export default class Bot {
 	private client: Client;
 	private rolegivermngr: RoleGiverManager;
-	private scorer: Scorer;
+	private scoremngr: ScoreManager;
+	private statsmngr: StatsManager;
 	private reportmngr: ReportManager;
 	private cmdproc: CommandProcessor;
 	private modalproc: ModalProcessor;
@@ -44,14 +46,16 @@ export default class Bot {
 		});
 
 		this.dUtil = new DiscordUtilities(this.client);
+
 		this.rolegivermngr = new RoleGiverManager(this.client);
-		this.scorer = new Scorer();
 		this.reportmngr = new ReportManager(this.client);
 		this.postfactory = new PostFactory(this.client);
+		this.scoremngr = new ScoreManager(this.client, this.dUtil);
+		this.statsmngr = new StatsManager(this.client, this.dUtil, this.reportmngr);
 
-		this.msgproc = new MessageProcessor(this.client, this.scorer, this.rolegivermngr);
+		this.msgproc = new MessageProcessor(this.client, this.scoremngr, this.rolegivermngr);
 		this.modalproc = new ModalProcessor(this.client);
-		this.cmdproc = new CommandProcessor(this.client, this.dUtil, this.scorer, this.reportmngr, this.postfactory);
+		this.cmdproc = new CommandProcessor(this.client, this.dUtil, this.statsmngr, this.reportmngr, this.postfactory);
 		this.contextproc = new ContextProcessor(this.client, this.postfactory, this.reportmngr);
 
 		// floating services

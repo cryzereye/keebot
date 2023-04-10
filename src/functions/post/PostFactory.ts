@@ -1,3 +1,6 @@
+import { ChatInputCommandInteraction, Client, CommandInteraction, MessageContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
+import { PostResult } from "../../processor/types/PostResult";
+
 const { NewPostManager } = require('./NewPostManager');
 const { EditPostManager } = require('./EditPostManager');
 const { SoldPostManager } = require('./SoldPostManager');
@@ -5,7 +8,13 @@ const { DeletePostManager } = require('./DeletePostManager');
 const { ListPostManager } = require('./ListPostManager');
 
 export class PostFactory {
-    constructor(client) {
+    private newPostManager: NewPostManager;
+    private editPostManager: EditPostManager;
+    private soldPostManager: SoldPostManager;
+    private deletePostManager: DeletePostManager;
+    private listPostManager: ListPostManager;
+
+    constructor(client: Client) {
         this.newPostManager = new NewPostManager(client);
         this.editPostManager = new EditPostManager(client);
         this.soldPostManager = new SoldPostManager(client);
@@ -13,7 +22,7 @@ export class PostFactory {
         this.listPostManager = new ListPostManager(client);
     }
 
-    async processCommand(interaction) {
+    async processCommand(interaction: ChatInputCommandInteraction) {
         const postType = interaction.options.getSubcommand(false);
         switch (postType) {
             case "new": this.processResults(interaction, await this.newPostManager.doModal(interaction)); break;
@@ -24,7 +33,7 @@ export class PostFactory {
         }
     }
 
-    async processModal(interaction) {
+    async processModal(interaction: ModalSubmitInteraction) {
         switch (interaction.customId) {
             case "buyPostModal":
             case "sellPostModal":
@@ -35,12 +44,23 @@ export class PostFactory {
         }
     }
 
+    async processContext(interaction: MessageContextMenuCommandInteraction): Promise<PostResult>{
+        const { commandName, targetId } = interaction;
+
+        return {
+            success: false,
+            content: "",
+            isModal: false,
+            modal: new ModalBuilder
+        };
+    }
+
     /**
      * does the results processing for all modal functions
      * @param {discord.js.Interaction} interaction 
      * @param {Object} data 
      */
-    processResults(interaction, data) {
+    processResults(interaction: ChatInputCommandInteraction, data: PostResult) {
         const { success, content, isModal, modal } = data;
         dUtil.postProcess(interaction, success, content, isModal, modal);
     }

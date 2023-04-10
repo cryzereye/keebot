@@ -1,3 +1,6 @@
+import { MessageContextMenuCommandInteraction } from "discord.js";
+import { PostResult } from "../processor/types/PostResult";
+
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const Report = require('../models/Report');
 const Post = require('../models/Post');
@@ -63,7 +66,8 @@ export class ReportManager {
     }
   }
 
-  async reportPost(interaction, targetID) {
+  async reportPost(interaction: MessageContextMenuCommandInteraction): Promise <PostResult> {
+    const { targetId } = interaction;
     const authorID = interaction.user.id;
     const authorName = interaction.user.username + "#" + interaction.user.discriminator;
     const channelID = interaction.channelId;

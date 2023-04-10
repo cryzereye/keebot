@@ -1,3 +1,0 @@
-interface Processor {
-    process: void;
-}

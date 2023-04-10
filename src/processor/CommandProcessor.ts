@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, Client, CommandInteraction } from "discord.js";
-import { Scorer } from "../functions/Scorer";
+import { StatsManager } from "../functions/StatsManager";
 import { ReportManager } from "../functions/ReportManager";
 import { PostFactory } from "../functions/post/PostFactory";
 import { DiscordUtilities } from '../util/DiscordUtilities';
@@ -12,14 +12,14 @@ const { constants } = require('../globals/constants.json');
 
 export class CommandProcessor extends BaseProcessor {
 	private dUtil: DiscordUtilities;
-	private scorer: Scorer;
+	private statsmngr: StatsManager;
 	private reportmngr: ReportManager;
 	private postfactory: PostFactory;
 	
-	constructor(client: Client, dUtil: DiscordUtilities, scorer: Scorer, reportmngr: ReportManager, postfactory: PostFactory) {
+	constructor(client: Client, dUtil: DiscordUtilities, statsmngr: StatsManager, reportmngr: ReportManager, postfactory: PostFactory) {
 		super(client);
 		this.dUtil = dUtil;
-		this.scorer = scorer;
+		this.statsmngr = statsmngr;
 		this.reportmngr = reportmngr;
 		this.postfactory = postfactory;
 	}
@@ -75,11 +75,8 @@ export class CommandProcessor extends BaseProcessor {
 		*/
 	}
 
-	async doStats(interaction: CommandInteraction) {
-		const target = interaction.options.getUser('user');
-		if (target)
-			return this.scorer.getStatsEmbed(interaction, target, this.reportmngr);
-		return this.scorer.getStatsEmbed(interaction, interaction.user, this.reportmngr);
+	doStats(interaction: ChatInputCommandInteraction) {
+		this.statsmngr.doProcess(interaction);
 	}
 
 	async processReport(interaction: CommandInteraction) {
