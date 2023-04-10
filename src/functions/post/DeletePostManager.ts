@@ -65,7 +65,7 @@ export class DeletePostManager extends BasePostManager {
             }
             let msgURL = PostModel.generateUrl(message.channel.id, message.id);
 
-            PostModel.delete(
+            PostModel.deletes(
                 data.postID,
                 data.deleteDate
             );

@@ -1,13 +1,16 @@
+import { Snowflake, SnowflakeUtil } from "discord.js";
+import { Post } from "./types/Post";
+
 const fs = require('fs');
 const fileName = '../../json/post.json';
 const osFile = './json/post.json';
 let { post } = require(fileName);
-const { dev } = require('../../json/config.json');
+const { dev, channelsID } = require('../../json/config.json');
 
-exports.savePostToFile = () => {
+export function savePostToFile(): void {
   let dataStr = { "post": post };
   try {
-    fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err) {
+    fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err: string) {
       if (err) return console.log(err);
     });
   }
@@ -16,7 +19,7 @@ exports.savePostToFile = () => {
   }
 }
 
-exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate, bumpDate, expiryDate) => {
+export function newRecord (postID: Snowflake, newListID: Snowflake, authorID: Snowflake, type: TransactionType, itemrole: Snowflake, have: string, want: string, postDate: string, bumpDate: Date, expiryDate: Date): void {
   post[postID] = {
     postID: postID,
     newListID: [newListID],
@@ -34,76 +37,62 @@ exports.new = (postID, newListID, authorID, type, itemrole, have, want, postDate
     deleted: false,
     expired: false
   };
-  this.savePostToFile();
+  savePostToFile();
 }
 
-exports.get = (postID) => {
+export function get (postID: Snowflake): Post {
   return post[postID];
 }
 
-exports.getAllNeedsBump = () => {
-  let postArr = Object.values(post);
+export function getAllNeedsBump(): Post[] {
+  let postArr: Post[] = Object.values(post);
   const currDate = new Date();
 
   return postArr.filter(post => !post.sold && !post.deleted && !post.expired && new Date(post.bumpDate) < currDate);
 }
 
-exports.edit = (postID, have, want, editDate, newListingID) => {
+export function edit (postID: Snowflake, have: string, want: string, editDate: string, newListingID: Snowflake): void{
   post[postID].have = have;
   post[postID].want = want;
   post[postID].editDate = editDate;
   post[postID].newListID.push(newListingID);
-  this.savePostToFile();
+  savePostToFile();
 }
 
-exports.markSold = (postID, soldDate) => {
+export function markSold(postID: Snowflake, soldDate: string): void {
   post[postID].soldDate = soldDate;
   post[postID].sold = true;
-  this.savePostToFile();
+  savePostToFile();
 }
 
-exports.delete = (postID, deleteDate) => {
+export function deletes(postID: Snowflake, deleteDate: string): void {
   post[postID].deleteDate = deleteDate;
   post[postID].deleted = true;
-  this.savePostToFile();
+  savePostToFile();
 }
 
-exports.bumped = (postID, bumpDate) => {
+export function bumped(postID: Snowflake, bumpDate: string): void {
   post[postID].bumpDate = bumpDate;
-  this.savePostToFile();
+  savePostToFile();
 }
 
-/**
- * sets post's expiry date
- * @param {String} postID 
- * @param {DateString} expiryDate 
- */
-exports.setExpiry = (postID, expiryDate) => {
+export function setExpiry(postID: Snowflake, expiryDate: string): void {
   post[postID].expiryDate = expiryDate;
-  this.savePostToFile();
+  savePostToFile();
 }
 
-/**
- * Marks a post as expired
- * @param {Snowflake} postID 
- */
-exports.expired = (postID) => {
+export function expired(postID: Snowflake): void {
   post[postID].expired = true;
-  this.savePostToFile();
+  savePostToFile();
 }
 
-/**
- * Gets postID from associated newListID
- * @param {Snowflake} newListID 
- * @returns {Object} post[]
- */
-exports.getPostFromNewListID = (newListID) => {
-  let postArr = Object.values(post);
-  return postArr.filter((currentPost) => currentPost.newListID.includes(newListID))[0];
+export function getPostFromNewListID(newListID: Snowflake): Post {
+  let postArr: Post[] = Object.values(post);
+  return postArr.filter((currentPost: Post) => currentPost.newListID.includes(newListID))[0];
 } 
 
-exports.list = (authorID, itemrole, type) => {
-  let records = [];
+export function list(authorID: Snowflake, itemrole: Snowflake, type: TransactionType): Post[] {
+  let records: Post[] = [];
   let matchedAuthorID;
   let matchedItemRole;
   let matchedType;
@@ -134,25 +123,14 @@ exports.list = (authorID, itemrole, type) => {
   return records;
 }
 
-/**
- * returns a url corresponding to the given msgid
- * @param {String} channelID: channel ID
- * @param {String} msgid 
- * @returns {String} URL
- */
-exports.generateUrl = (chid, msgid) => {
+export function generateUrl(chid: Snowflake, msgid: Snowflake): string {
   return `https://discord.com/channels/${channelsID.server}/${chid}/${msgid}`;
 }
 
-/**
- * returns channel ID corresponding to given type
- * @param {String} type buy/sell/trade
- * @returns {String} channel ID
- */
-exports.getChannelFromType = (type) => {
+exports.getChannelFromType = (type: TransactionType) => {
   switch (type) {
-    case "buy": return channelsID.buying;
-    case "sell": return channelsID.selling;
-    case "trade": return channelsID.trading;
+    case TransactionType.buy: return channelsID.buying;
+    case TransactionType.sell: return channelsID.selling;
+    case TransactionType.trade: return channelsID.trading;
   }
 }

@@ -5,7 +5,7 @@ const { BasePostManager } = require('./BasePostManager');
 const { NewPostModal } = require('../modal/NewPostModal');
 
 const { PostModel } = require('../../models/PostModel');
-const { channelsID } = require('../json/config.json');
+const { channelsID, dev } = require('../json/config.json');
 import util = require('../../util/Utilities');
 
 export class NewPostManager extends BasePostManager {
@@ -72,7 +72,7 @@ export class NewPostManager extends BasePostManager {
             expiryDate = util.addHours(postDate, 10); // 10 minutes post expiry
         }
 
-        PostModel.new(
+        PostModel.newRecord(
             message.id,
             newListMsg.id,
             authorID,

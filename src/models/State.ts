@@ -3,10 +3,10 @@ const fileName = '../../json/state.json';
 const osFile = './json/state.json';
 let { state } = require(fileName);
 
-exports.saveStateToFile = () => {
+export function saveStateToFile(): void {
     let dataStr = { "state": state };
     try {
-        fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err) {
+        fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err: string) {
             if (err) return console.log(err);
         });
     }
@@ -15,7 +15,7 @@ exports.saveStateToFile = () => {
     }
 }
 
-exports.updateState = (name, value) => {
+export function updateState(name: string, value: string): void {
     state[name] = value;
-    this.saveStateToFile();
+    saveStateToFile();
 }

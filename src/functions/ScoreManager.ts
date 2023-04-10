@@ -2,6 +2,9 @@ import { Client, Snowflake } from "discord.js";
 import { Manager } from "./Manager";
 import { DiscordUtilities } from "../util/DiscordUtilities";
 
+const fs = require('fs');
+const fileName = '../../json/scores.json';
+const osFile = './json/scores.json';
 let { scores } = require(fileName);
 
 export class ScoreManager extends Manager {
