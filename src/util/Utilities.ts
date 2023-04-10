@@ -19,13 +19,13 @@ export function getTimeDiff (target: Date) : TimeDiff {
 	const hours : number = Math.floor((((ms % 31557600000) % 2629800000) % 86400000) / 3600000);
 	const mins : number = Math.round(((((ms % 31557600000) % 2629800000) % 86400000) % 3600000) / 60000);
 
-	const result: TimeDiff = {
-		years : (years > 0 ? `${years} years` : ""),
-		months : (months > 0 ? `${months} months` : ""),
-		days : (days > 0 ? `${days} days` : ""),
-		hours : (hours > 0 ? `${hours} hours` : ""),
-		mins : (mins > 0 ? `${mins} mins` : "")
-	}
+	const result: TimeDiff = [
+		(years > 0 ? `${years} years` : ""),
+		(months > 0 ? `${months} months` : ""),
+		(days > 0 ? `${days} days` : ""),
+		(hours > 0 ? `${hours} hours` : ""),
+		(mins > 0 ? `${mins} mins` : "")
+	]
 
 	return result;
 }

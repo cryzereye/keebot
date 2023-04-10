@@ -7,8 +7,7 @@ import { UserDates } from "./types/UserDates";
 const { relevant_roles, channelsID } = require('../../json/config.json');
 const fileName = '../../json/scores.json';
 let { scores } = require(fileName);
-const util = require('../util/Utilities');
-const dUtil = require('../util/DiscordUtil');
+import util = require('../util/Utilities');
 
 export class StatsManager extends Manager {
 	private reportmngr: ReportManager;
