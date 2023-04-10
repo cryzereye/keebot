@@ -84,7 +84,7 @@ export class DiscordUtilities {
 		}
 	}
 
-	public async removeRoleToUser(user: User, guild: Guild, role: Role): Promise<void> {
+	public async removeRoleFromUser(user: User, guild: Guild, role: Role): Promise<void> {
 		let gm = await this.getGuildMemberFromID(user.id, guild).catch(console.error);
 		if (gm && await this.guildMemberHasRole(gm, role).catch(console.error)) {
 			gm.roles.remove(role).catch((e) => console.log(e.message));
@@ -159,7 +159,8 @@ export class DiscordUtilities {
 			if (lastMessageID) options.before = lastMessageID;
 
 			const messages = await channel.messages.fetch(options).catch(console.error);
-			if (!(messages instanceof Array<Message>) || messages.length == 0) break;
+			if(!(messages instanceof Array)) return; 
+			if (messages.length == 0) break;
 
 			messages.forEach(msg => {
 				console.log(msg);
