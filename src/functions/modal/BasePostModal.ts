@@ -1,10 +1,13 @@
-const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
+import { ActionRowBuilder, ModalBuilder, Role, Snowflake, TextInputBuilder, TextInputStyle } from 'discord.js';
 
-class BasePostModal extends ModalBuilder {
-	constructor(type) {
+export class BasePostModal extends ModalBuilder {
+	constructor() {
 		super();
-		let haveField = this.buildHaveField();
-		let wantField = this.buildWantField();
+	}
+
+	buildBaseComponents(type: TransactionType, have: string, want: string): Array<ActionRowBuilder<TextInputBuilder>> {
+		let haveField = this.buildHaveField(have);
+		let wantField = this.buildWantField(want);
 
 		switch (type) {
 			case "sell": {
@@ -25,12 +28,12 @@ class BasePostModal extends ModalBuilder {
 		}
 
 		return [
-			new ActionRowBuilder().addComponents(haveField),
-			new ActionRowBuilder().addComponents(wantField),
+			new ActionRowBuilder<TextInputBuilder>().addComponents(haveField),
+			new ActionRowBuilder<TextInputBuilder>().addComponents(wantField),
 		];
 	}
 
-	buildRoleField(itemrole) {
+	buildRoleField(itemrole: Role) {
 		const role = new TextInputBuilder()
 			.setCustomId(itemrole.id.toString())
 			.setLabel("Item Role [DO NOT EDIT ROLE]")
@@ -40,7 +43,7 @@ class BasePostModal extends ModalBuilder {
 		return role;
 	}
 
-	buildHaveField(value) {
+	buildHaveField(value: void | string): TextInputBuilder {
 		const have = new TextInputBuilder()
 			.setCustomId('have')
 			.setLabel("Have")
@@ -52,7 +55,7 @@ class BasePostModal extends ModalBuilder {
 		return have;
 	}
 
-	buildWantField(value) {
+	buildWantField(value: void | string): TextInputBuilder {
 		const want = new TextInputBuilder()
 			.setCustomId('want')
 			.setLabel("Want")
@@ -64,7 +67,7 @@ class BasePostModal extends ModalBuilder {
 		return want;
 	}
 
-	buildImgurField() {
+	buildImgurField(): TextInputBuilder {
 		const imgur = new TextInputBuilder()
 			.setCustomId('imgur')
 			.setLabel("Imgur Link")
@@ -74,7 +77,7 @@ class BasePostModal extends ModalBuilder {
 		return imgur;
 	}
 
-	buildDetailsField() {
+	buildDetailsField(): TextInputBuilder {
 		const want = new TextInputBuilder()
 			.setCustomId('details')
 			.setLabel("Details")
@@ -86,7 +89,7 @@ class BasePostModal extends ModalBuilder {
 		return want;
 	}
 
-	buildPostIDField(value) {
+	buildPostIDField(value: Snowflake): TextInputBuilder {
 		const postId = new TextInputBuilder()
 			.setCustomId(value)
 			.setLabel("Post ID: DO NOT EDIT")
@@ -97,7 +100,7 @@ class BasePostModal extends ModalBuilder {
 		return postId;
 	}
 
-	getIdTitleFromType(type) {
+	getIdTitleFromType(type: TransactionType): any {
 		switch (type) {
 			case "buy": return { id: "buyPostModal", title: "Buy" };
 			case "sell": return { id: "sellPostModal", title: "Sell" };
