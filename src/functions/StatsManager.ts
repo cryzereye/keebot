@@ -16,16 +16,16 @@ export class StatsManager extends Manager {
 		this.reportmngr = reportmngr;
 	}
 
-	async doProcess(interaction: BaseInteraction): Promise<void> {
+	override async doProcess(interaction: BaseInteraction): Promise<void> {
 		if (interaction instanceof ChatInputCommandInteraction) {
 			interaction.deferReply().catch(console.error);
 
 			const { user, guild } = interaction;
 			const argUser = interaction.options.getUser('user');
 			const target: User = (argUser ? argUser : user);
-			const isServiceProvider = await dUtil.isServiceProvider(guild, target.id);
+			const isServiceProvider = await this.dUtil.isServiceProvider(guild, target.id);
 
-			const guildmember = await dUtil.getGuildMemberfromID(target.id, guild).catch(console.error);
+			const guildmember = await this.dUtil.getGuildMemberFromID(target.id, guild).catch(console.error);
 			if(!guildmember) return;
 
 			let reports = this.reportmngr.getVerifiedReportsMatrix(target.id.toString());
@@ -39,11 +39,11 @@ export class StatsManager extends Manager {
 			const roles = this.rolesToString(guildmember);
 			const userDates: UserDates = this.getUserDates(guildmember);
 
-			let feedbackCount = (isServiceProvider? await this.countFeedbackForUser(guild, target.id): 0);
+			let feedbackCount = (isServiceProvider? await this.countFeedbackForUser(guild, target.id): "0");
 
 			interaction.reply({
 				embeds: [
-					await this.generateStats(guildmember, roles, authorDetails, reports, userDates, isServiceProvider, feedbackCount)]
+					await this.generateStats(guildmember, roles, authorDetails, reports, userDates, isServiceProvider, feedbackCount.toString())]
 			}).catch(console.error);
 		}
 	}
@@ -117,9 +117,11 @@ export class StatsManager extends Manager {
 		return roles;
 	}
 
-	async countFeedbackForUser(guild: Guild, userID: Snowflake) {
-		let feedback = await dUtil.fetchAllMessagesMentionsUser(guild, userID, channelsID.serviceFeedback);
-		return feedback.length.toString();
+	async countFeedbackForUser(guild: Guild, userID: Snowflake): Promise<string> {
+		let feedback = await this.dUtil.fetchAllMessagesMentionsUser(guild, userID, channelsID.serviceFeedback);
+		if(feedback)
+			return feedback.length.toString();
+		return "0";
 	}
 
 	getUserDates(gm: GuildMember): UserDates {

@@ -79,7 +79,7 @@ export class CommandProcessor extends BaseProcessor {
 		this.statsmngr.doProcess(interaction);
 	}
 
-	async processReport(interaction: CommandInteraction) {
+	async processReport(interaction: ChatInputCommandInteraction) {
 		return await this.reportmngr.processReport(interaction);
 	}
 

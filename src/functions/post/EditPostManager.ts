@@ -1,13 +1,21 @@
+import { BaseInteraction, ChatInputCommandInteraction, Client, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
+import { DiscordUtilities } from "../../util/DiscordUtilities";
+import { PostResult } from "../../processor/types/PostResult";
+
 const { BasePostManager } = require('./BasePostManager');
 const { EditPostModal } = require('../modal/EditPostModal');
 
-class EditPostManager extends BasePostManager {
-    constructor(client) {
-        super(client);
+const { PostModel } = require('../../models/PostModel');
+const { channelsID } = require('../json/config.json');
+
+export class EditPostManager extends BasePostManager {
+    constructor(client: Client, dUtil: DiscordUtilities) {
+        super(client, dUtil);
     }
 
-    async doModal(interaction, argPostID) {
+    async doModal(interaction: BaseInteraction, argPostID: Snowflake): Promise<PostResult> {
         let { guild, user, channelId } = interaction;
+        if (!(guild && user && channelId)) return this.invalidPost();
         let post = await this.getValidPostRecord(argPostID, channelId, guild);
 
         if (post) {
@@ -21,12 +29,12 @@ class EditPostManager extends BasePostManager {
         else return this.invalidPost();
     }
 
-    async doProcess(guild, authorID, data) {
-        let record = Post.get(data.postID);
+    async doProcess(guild: Guild, authorID: Snowflake, data: any) {
+        let record = PostModel.get(data.postID);
 
         if (record) {
-            const channelID = Post.getChannelFromType(record.type);
-            const postMsg = await dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
+            const channelID = PostModel.getChannelFromType(record.type);
+            const postMsg = await this.dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
 
             if (!postMsg) {
                 return {
@@ -46,7 +54,7 @@ class EditPostManager extends BasePostManager {
             let haveEdited = (record.have !== data.have);
             let wantEdited = (record.want !== data.want);
 
-            content.map(line => {
+            content.map((line: string) => {
                 if (line.startsWith("HAVE: ") && !haveEdited)
                     newContent += `HAVE: ${data.have}\n`;
                 else if (line.startsWith("WANT: ") && !wantEdited)
@@ -64,7 +72,7 @@ class EditPostManager extends BasePostManager {
                     errorContent: ""
                 };
             }
-            let msgURL = Post.generateUrl(message.channel.id, message.id);
+            let msgURL = PostModel.generateUrl(message.channel.id, message.id);
 
             if (record.authorID !== authorID)
                 newListContent += `**UPDATED <#${channelID}> post by Mod <@!${authorID}> in behalf of <@${record.authorID}>**\n`;
@@ -76,10 +84,10 @@ class EditPostManager extends BasePostManager {
             newListContent += `${msgURL}`;
 
             let ch = channelsID.newListings;
-            const newListMsg = await dUtil.sendMessageToChannel(this.client, guild.id, ch, newListContent).catch(console.error);
+            const newListMsg = await this.dUtil.sendMessageToChannel(this.client, guild.id, ch, newListContent).catch(console.error);
 
             if (newListMsg) {
-                Post.edit(
+                PostModel.edit(
                     data.postID,
                     data.have,
                     data.want,
@@ -88,7 +96,7 @@ class EditPostManager extends BasePostManager {
                 );
             }
             else {
-                Post.edit(
+                PostModel.edit(
                     data.postID,
                     data.have,
                     data.want,
@@ -101,7 +109,7 @@ class EditPostManager extends BasePostManager {
             return {
                 edited: true,
                 url: msgURL,
-                newListingURL: Post.generateUrl(ch, newListMsg.id),
+                newListingURL: PostModel.generateUrl(ch, newListMsg.id),
                 errorContent: ""
             };
         }
@@ -115,23 +123,30 @@ class EditPostManager extends BasePostManager {
         }
     }
 
-    async doModalDataProcess(interaction) {
-        const authorID = interaction.user.id;
-        const fields = interaction.fields.fields;
-        let data = {};
-        let editResult;
+    async doModalDataProcess(interaction: ModalSubmitInteraction) {
+        const {guild, user, fields} = interaction;
+        if(!(guild && user && fields && fields.fields)) return;
+        
+        const authorID = user.id;
+        const extracted = fields.fields;
+        if(extracted.size <= 0 ) return;
 
-        const postID = fields.keys().next().value;
-        if (postID && postID != "have")
-            data.postID = postID;
-        data.have = fields.get("have").value;
-        data.want = fields.get("want").value;
-        data.editDate = new Date(interaction.createdAt).toString();
+        const postID = extracted.keys().next().value;
+        const have = extracted.get("have");
+        const want = extracted.get("want");
+
+        let data = {
+            postID: (postID && postID != "have" ? postID : ""),
+            have: (have ? have.value: ""),
+            want: (want ? want.value: ""),
+            editDate: new Date(interaction.createdAt).toString()
+        };
+        let editResult;
 
         data = this.cleanUserEntries(data);
 
         const { edited, url, newListingURL, errorContent } = await this.doProcess(
-            interaction.client, interaction.guild, authorID, data
+            guild, authorID, data
         ).catch(console.error);
 
         if (edited)
@@ -139,8 +154,6 @@ class EditPostManager extends BasePostManager {
         else
             editResult = errorContent;
 
-        dUtil.postProcess(interaction, edited, editResult, false, null);
+        this.dUtil.postProcess(interaction, edited, editResult, false, null);
     }
 }
-
-module.exports = { EditPostManager }

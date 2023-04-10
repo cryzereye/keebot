@@ -1,17 +1,26 @@
-const { BasePostManager } = require('./BasePostManager');
-const { DeletePostModal } = require('../modal/DeletePostModal');
+import { BaseInteraction, ChatInputCommandInteraction, Client, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
+import { PostResult } from "../../processor/types/PostResult";
 
-class DeletePostManager extends BasePostManager {
-    constructor(client) {
-        super(client);
+import { BasePostManager } from './BasePostManager';
+import { DeletePostModal } from '../modal/DeletePostModal';
+import { DiscordUtilities } from "../../util/DiscordUtilities";
+import { ProcessResult } from "../types/ProcessResult";
+
+const { PostModel } = require('../../models/PostModel');
+const { channelsID } = require('../json/config.json');
+
+export class DeletePostManager extends BasePostManager {
+    constructor(client: Client, dUtil: DiscordUtilities) {
+        super(client, dUtil);
     }
 
-    async doModal(interaction, argPostID) {
+    async doModal(interaction: BaseInteraction, argPostID: Snowflake): Promise<PostResult> {
         let { guild, user, channelId } = interaction;
+        if (!(guild && user && channelId)) return this.invalidPost();
         let post = await this.getValidPostRecord(argPostID, channelId, guild);
 
         if (post) {
-            const errors = this.postUpdatePreValidations(post, user.id, post.authorID, guild);
+            const errors = await this.postUpdatePreValidations(post, user.id, post.authorID, guild);
             if (errors) return errors;
 
             let modal = new DeletePostModal(post.type, post.postID, post.have, post.want);
@@ -21,26 +30,26 @@ class DeletePostManager extends BasePostManager {
         else return this.invalidPost();
     }
 
-    async doProcess(guild, data) {
+    async doProcess(guild: Guild, data: any): Promise <ProcessResult> {
         const newListingsCh = channelsID.newListings;
-        let record = Post.get(data.postID);
+        let record = PostModel.get(data.postID);
 
         if (record) {
-            const channelID = Post.getChannelFromType(record.type);
-            const postMsg = await dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
+            const channelID = PostModel.getChannelFromType(record.type);
+            const postMsg = await this.dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
 
             if (!postMsg) {
                 return {
-                    deleted: false,
+                    processed: false,
                     url: "",
                     errorContent: "Unable to fetch message from channel."
                 };
             }
 
-            const deletedPostMsg = await dUtil.sendMessageToChannel(guild.client, guild.id, channelsID.deletedPost, `<@${record.authorID}> deleted ${record.postID}\n\n${postMsg.content}`);
+            const deletedPostMsg = await this.dUtil.sendMessageToChannel(guild.id, channelsID.deletedPost, `<@${record.authorID}> deleted ${record.postID}\n\n${postMsg.content}`);
             if (!deletedPostMsg) {
                 return {
-                    deleted: false,
+                    processed: false,
                     url: "",
                     errorContent: "Unable to delete post message"
                 };
@@ -49,60 +58,63 @@ class DeletePostManager extends BasePostManager {
             const message = await postMsg.delete().catch(console.error);
             if (!message) {
                 return {
-                    deleted: false,
+                    processed: false,
                     url: "",
                     errorContent: "Unable to delete post message"
                 };
             }
-            let msgURL = Post.generateUrl(message.channel.id, message.id);
+            let msgURL = PostModel.generateUrl(message.channel.id, message.id);
 
-            Post.delete(
+            PostModel.delete(
                 data.postID,
                 data.deleteDate
             );
 
-            record.newListID.map(async (x) => {
-                await dUtil.makeMessageSpoiler(guild.client, guild.id, newListingsCh, x);
+            record.newListID.map(async (x: Snowflake) => {
+                await this.dUtil.makeMessageSpoiler(guild.id, newListingsCh, x);
             });
 
             return {
-                deleted: true,
+                processed: true,
                 url: msgURL,
                 errorContent: ""
             };
         }
-        else {
-            return {
-                deleted: false,
-                url: "",
-                errorContent: "Invalid! Post/ID does not exist."
-            };
-        }
+
+        return {
+            processed: false,
+            url: "",
+            errorContent: "Invalid! Post/ID does not exist."
+        };
+
     }
 
-    async doModalDataProcess(interaction) {
-        const fields = interaction.fields.fields;
-        let data = {};
-        let deleteResult;
+    async doModalDataProcess(interaction: ModalSubmitInteraction): Promise<void> {
+        const { guild } = interaction;
+        if(!guild) return;
 
+        const fields = interaction.fields.fields;
         const postID = fields.keys().next().value;
-        if (postID && postID != "have")
-            data.postID = postID;
-        data.deleteDate = new Date(interaction.createdAt).toString();
+        let data = {
+            postID: (postID && postID != "have" ? postID : undefined),
+            deleteDate: new Date(interaction.createdAt).toString()
+        };
+        let deleteResult;
 
         data = this.cleanUserEntries(data);
 
-        const { deleted, url, errorContent } = await this.doProcess(
-            interaction.guild, data
+        const result: ProcessResult | void = await this.doProcess(
+            guild, data
         ).catch(console.error);
 
-        if (deleted)
+        if(!result) return;
+        const { processed, errorContent } = result;
+
+        if (processed)
             deleteResult = `Your post has been deleted`;
         else
             deleteResult = errorContent;
 
-        dUtil.postProcess(interaction, deleted, deleteResult, false, null);
+        this.dUtil.postProcess(interaction, processed, deleteResult, false, null);
     }
 }
-
-module.exports = { DeletePostManager }

@@ -1,6 +1,6 @@
-import { Channel, Client, CommandInteraction, Emoji, FetchMessagesOptions, Guild, GuildMember, Message, ModalBuilder, Role, Snowflake, TextChannel, User } from "discord.js";
+import { BaseInteraction, Channel, Client, CommandInteraction, Emoji, FetchMessagesOptions, Guild, GuildMember, Message, ModalBuilder, ModalSubmitInteraction, Role, Snowflake, TextChannel, User } from "discord.js";
 
-const { channelsID, modRole, serviceProviderRole } = require('../../json/config.json');
+const { channelsID, modRole, serviceProviderRole, adminRole } = require('../../json/config.json');
 
 export class DiscordUtilities {
 	private client: Client;
@@ -76,7 +76,15 @@ export class DiscordUtilities {
 		return result;
 	}
 
-	public async addRoleToUser(user: User, guild: Guild, role: Role): Promise<void> {
+	public async isAdmin(guild: Guild, userID: Snowflake): Promise<Boolean> {
+		let gm = await this.getGuildMemberFromID(userID, guild).catch(console.error);
+		if (!gm) return false;
+		let result = this.guildMemberHasRole(gm, adminRole.id);
+		return result;
+	}
+
+	public async addRoleToUser(user: User, guild: Guild, role: Role | void): Promise<void> {
+		if(!(guild && role)) return;
 		let gm = await this.getGuildMemberFromID(user.id, guild).catch(console.error);
 		if (gm && !(await this.guildMemberHasRole(gm, role).catch(console.error))) {
 			gm.roles.add(role).catch((e) => console.log(e.message));
@@ -106,13 +114,14 @@ export class DiscordUtilities {
 		}
 	}
 
-	public async postProcess(interaction: CommandInteraction, success: Boolean, content: string, isModal: Boolean, modal: ModalBuilder): Promise<void> {
+	public async postProcess(interaction: BaseInteraction, success: Boolean, content: string, isModal: Boolean, modal: ModalBuilder | null): Promise<void> {
 		if (!success && interaction.guild)
 			await this.sendMessageToChannel(interaction.guild.id, channelsID.keebotlogs, `<@${interaction.user.id}>\n${content}`);
-		if (isModal) {
+
+		if (interaction instanceof CommandInteraction && isModal && modal) {
 			await interaction.showModal(modal).catch(console.error);
 		}
-		else {
+		else if (interaction instanceof ModalSubmitInteraction){
 			try {
 				await interaction.reply({
 					content: content,

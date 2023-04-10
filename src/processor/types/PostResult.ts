@@ -4,5 +4,5 @@ export type PostResult = {
     success: Boolean;
     content: string;
     isModal: Boolean;
-    modal: ModalBuilder;
+    modal: ModalBuilder | null;
 }

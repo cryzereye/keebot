@@ -16,6 +16,7 @@ export class MessageProcessor extends BaseProcessor {
   }
 
   async processMessage(message: Message): Promise<void> {
+    if(!(message && message.guild)) return;
     let authorID = message.author.id.toString();
     const botUser = this.client.user;
     if (botUser && authorID == botUser.id) return; // if bot sent the message, ignore
@@ -56,7 +57,7 @@ export class MessageProcessor extends BaseProcessor {
         });
       }
       if (!dev)
-        this.rolegivermngr.roleCheck(this.scoremngr.getScore(authorID), message);
+        this.rolegivermngr.roleCheck(this.scoremngr.getScore(authorID), message.author, message.guild);
     }
   }
 

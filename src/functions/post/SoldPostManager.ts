@@ -1,12 +1,19 @@
+import { BaseInteraction, Client, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
+import { DiscordUtilities } from "../../util/DiscordUtilities";
+import { ProcessResult } from "../types/ProcessResult";
+
 const { BasePostManager } = require('./BasePostManager');
 const { SoldPostModal } = require('../modal/SoldPostModal');
 
-class SoldPostManager extends BasePostManager {
-    constructor(client) {
-        super(client);
+const { PostModel } = require('../../models/PostModel');
+const { channelsID } = require('../json/config.json');
+
+export class SoldPostManager extends BasePostManager {
+    constructor(client: Client, dUtil: DiscordUtilities) {
+        super(client, dUtil);
     }
 
-    async doModal(interaction, argPostID) {
+    async doModal(interaction: BaseInteraction, argPostID: Snowflake) {
         let { guild, user, channelId } = interaction;
         let post = await this.getValidPostRecord(argPostID, channelId, guild);
 
@@ -21,17 +28,17 @@ class SoldPostManager extends BasePostManager {
         else return this.invalidPost();
     }
 
-    async doProcess(guild, data) {
-        let record = Post.get(data.postID);
+    async doProcess(guild: Guild, data: any): Promise <ProcessResult> {
+        let record = PostModel.get(data.postID);
         const newListingsCh = channelsID.newListings;
 
         if (record) {
-            const channelID = Post.getChannelFromType(record.type);
-            const postMsg = await dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
+            const channelID = PostModel.getChannelFromType(record.type);
+            const postMsg = await this.dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
 
             if (!postMsg) {
                 return {
-                    sold: false,
+                    processed: false,
                     url: "",
                     errorContent: "Unable to fetch message from channel."
                 };
@@ -42,60 +49,63 @@ class SoldPostManager extends BasePostManager {
             const message = await postMsg.edit(newContent).catch(console.error);
             if (!message) {
                 return {
-                    sold: false,
+                    processed: false,
                     url: "",
                     errorContent: "Unable to mark post as sold"
                 };
             }
-            let msgURL = Post.generateUrl(message.channel.id, message.id);
+            let msgURL = PostModel.generateUrl(message.channel.id, message.id);
 
-            Post.markSold(
+            PostModel.markSold(
                 data.postID,
                 data.soldDate
             );
 
-            record.newListID.map(async (x) => {
-                await dUtil.makeMessageSpoiler(guild.client, guild.id, newListingsCh, x);
+            record.newListID.map(async (x: Snowflake) => {
+                await this.dUtil.makeMessageSpoiler(guild.client, guild.id, newListingsCh, x);
             });
 
             return {
-                sold: true,
+                processed: true,
                 url: msgURL,
                 errorContent: ""
             };
         }
         else {
             return {
-                sold: false,
+                processed: false,
                 url: "",
                 errorContent: "Invalid! Post/ID does not exist."
             };
         }
     }
 
-    async doModalDataProcess(interaction) {
-        const fields = interaction.fields.fields;
-        let data = {};
-        let soldResult;
+    async doModalDataProcess(interaction: ModalSubmitInteraction) {
+        const { guild } = interaction;
+        if(!guild) return;
 
+        const fields = interaction.fields.fields;
         const postID = fields.keys().next().value;
-        if (postID && postID != "have")
-            data.postID = postID;
-        data.soldDate = new Date(interaction.createdAt).toString();
+        let data = {
+            postID: (postID && postID != "have" ? postID : undefined),
+            deleteDate: new Date(interaction.createdAt).toString()
+        };
+        let soldResult;
 
         data = this.cleanUserEntries(data);
 
-        const { sold, url, errorContent } = await this.doProcess(
-            interaction.guild, data
+        const result: ProcessResult | void = await this.doProcess(
+            guild, data
         ).catch(console.error);
 
-        if (sold)
+        if(!result) return;
+        const { processed, url, errorContent } = result;
+
+        if (processed)
             soldResult = `Your post has been marked sold:\n${url}`;
         else
             soldResult = errorContent;
 
-        dUtil.postProcess(interaction, sold, soldResult, false, null);
+        this.dUtil.postProcess(interaction, processed, soldResult, false, null);
     }
 }
-
-module.exports = { SoldPostManager }

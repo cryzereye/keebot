@@ -1,7 +1,7 @@
 import { ActionRowBuilder, Snowflake, TextInputBuilder } from 'discord.js';
 import { BasePostModal } from './BasePostModal';
 
-class EditPostModal extends BasePostModal {
+export class EditPostModal extends BasePostModal {
     constructor(type: TransactionType, postID: Snowflake, have: string, want: string){
         super();
         const components: Array<ActionRowBuilder<TextInputBuilder>> = this.buildBaseComponents(type, have, want);
@@ -10,5 +10,3 @@ class EditPostModal extends BasePostModal {
         this.addComponents(components);
     }
 }
-
-module.exports = { EditPostModal }

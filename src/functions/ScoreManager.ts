@@ -9,10 +9,6 @@ export class ScoreManager extends Manager {
         super(client, dUtil);
     }
 
-    async doProcess(): Promise<void> {
-
-    }
-
     addPoint(id1: Snowflake, id1_name: string, id2: Snowflake) {
         try {
             scores[id1].points += 1;

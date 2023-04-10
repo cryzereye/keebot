@@ -1,98 +1,76 @@
-const { relevant_roles, me_id, dev } = require('../../../json/config.json');
-const Post = require('../../models/Post');
-const dUtil = require('../../util/DiscordUtil');
-const util = require('../../util/Utilities');
+import { Client, Guild, ModalBuilder, Snowflake } from "discord.js";
+import { Post } from "../../models/types/Post";
+import { PostResult } from "../../processor/types/PostResult";
 
-class BasePostManager {
-	constructor(client) {
+//import PostModel = require('../../models/PostModel');
+import util = require('../../util/Utilities');
+import { DiscordUtilities } from "../../util/DiscordUtilities";
+
+const { channelsID, me_id } = require('../json/config.json');
+
+export abstract class BasePostManager {
+	protected client: Client;
+	protected dUtil: DiscordUtilities;
+	
+
+	constructor(client: Client, dUtil: DiscordUtilities) {
 		this.client = client;
+		this.dUtil = dUtil;
 	}
 
-	doModal() {
-		return {
-			success: false,
-			content: "**FATAL ERROR. CONTACT MODS**",
-			isModal: false,
-			modal: null
-		}
-	}
-
-	doProcess() {
-		return {
-			success: false,
-			content: "**FATAL ERROR. CONTACT MODS**",
-			isModal: false,
-			modal: null
-		}
-	}
-
-	doModalDataProcess() {
-		return {
-			success: false,
-			content: "**FATAL ERROR. CONTACT MODS**",
-			isModal: false,
-			modal: null
-		}
-	}
-
-	async getValidPostRecord(msgID, channelID, guild) {
-		if (channelID == channelsID.newListings)
-			return Post.getPostFromNewListID(msgID);
-		else {
-			let record = Post.get(msgID);
-			if (record) return record;
+	async getValidPostRecord(msgID: Snowflake, channelID: Snowflake, guild: Guild): Promise<Post | void> {
+		/*	if (channelID == channelsID.newListings)
+				return PostModel.getPostFromNewListID(msgID);
 			else {
-				const origID = await dUtil.getIdOfRepliedMsg(guild, channelID, msgID);
-				record = Post.get(origID);
+				let record = PostModel.get(msgID);
 				if (record) return record;
+				else {
+					const origID = await this.dUtil.getIdOfRepliedMsg(guild, channelID, msgID);
+					record = PostModel.get(origID);
+					if (record) return record;
+				}
 			}
-		}
-
-		return null;
+	
+			return null;*/
 	}
 
-	async isValidPostEditor(userID, authorID, guild) {
-		let isMod = await dUtil.isMod(guild, userID);
+	async isValidPostEditor(userID: Snowflake, authorID: Snowflake, guild: Guild) {
+		let isMod = await this.dUtil.isMod(guild, userID);
 		return (authorID == userID || isMod);
 	}
 
-	async postUpdatePreValidations(postRecord, userID, authorID, guild) {
+	async postUpdatePreValidations(postRecord: Post, userID: Snowflake, authorID: Snowflake, guild: Guild): Promise<PostResult | void> {
 		let validEditor = await this.isValidPostEditor(userID, authorID, guild);
+		let result: PostResult = {
+			success: false,
+			content: "",
+			isModal: false,
+			modal: null
+		};
+
 		if (!validEditor) {
-			return {
-				success: false,
-				content: `Invalid! Make sure you are editing your own post. Pinging <@!${me_id}>`,
-				isModal: false,
-				modal: null
-			}
+			result.content = `Invalid! Make sure you are editing your own post. Pinging <@!${me_id}>`;
+			return result;
 		}
 
 		if (postRecord.sold) {
-			return {
-				success: false,
-				content: `Invalid! Post is already marked as sold`,
-				isModal: false,
-				modal: null
-			}
+			result.content = `Invalid! Post is already marked as sold`;
+			return result;
 		}
 
 		if (postRecord.deleted) {
-			return {
-				success: false,
-				content: `Invalid! Post is already deleted`,
-				isModal: false,
-				modal: null
-			}
+			result.content = `Invalid! Post is already deleted`;
+			return result;
 		}
 	}
 
-	haveWantValidation(type, have, want) {
+	haveWantValidation(type: TransactionType, have: string, want: string) {
 		switch (type) {
-			case "sell": {
+			case TransactionType.sell: {
 				if (!util.isValidAmount(want)) this.invalidWantError();
 				break;
 			}
-			case "buy": {
+			case TransactionType.buy: {
 				if (!util.isValidAmount(have)) this.invalidHaveError();
 				break;
 			}
@@ -115,7 +93,7 @@ class BasePostManager {
 		};
 	}
 
-	successModal(modal) {
+	successModal(modal: ModalBuilder) {
 		return {
 			success: true,
 			content: "",
@@ -142,7 +120,7 @@ class BasePostManager {
 		}
 	}
 
-	cleanUserEntries(data) {
+	cleanUserEntries(data: any) {
 		Object.keys(data).forEach(x => {
 			if (x === "details") return;
 			data[x] = data[x].toString().replace("\n", " ");
@@ -150,5 +128,3 @@ class BasePostManager {
 		return data;
 	}
 }
-
-module.exports = { BasePostManager }

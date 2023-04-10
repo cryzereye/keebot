@@ -49,11 +49,12 @@ export default class Bot {
 
 		this.dUtil = new DiscordUtilities(this.client);
 
-		this.rolegivermngr = new RoleGiverManager(this.client);
-		this.reportmngr = new ReportManager(this.client);
-		this.postfactory = new PostFactory(this.client);
+		this.rolegivermngr = new RoleGiverManager(this.client, this.dUtil);
+		this.reportmngr = new ReportManager(this.client, this.dUtil);
 		this.scoremngr = new ScoreManager(this.client, this.dUtil);
 		this.statsmngr = new StatsManager(this.client, this.dUtil, this.reportmngr);
+
+		this.postfactory = new PostFactory(this.client, this.dUtil);
 
 		this.msgproc = new MessageProcessor(this.client, this.scoremngr, this.rolegivermngr);
 		this.modalproc = new ModalProcessor(this.client);
@@ -105,7 +106,7 @@ export default class Bot {
 			activities: [{
 				type: ActivityType.Streaming,
 				url: "https://github.com/cryzereye/keebot",
-				name: "ping @gego for bugs"
+				name: "ping @admin for bugs"
 			}],
 			status: "online"
 		}

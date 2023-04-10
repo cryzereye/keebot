@@ -17,7 +17,7 @@ export class BumpService extends Service {
 		this.startService();
 	}
 
-	async startService() {
+	override async startService() {
 		console.log(`[${new Date().toLocaleString()}] Bump service started...`);
 		// loop for check intervals
 		while (true) {

@@ -1,12 +1,19 @@
+import { ChatInputCommandInteraction, Client, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
+import { DiscordUtilities } from "../../util/DiscordUtilities";
+
 const { BasePostManager } = require('./BasePostManager');
 const { NewPostModal } = require('../modal/NewPostModal');
 
-class NewPostManager extends BasePostManager {
-    constructor(client) {
-        super(client);
+const { PostModel } = require('../../models/PostModel');
+const { channelsID } = require('../json/config.json');
+import util = require('../../util/Utilities');
+
+export class NewPostManager extends BasePostManager {
+    constructor(client: Client, dUtil: DiscordUtilities) {
+        super(client, dUtil);
     }
 
-    doModal(interaction) {
+    doModal(interaction: ChatInputCommandInteraction) {
         const type = interaction.options.getString('type');
         const itemrole = interaction.options.getRole('itemrole');
 
@@ -23,8 +30,8 @@ class NewPostManager extends BasePostManager {
         }
     }
 
-    async doProcess(guild, type, authorID, postDate, data) {
-        let channelID = Post.getChannelFromType(type);
+    async doProcess(guild: Guild, type: TransactionType | string, authorID: Snowflake, postDate: string, data: any): Promise<any>{
+        let channelID = PostModel.getChannelFromType(type);
         let content = "";
         let newListContent = "";
         let msgURL = "";
@@ -50,12 +57,12 @@ class NewPostManager extends BasePostManager {
         newListContent += `WANT:  ${data.want}\n`;
 
         // gets sent message from buy/sell/trade channels then gets id, generates url to be sent in #new-listings
-        const message = await dUtil.sendMessageToChannel(this.client, guild.id, channelID, content);
-        msgURL = Post.generateUrl(channelID, message.id);
+        const message = await this.dUtil.sendMessageToChannel(this.client, guild.id, channelID, content);
+        msgURL = PostModel.generateUrl(channelID, message.id);
         newListContent += `${msgURL}`;
 
         let ch = channelsID.newListings;
-        const newListMsg = await dUtil.sendMessageToChannel(this.client, guild.id, ch, newListContent);
+        const newListMsg = await this.dUtil.sendMessageToChannel(this.client, guild.id, ch, newListContent);
 
         let bumpDate = util.addHours(postDate, 8 + Math.floor(Math.random() * 4)); // randoms 8-12 hours
         let expiryDate = util.addHours(postDate, 24 * 60); // 60 days post expiry
@@ -65,7 +72,7 @@ class NewPostManager extends BasePostManager {
             expiryDate = util.addHours(postDate, 10); // 10 minutes post expiry
         }
 
-        Post.new(
+        PostModel.new(
             message.id,
             newListMsg.id,
             authorID,
@@ -81,32 +88,40 @@ class NewPostManager extends BasePostManager {
         return {
             posted: true,
             url: msgURL,
-            newListingURL: Post.generateUrl(ch, newListMsg.id),
+            newListingURL: PostModel.generateUrl(ch, newListMsg.id),
         };
     }
 
-    async doModalDataProcess(interaction) {
-        const authorID = interaction.user.id;
+    async doModalDataProcess(interaction: ModalSubmitInteraction) {
+        const {guild, user, fields, customId} = interaction;
+        if(!(guild && user && fields && fields.fields)) return;
+        
+        const authorID = user.id;
+        const extracted = fields.fields;
+        if(extracted.size <= 0 ) return;
+
         const postDate = new Date(interaction.createdAt).toString();
+        const type = customId.replace("PostModal", "");
+        const roleID = extracted.keys().next().value;
+        const have = extracted.get("have");
+        const want = extracted.get("want");
+        const imgur = extracted.get("imgur");
+        const details = extracted.get("details");
 
-        const type = interaction.customId.replace("PostModal", "");
-        const fields = interaction.fields.fields;
-        let data = {};
+        let data = {
+            roleID: (roleID && roleID != "have" ? roleID : ""),
+            have: (have ? have.value: ""),
+            want: (want ? want.value: ""),
+            imgur: (imgur ? imgur.value: ""),
+            details: (details ? details.value: ""),
+            editDate: new Date(interaction.createdAt).toString()
+        };
         let postResult;
-
-        const roleID = fields.keys().next().value;
-        if (roleID && roleID != "have")
-            data.roleID = roleID;
-        data.have = fields.get("have").value;
-        data.want = fields.get("want").value;
-
-        if (fields.has("imgur")) data.imgur = fields.get("imgur").value;
-        if (fields.has("details")) data.details = fields.get("details").value;
 
         data = this.cleanUserEntries(data);
 
         const { posted, url, newListingURL, errorContent } = await this.doProcess(
-            interaction.client, interaction.guild, type, authorID, postDate, data
+            guild, type, authorID, postDate, data
         );
 
         if (posted)
@@ -114,9 +129,6 @@ class NewPostManager extends BasePostManager {
         else
             postResult = errorContent;
 
-        dUtil.postProcess(interaction, posted, postResult, false, null);
+        this.dUtil.postProcess(interaction, posted, postResult, false, null);
     }
 }
-
-
-module.exports = { NewPostManager }

@@ -1,4 +1,4 @@
-import { Client, Message, Role } from "discord.js";
+import { Client, Guild, Message, Role, User } from "discord.js";
 import { Manager } from "./Manager";
 import { DiscordUtilities } from "../util/DiscordUtilities";
 
@@ -9,17 +9,17 @@ export class RoleGiverManager extends Manager {
 		super(client, dUtil);
 	}
 
-	async roleCheck(userScore: number, message: Message) {
+	async roleCheck(userScore: number, author: User, guild: Guild) {
 		let len = roles.length;
 		for (let i = 0; i < len; i++) {
 			if (userScore >= roles[i].filter) {
-				await dUtil.addRoleToUser(message.author, message.guild, this.getRoleInst(message, roles[i].role)).catch(console.error);
+				await this.dUtil.addRoleToUser(author, guild, this.getRoleInst(guild, roles[i].role)).catch(console.error);
 			}
 		}
 	}
 
-	getRoleInst(message: Message, roleName: string): Role | void {
-		if(!(message && message.guild)) return;		
-		return message.guild.roles.cache.find((r) => r.name == roleName);
+	getRoleInst(guild: Guild, roleName: string): Role | void {
+		if(!guild) return;		
+		return guild.roles.cache.find((r) => r.name == roleName);
 	}
 }

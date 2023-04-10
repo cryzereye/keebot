@@ -11,7 +11,7 @@ export class BackupService extends Service {
         this.startService();
     }
 
-    async startService() {
+    override async startService() {
         while (true) {
             if (this.isTime()) this.doBackup();
             this.saveNextBackup();

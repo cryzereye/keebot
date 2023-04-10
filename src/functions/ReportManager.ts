@@ -1,31 +1,38 @@
-import { MessageContextMenuCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, Client, MessageContextMenuCommandInteraction, ModalSubmitInteraction, Snowflake } from "discord.js";
 import { PostResult } from "../processor/types/PostResult";
+import { Manager } from "./Manager";
+import { DiscordUtilities } from "../util/DiscordUtilities";
+import { ReportType } from "./enums/ReportType";
+import { Report } from "../models/types/Report";
 
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const Report = require('../models/Report');
-const Post = require('../models/Post');
+const ReportModel = require('../models/ReportModel');
+const PostModel = require('../models/PostModel');
 const dUtil = require('../util/DiscordUtil');
-const { admins, channelsID, reportTypes } = require('../../json/config.json');
+const { channelsID, reportTypes } = require('../../json/config.json');
 const { constants } = require('../globals/constants.json');
 
-export class ReportManager {
-  constructor(client) {
-    this.client = client;
+export class ReportManager extends Manager{
+  constructor(client: Client, dUtil: DiscordUtilities) {
+    super(client, dUtil);
   }
 
-  async processReport(interaction) {
+  async processReport(interaction: ChatInputCommandInteraction) {
     const {guild, user} = interaction;
+    if(!guild) return;
+
     const reportType = interaction.options.getSubcommand(false);
     const author = interaction.user;
     const authorName = author.username + "#" + author.discriminator;
     switch (reportType) {
       case "file": {
         const reported = interaction.options.getUser('user');
+        if(!(reported && guild)) return;
         const reportedName = reported.username + "#" + reported.discriminator;
         const category = interaction.options.getString('category');
         const summary = interaction.options.getString('summary');
 
-        const reportID = Report.fileNewReport(
+        const reportID = ReportModel.fileNewReport(
           author.id,
           authorName,
           reported.id,
@@ -36,7 +43,7 @@ export class ReportManager {
         );
         const reportContent = `Reporter: ${authorName}\nTarget: ${reportedName}\nCategory: ${category}\nSummary: ${summary}`;
         const finalReport = "**REPORT ID: #" + reportID + "**```" + reportContent + "```";
-        await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.reports, finalReport);
+        await dUtil.sendMessageToChannel(interaction.client, guild.id, channelsID.reports, finalReport);
         return `**REPORT FILED** ID: ${reportID}`;
       }
       case "verify": {
@@ -48,7 +55,7 @@ export class ReportManager {
           const reportID = interaction.options.getString('id');
           const verifier = authorName;
           const verifyDate = new Date(interaction.createdAt).toString();
-          const { verified, report } = Report.verifyReportFromFile(reportID, true, verifier, verifyDate);
+          const { verified, report } = ReportModel.verifyReportFromFile(reportID, true, verifier, verifyDate);
 
           if (verified) {
             reply = `**VERIFIED REPORT #${reportID}**`;
@@ -60,18 +67,20 @@ export class ReportManager {
           }
         }
 
-        await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.reports, reply);
+        await dUtil.sendMessageToChannel(this.client, guild.id, channelsID.reports, reply);
         return reply;
       }
     }
   }
 
   async reportPost(interaction: MessageContextMenuCommandInteraction): Promise <PostResult> {
-    const { targetId } = interaction;
+    const { targetId, guild } = interaction;
+    if(!guild) return constants.postReport_fail;
+
     const authorID = interaction.user.id;
     const authorName = interaction.user.username + "#" + interaction.user.discriminator;
     const channelID = interaction.channelId;
-    const message = await dUtil.getMessageFromID(interaction.member.guild, channelID, targetID).catch(console.error);
+    const message = await dUtil.getMessageFromID(guild, channelID, targetId).catch(console.error);
 
     if (message) {
       // default is users post the sales. before bot feature
@@ -99,7 +108,7 @@ export class ReportManager {
         }
       }
 
-      const reportID = Report.fileNewReport(
+      const reportID = ReportModel.fileNewReport(
         authorID,
         authorName,
         reportedID,
@@ -111,8 +120,8 @@ export class ReportManager {
 
       console.log(`[${new Date().toLocaleString()}] Report for ${reportedName} saved`);
 
-      let content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${reportedID}>\n${Post.generateUrl(channelID, targetID)}`;
-      let filedReport = await dUtil.sendMessageToChannel(interaction.client, interaction.guild.id, channelsID.reports, content);
+      let content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${reportedID}>\n${PostModel.generateUrl(channelID, targetId)}`;
+      let filedReport = await dUtil.sendMessageToChannel(interaction.client, guild.id, channelsID.reports, content);
 
       if (filedReport) {
         try{
@@ -127,21 +136,21 @@ export class ReportManager {
         }
       }
     }
-
+    return constants.postReport_fail
   }
 
-  getVerifiedReportsMatrix(id) {
-    let reports = Report.getVerifiedReportsForUser(id);
+  getVerifiedReportsMatrix(id: Snowflake) {
+    let reports = ReportModel.getVerifiedReportsForUser(id);
     let reportStats = "";
-    reportTypes.forEach(type =>{
-      let fetched = reports.filter((entry) => entry.category === type);
+    reportTypes.forEach((type: ReportType) =>{
+      let fetched = reports.filter((entry: Report) => entry.type === type);
       if(fetched.length > 0)
         reportStats += `${type}: ${fetched.length}\n`;
     });
     return reportStats;
   }
 
-  generateModal(target) {
+  generateModal(target: Snowflake): typeof ModalBuilder {
     let modal = new ModalBuilder();
     let components = [
       new ActionRowBuilder().addComponents(this.buildShortField("target", "User", target)),
@@ -153,7 +162,7 @@ export class ReportManager {
     return modal;
   }
 
-  buildShortField(id, label, value) {
+  buildShortField(id: Snowflake, label: string, value: string): typeof TextInputBuilder {
     const field = new TextInputBuilder()
       .setCustomId(id)
       .setLabel(label)

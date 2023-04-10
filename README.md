@@ -20,6 +20,9 @@ This is the bot that manages the marketplace system of the Discord server Keebis
 `/stats <optional:user>`
 : Shows user's stats based on the bot's record from the vouches from #verify-transactions. This' commands' results include roles, vouch points, users they transacted with (max 10 users) including how many instances they got vouched, verified reports count listed by category, account creation dates and duration, user join date and duration in the server. For @Service Providers, they would have a separate count from their service feedbacks.
 
+`/help`
+: Shows small information about the bot commands
+
 ## **Moderation Features**:
 `/report verify <id>`
 : Command for verifying reports from users.
