@@ -6,7 +6,7 @@ const { BasePostManager } = require('./BasePostManager');
 const { SoldPostModal } = require('../modal/SoldPostModal');
 
 const { PostModel } = require('../../models/PostModel');
-const { channelsID } = require('../json/config.json');
+const { channelsID } = require('../../../json/config.json');
 
 export class SoldPostManager extends BasePostManager {
     constructor(client: Client, dUtil: DiscordUtilities) {

@@ -1,6 +1,6 @@
-import { Client, GatewayIntentBits, Partials, ActivityType, PresenceData, ClientUser } from 'discord.js';
+import { Client, GatewayIntentBits, Partials, ActivityType, PresenceData, ClientUser, Message, BaseInteraction } from 'discord.js';
 import { Routes } from 'discord-api-types/v10';
-import { REST } from '@discordjs/rest/dist';
+import { REST } from '@discordjs/rest';
 
 import { CommandProcessor } from './processor/CommandProcessor';
 import { ModalProcessor } from './processor/ModalProcessor';
@@ -15,8 +15,6 @@ import { BumpService } from './service/BumpService';
 import { PostFactory } from './functions/post/PostFactory';
 import { DiscordUtilities } from './util/DiscordUtilities';
 import { ScoreManager } from './functions/ScoreManager';
-import { Message } from 'discord.js';
-import { BaseInteraction } from 'discord.js';
 
 const { discord_id, discord_token, channelsID } = require('../json/config.json');
 const { commands } = require('./globals/commands.json');
@@ -61,20 +59,19 @@ export default class Bot {
 		this.cmdproc = new CommandProcessor(this.client, this.dUtil, this.statsmngr, this.reportmngr, this.postfactory);
 		this.contextproc = new ContextProcessor(this.client, this.postfactory, this.reportmngr);
 
-		// floating services
-		new BackupService(this.client);
-		new BumpService(this.client);
-
 		this.declareListeners();
 		this.client.login(discord_token);
 	}
 
 	declareListeners(): void {
 		this.client.on('ready', () => {
+			this.botUser = this.client.user;
 			this.buildSlashCommands();
 			this.updateBotPresence();
 
-			this.botUser = this.client.user;
+			// floating services
+			new BackupService(this.client);
+			new BumpService(this.client);
 
 			console.log(`[${new Date().toLocaleString()}] bot is ready`);
 		});

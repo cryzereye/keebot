@@ -5,7 +5,7 @@ const { BasePostManager } = require('./BasePostManager');
 const { NewPostModal } = require('../modal/NewPostModal');
 
 const { PostModel } = require('../../models/PostModel');
-const { channelsID, dev } = require('../json/config.json');
+const { channelsID, dev } = require('../../../json/config.json');
 import util = require('../../util/Utilities');
 
 export class NewPostManager extends BasePostManager {

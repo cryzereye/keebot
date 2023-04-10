@@ -4,7 +4,7 @@ import { Service } from "./Service";
 import { Post } from "../models/types/Post";
 
 const PostModel = require('../models/PostModel');
-const dUtil = require('../util/DiscordUtil');
+const dUtil = require('../util/DiscordUtilities');
 const util = require('../util/Utilities');
 const { channelsID, dev } = require('../../json/config.json');
 

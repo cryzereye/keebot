@@ -1,4 +1,4 @@
-import { Snowflake, SnowflakeUtil } from "discord.js";
+import { Snowflake } from "discord.js";
 import { Post } from "./types/Post";
 
 const fs = require('fs');
@@ -127,7 +127,7 @@ export function generateUrl(chid: Snowflake, msgid: Snowflake): string {
   return `https://discord.com/channels/${channelsID.server}/${chid}/${msgid}`;
 }
 
-exports.getChannelFromType = (type: TransactionType) => {
+export function getChannelFromType(type: TransactionType): string {
   switch (type) {
     case TransactionType.buy: return channelsID.buying;
     case TransactionType.sell: return channelsID.selling;

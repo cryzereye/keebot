@@ -5,7 +5,7 @@ import { PostResult } from "./types/PostResult";
 import { BaseProcessor } from "./BaseProcessor";
 
 const { commands } = require('../globals/commands.json');
-const dUtil = require('../util/DiscordUtil');
+const dUtil = require('../util/DiscordUtilities');
 
 export class ContextProcessor extends BaseProcessor{
   private postfactory: PostFactory

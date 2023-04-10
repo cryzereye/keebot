@@ -8,7 +8,7 @@ import { Report } from "../models/types/Report";
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const ReportModel = require('../models/ReportModel');
 const PostModel = require('../models/PostModel');
-const dUtil = require('../util/DiscordUtil');
+const dUtil = require('../util/DiscordUtilities');
 const { channelsID, reportTypes } = require('../../json/config.json');
 const { constants } = require('../globals/constants.json');
 

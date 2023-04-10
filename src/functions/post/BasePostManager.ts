@@ -2,11 +2,11 @@ import { Client, Guild, ModalBuilder, Snowflake } from "discord.js";
 import { Post } from "../../models/types/Post";
 import { PostResult } from "../../processor/types/PostResult";
 
-//import PostModel = require('../../models/PostModel');
+import PostModel = require('../../models/PostModel');
 import util = require('../../util/Utilities');
 import { DiscordUtilities } from "../../util/DiscordUtilities";
 
-const { channelsID, me_id } = require('../json/config.json');
+const { channelsID, me_id } = require('../../../json/config.json');
 
 export abstract class BasePostManager {
 	protected client: Client;
@@ -18,20 +18,20 @@ export abstract class BasePostManager {
 		this.dUtil = dUtil;
 	}
 
-	async getValidPostRecord(msgID: Snowflake, channelID: Snowflake, guild: Guild): Promise<Post | void> {
-		/*	if (channelID == channelsID.newListings)
+	async getValidPostRecord(msgID: Snowflake, channelID: Snowflake, guild: Guild): Promise<Post | null> {
+			if (channelID == channelsID.newListings)
 				return PostModel.getPostFromNewListID(msgID);
 			else {
 				let record = PostModel.get(msgID);
 				if (record) return record;
 				else {
-					const origID = await this.dUtil.getIdOfRepliedMsg(guild, channelID, msgID);
-					record = PostModel.get(origID);
+					const origID: Snowflake | void = await this.dUtil.getIdOfRepliedMsg(guild, channelID, msgID);
+					if(origID) record = PostModel.get(origID);
 					if (record) return record;
 				}
 			}
 	
-			return null;*/
+			return null;
 	}
 
 	async isValidPostEditor(userID: Snowflake, authorID: Snowflake, guild: Guild) {
