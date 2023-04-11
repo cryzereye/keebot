@@ -7,13 +7,8 @@ import { ScoreManager } from "./ScoreManager";
 const { channelsID } = require('../../json/config.json');
 
 export class ExtractManager extends Manager {
-    private scoremngr: ScoreManager
-    private rolegivermngr: RoleGiverManager
-
-    constructor(client: Client, dUtil: DiscordUtilities, scoremngr: ScoreManager, rolegivermngr: RoleGiverManager) {
-        super(client, dUtil);
-        this.scoremngr = scoremngr;
-        this.rolegivermngr = rolegivermngr;
+    constructor() {
+        super();
     }
 
     override async doProcess(interaction: BaseInteraction): Promise<void> {
@@ -39,7 +34,7 @@ export class ExtractManager extends Manager {
         let hasMoreMessages = true;
         let lastMessageID: Snowflake | undefined;
 
-        this.scoremngr.clearScores();
+        globalThis.scoremngr.clearScores();
 
         while (hasMoreMessages) {
             // from https://stackoverflow.com/questions/55153125/fetch-more-than-100-messages
@@ -78,8 +73,8 @@ export class ExtractManager extends Manager {
         try {
             let mentions = msg.mentions.users; // mentioned by initial vouch
             mentions.map(x => {
-                this.scoremngr.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator);
-                this.rolegivermngr.roleCheck(this.scoremngr.getScore(msg.author.id.toString()), msg.author, guild);
+                globalThis.scoremngr.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator);
+                globalThis.rolegivermngr.roleCheck(globalThis.scoremngr.getScore(msg.author.id.toString()), msg.author, guild);
             });
         }
         catch (e) {

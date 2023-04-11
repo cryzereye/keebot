@@ -12,11 +12,10 @@ export class BumpService extends Service {
 	private queue: Array<Post>;
 	private dUtil: DiscordUtilities;
 
-	constructor(client: Client, dUtil: DiscordUtilities) {
-		super(client);
+	constructor() {
+		super();
 		this.queue = [];
-		this.dUtil = dUtil;
-		this.startService();
+		this.dUtil = globalThis.dUtil;
 	}
 
 	override async startService() {

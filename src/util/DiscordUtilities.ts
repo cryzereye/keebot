@@ -5,8 +5,8 @@ const { channelsID, modRole, serviceProviderRole, adminRole } = require('../../j
 export class DiscordUtilities {
 	private client: Client;
 
-	constructor(client: Client) {
-		this.client = client;
+	constructor() {
+		this.client = globalThis.client;
 	}
 
 	public async getGuildMemberFromID(user: Snowflake, guild: Guild | Snowflake): Promise<GuildMember | void> {

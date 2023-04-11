@@ -6,13 +6,8 @@ import { BaseProcessor } from "./BaseProcessor";
 const { dev, me_id, command_sign, channelsID, discord_id } = require('../../json/config.json');
 
 export class MessageProcessor extends BaseProcessor {
-  private scoremngr: ScoreManager;
-  private rolegivermngr: RoleGiverManager;
-
-  constructor(client: Client, scoremngr: ScoreManager, rolegivermngr: RoleGiverManager) {
-    super(client);
-    this.scoremngr = scoremngr;
-    this.rolegivermngr = rolegivermngr;
+  constructor() {
+    super();
   }
 
   async processMessage(message: Message): Promise<void> {
@@ -46,18 +41,18 @@ export class MessageProcessor extends BaseProcessor {
 
         let replyto = repliedUser.username + '#' + repliedUser.discriminator;
         if(authorName == replyto) message.reply(`**DO NOT CONFIRM FOR YOURSELF!** pinging <@${me_id}>`);
-        else this.scoremngr.addPoint(authorID, authorName, replyto);
+        else globalThis.scoremngr.addPoint(authorID, authorName, replyto);
       }
       else {
         // initial send
         message.mentions.users.map(x => {
           let mentioned = x.username + '#' + x.discriminator;
           if(authorName == mentioned) message.reply(`**DO NOT VOUCH YOURSELF!** pinging <@${me_id}>`);
-          else this.scoremngr.addPoint(authorID, authorName, mentioned);
+          else globalThis.scoremngr.addPoint(authorID, authorName, mentioned);
         });
       }
       if (!dev)
-        this.rolegivermngr.roleCheck(this.scoremngr.getScore(authorID), message.author, message.guild);
+      globalThis.rolegivermngr.roleCheck(globalThis.scoremngr.getScore(authorID), message.author, message.guild);
     }
   }
 

@@ -10,8 +10,8 @@ const { channelsID, dev } = require('../../../json/config.json');
 import util = require('../../util/Utilities');
 
 export class NewPostManager extends BasePostManager {
-    constructor(client: Client, dUtil: DiscordUtilities) {
-        super(client, dUtil);
+    constructor() {
+        super();
     }
 
     doModal(interaction: ChatInputCommandInteraction) {

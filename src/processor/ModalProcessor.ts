@@ -3,8 +3,8 @@ import { PostFactory } from "../functions/post/PostFactory";
 import { BaseProcessor } from "./BaseProcessor";
 
 export class ModalProcessor extends BaseProcessor {
-  constructor(client: Client) {
-    super(client);
+  constructor() {
+    super();
   }
 
   public async processModal(interaction: ModalSubmitInteraction, postfactory: PostFactory) {

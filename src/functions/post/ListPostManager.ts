@@ -8,8 +8,8 @@ import PostModel = require('../../models/PostModel');
 import util = require('../../util/Utilities');
 
 export class ListPostManager extends BasePostManager {
-    constructor(client: Client, dUtil: DiscordUtilities) {
-        super(client, dUtil);
+    constructor() {
+        super();
     }
 
     async doProcess(interaction: ChatInputCommandInteraction) {

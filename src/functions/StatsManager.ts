@@ -1,7 +1,5 @@
-import { BaseInteraction, ChatInputCommandInteraction, Client, EmbedAuthorData, EmbedBuilder, Guild, GuildMember, Role, Snowflake, User } from "discord.js";
+import { BaseInteraction, ChatInputCommandInteraction, EmbedAuthorData, EmbedBuilder, Guild, GuildMember, Role, Snowflake, User } from "discord.js";
 import { Manager } from "./Manager";
-import { DiscordUtilities } from "../util/DiscordUtilities";
-import { ReportManager } from "./ReportManager";
 import { UserDates } from "./types/UserDates";
 
 const { relevant_roles, channelsID } = require('../../json/config.json');
@@ -10,10 +8,8 @@ let { scores } = require(fileName);
 import util = require('../util/Utilities');
 
 export class StatsManager extends Manager {
-	private reportmngr: ReportManager;
-	constructor(client: Client, dUtil: DiscordUtilities, reportmngr: ReportManager) {
-		super(client, dUtil);
-		this.reportmngr = reportmngr;
+	constructor() {
+		super();
 	}
 
 	override async doProcess(interaction: BaseInteraction): Promise<void> {
@@ -28,7 +24,7 @@ export class StatsManager extends Manager {
 			const guildmember = await this.dUtil.getGuildMemberFromID(target.id, guild).catch(console.error);
 			if(!guildmember) return;
 
-			let reports = this.reportmngr.getVerifiedReportsMatrix(target.id.toString());
+			let reports = globalThis.reportmngr.getVerifiedReportsMatrix(target.id.toString());
 			if (reports == "") reports = "CLEAN RECORD";
 
 			const authorDetails: EmbedAuthorData = {

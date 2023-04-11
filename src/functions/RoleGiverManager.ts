@@ -5,8 +5,8 @@ import { DiscordUtilities } from "../util/DiscordUtilities";
 const { roles } = require('../../json/config.json');
 
 export class RoleGiverManager extends Manager {
-	constructor(client: Client, dUtil: DiscordUtilities) {
-		super(client, dUtil);
+	constructor() {
+		super();
 	}
 
 	async roleCheck(userScore: number, author: User, guild: Guild) {

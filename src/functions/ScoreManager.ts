@@ -8,8 +8,8 @@ const osFile = './json/scores.json';
 let { scores } = require(fileName);
 
 export class ScoreManager extends Manager {
-    constructor(client: Client, dUtil: DiscordUtilities) {
-        super(client, dUtil);
+    constructor() {
+        super();
     }
 
     addPoint(id1: Snowflake, id1_name: string, id2: Snowflake) {

@@ -9,8 +9,8 @@ const { PostModel } = require('../../models/PostModel');
 const { channelsID } = require('../../../json/config.json');
 
 export class SoldPostManager extends BasePostManager {
-    constructor(client: Client, dUtil: DiscordUtilities) {
-        super(client, dUtil);
+    constructor() {
+        super();
     }
 
     async doModal(interaction: BaseInteraction, argPostID: Snowflake) {

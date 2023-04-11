@@ -48,26 +48,28 @@ export default class Bot {
 			partials: [Partials.Channel]
 		});
 
-		this.dUtil = new DiscordUtilities(this.client);
+		this.dUtil = new DiscordUtilities();
 
-		this.rolegivermngr = new RoleGiverManager(this.client, this.dUtil);
-		this.reportmngr = new ReportManager(this.client, this.dUtil);
-		this.scoremngr = new ScoreManager(this.client, this.dUtil);
-		this.statsmngr = new StatsManager(this.client, this.dUtil, this.reportmngr);
-		this.extractmngr = new ExtractManager(this.client, this.dUtil, this.scoremngr, this.rolegivermngr);
+		this.rolegivermngr = new RoleGiverManager();
+		this.reportmngr = new ReportManager();
+		this.scoremngr = new ScoreManager();
+		this.statsmngr = new StatsManager();
+		this.extractmngr = new ExtractManager();
 
-		this.postfactory = new PostFactory(this.client, this.dUtil);
+		this.postfactory = new PostFactory();
 
-		this.msgproc = new MessageProcessor(this.client, this.scoremngr, this.rolegivermngr);
-		this.modalproc = new ModalProcessor(this.client);
-		this.cmdproc = new CommandProcessor(this.client, this.dUtil, this.statsmngr, this.reportmngr, this.extractmngr, this.postfactory);
-		this.contextproc = new ContextProcessor(this.client, this.dUtil,this.postfactory, this.reportmngr);
+		this.msgproc = new MessageProcessor();
+		this.modalproc = new ModalProcessor();
+		this.cmdproc = new CommandProcessor();
+		this.contextproc = new ContextProcessor();
 
 		this.declareListeners();
 
 		console.log(`[${new Date().toLocaleString()}] Logging in ...`);
 		this.client.login(discord_token);
 		console.log(`[${new Date().toLocaleString()}] Logged in ...`);
+
+		this.assignGlobals();
 	}
 
 	declareListeners(): void {
@@ -77,8 +79,8 @@ export default class Bot {
 			this.updateBotPresence();
 
 			// floating services
-			new BackupService(this.client);
-			new BumpService(this.client, this.dUtil);
+			new BackupService();
+			new BumpService();
 
 			console.log(`[${new Date().toLocaleString()}] bot is ready`);
 		});
@@ -116,5 +118,15 @@ export default class Bot {
 		}
 
 		this.botUser.setPresence(presence);
+	}
+
+	assignGlobals(){
+		globalThis.client = this.client;
+		globalThis.dUtil = this.dUtil;
+		globalThis.rolegivermngr = this.rolegivermngr;
+		globalThis.scoremngr = this.scoremngr;
+		globalThis.statsmngr = this.statsmngr;
+		globalThis.extractmngr = this.extractmngr;
+		globalThis.reportmngr = this.reportmngr;
 	}
 }

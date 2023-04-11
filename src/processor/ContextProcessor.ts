@@ -3,20 +3,12 @@ import { ReportManager } from "../functions/ReportManager";
 import { PostFactory } from "../functions/post/PostFactory";
 import { PostResult } from "./types/PostResult";
 import { BaseProcessor } from "./BaseProcessor";
-import { DiscordUtilities } from "../util/DiscordUtilities";
 
 const { commands } = require('../globals/commands.json');
 
 export class ContextProcessor extends BaseProcessor{
-  private postfactory: PostFactory;
-  private reportmngr: ReportManager;
-  private dUtil: DiscordUtilities;
-
-  constructor(client: Client, dUtil: DiscordUtilities, postfactory: PostFactory, reportmngr: ReportManager) {
-    super(client);
-    this.dUtil = dUtil;
-    this.postfactory = postfactory;
-    this.reportmngr = reportmngr;
+constructor() {
+    super();
   }
 
   async processContext(interaction: MessageContextMenuCommandInteraction) {
@@ -24,8 +16,8 @@ export class ContextProcessor extends BaseProcessor{
     switch (commandName) {
       case commands[5].name: 
       case commands[6].name: 
-      case commands[7].name: this.processResults(interaction, await this.postfactory.processContext(interaction)); break;
-      case commands[8].name: this.processResults(interaction, await this.reportmngr.reportPost(interaction)); break;
+      case commands[7].name: this.processResults(interaction, await globalThis.postfactory.processContext(interaction)); break;
+      case commands[8].name: this.processResults(interaction, await globalThis.reportmngr.reportPost(interaction)); break;
     }
   }
 

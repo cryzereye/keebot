@@ -19,14 +19,14 @@ export class PostFactory {
     private deletePostManager: DeletePostManager;
     private listPostManager: ListPostManager;
 
-    constructor(client: Client, dUtil: DiscordUtilities) {
-        this.client = client;
-        this.dUtil = dUtil;
-        this.newPostManager = new NewPostManager(client, dUtil);
-        this.editPostManager = new EditPostManager(client, dUtil);
-        this.soldPostManager = new SoldPostManager(client, dUtil);
-        this.deletePostManager = new DeletePostManager(client, dUtil);
-        this.listPostManager = new ListPostManager(client, dUtil);
+    constructor() {
+        this.client = globalThis.client;
+        this.dUtil = globalThis.dUtil;
+        this.newPostManager = new NewPostManager();
+        this.editPostManager = new EditPostManager();
+        this.soldPostManager = new SoldPostManager();
+        this.deletePostManager = new DeletePostManager();
+        this.listPostManager = new ListPostManager();
     }
 
     async processCommand(interaction: ChatInputCommandInteraction) {

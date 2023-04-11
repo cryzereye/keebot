@@ -13,8 +13,8 @@ const { channelsID, reportTypes } = require('../../json/config.json');
 const { constants } = require('../globals/constants.json');
 
 export class ReportManager extends Manager{
-  constructor(client: Client, dUtil: DiscordUtilities) {
-    super(client, dUtil);
+  constructor() {
+    super();
   }
 
   async processReport(interaction: ChatInputCommandInteraction) {
