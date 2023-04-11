@@ -1,7 +1,7 @@
 import fs = require('fs');
 import path = require('path');
-import { TimeDiff } from "./types/TimeDiff";
 import { TransactionType } from '../models/enums/TransactionType';
+import { TimeDiff } from "./types/TimeDiff";
 
 const { dev } = require('../../json/config.json');
 
@@ -10,15 +10,15 @@ const { dev } = require('../../json/config.json');
  * returns time difference from now to target
  * @param {Date} target 
  */
-export function getTimeDiff (target: Date) : TimeDiff {
+export function getTimeDiff(target: Date): TimeDiff {
 	const now = Date.now(); // already in milliseconds
 	const ms = (now - target.getMilliseconds());
 
-	const years : number = Math.floor(ms / 31557600000);
-	const months : number = Math.floor((ms % 31557600000) / 2629800000);
-	const days : number = Math.floor(((ms % 31557600000) % 2629800000) / 86400000);
-	const hours : number = Math.floor((((ms % 31557600000) % 2629800000) % 86400000) / 3600000);
-	const mins : number = Math.round(((((ms % 31557600000) % 2629800000) % 86400000) % 3600000) / 60000);
+	const years: number = Math.floor(ms / 31557600000);
+	const months: number = Math.floor((ms % 31557600000) / 2629800000);
+	const days: number = Math.floor(((ms % 31557600000) % 2629800000) / 86400000);
+	const hours: number = Math.floor((((ms % 31557600000) % 2629800000) % 86400000) / 3600000);
+	const mins: number = Math.round(((((ms % 31557600000) % 2629800000) % 86400000) % 3600000) / 60000);
 
 	const result: TimeDiff = [
 		(years > 0 ? `${years} years` : ""),
@@ -37,7 +37,7 @@ export function getTimeDiff (target: Date) : TimeDiff {
  * @param {number} hours 
  * @returns {string}
  */
-export function addHours (start: string, hours: number) : string {
+export function addHours(start: string, hours: number): string {
 	let date = new Date(start);
 	if (dev)
 		date.setTime(date.getTime() + hours * 60 * 1000); // x mins for test purposes
@@ -51,7 +51,7 @@ export function addHours (start: string, hours: number) : string {
  * @param {number} mins 
  * @returns {number} ms in mins
  */
-export function getMinutes (mins: number) : number {
+export function getMinutes(mins: number): number {
 	return mins * 60 * 1000;
 }
 
@@ -60,12 +60,12 @@ export function getMinutes (mins: number) : number {
  * @param {string} str 
  * @returns {Boolean}
  */
-export function isValidAmount (str: string) : Boolean {
+export function isValidAmount(str: string): Boolean {
 	const regexp = /\w*\d+\w*/gi;
 	return regexp.test(str);
 }
 
-export function copyAllFiles (src: string, dest: string) : void {
+export function copyAllFiles(src: string, dest: string): void {
 	createFolder(dest);
 
 	// Get list of files in source directory
@@ -79,18 +79,18 @@ export function copyAllFiles (src: string, dest: string) : void {
 	});
 }
 
-export function createFolder (dest: string) : void {
+export function createFolder(dest: string): void {
 	if (!fs.existsSync(dest)) {
 		fs.mkdirSync(dest);
 	}
 }
 
 export function getTransactionType(type: string): TransactionType {
-    switch(type) {
-        case "buy": return TransactionType.buy;
-        case "sell": return TransactionType.sell;
-        case "trade": return TransactionType.trade;
-    }
+	switch (type) {
+		case "buy": return TransactionType.buy;
+		case "sell": return TransactionType.sell;
+		case "trade": return TransactionType.trade;
+	}
 
-    return TransactionType.buy;
+	return TransactionType.buy;
 }

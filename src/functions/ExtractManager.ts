@@ -1,8 +1,5 @@
-import { BaseInteraction, ChatInputCommandInteraction, Client, Collection, FetchMessagesOptions, Guild, InteractionReplyOptions, Message, Snowflake, TextChannel } from "discord.js";
+import { BaseInteraction, ChatInputCommandInteraction, Collection, FetchMessagesOptions, Guild, InteractionReplyOptions, Message, Snowflake, TextChannel } from "discord.js";
 import { Manager } from "./Manager";
-import { RoleGiverManager } from "./RoleGiverManager";
-import { DiscordUtilities } from "../util/DiscordUtilities";
-import { ScoreManager } from "./ScoreManager";
 
 const { channelsID } = require('../../json/config.json');
 
@@ -12,15 +9,15 @@ export class ExtractManager extends Manager {
     }
 
     override async doProcess(interaction: BaseInteraction): Promise<void> {
-        
+
         const { user, guild } = interaction;
         if (!(user && guild && this.dUtil.isAdmin(guild, user.id))) return;
 
-        if (interaction instanceof ChatInputCommandInteraction){
+        if (interaction instanceof ChatInputCommandInteraction) {
             await interaction.deferReply().catch(console.error);
             await interaction.followUp(await this.doExtract(guild)).catch(console.error);
         }
-            
+
     }
 
     async doExtract(guild: Guild): Promise<InteractionReplyOptions> {
@@ -42,12 +39,12 @@ export class ExtractManager extends Manager {
             if (lastMessageID) options.before = lastMessageID;
 
             await vouchChannel.messages.fetch(options).then((msglist: Collection<Snowflake, Message>) => {
-                const { countReturn, lastMessageIDReturn} = this.traverseMessageList(msglist, count, lastMessageID, guild);
+                const { countReturn, lastMessageIDReturn } = this.traverseMessageList(msglist, count, lastMessageID, guild);
                 count = countReturn;
                 lastMessageID = lastMessageIDReturn;
                 if (count > 0 && count % 100 != 0) hasMoreMessages = false;
             })
-            .catch(console.error);
+                .catch(console.error);
         }
         console.log(`[${new Date().toLocaleString()}] Message count: ${count}`);
 
@@ -57,7 +54,7 @@ export class ExtractManager extends Manager {
         };
     }
 
-    traverseMessageList(msgList: Collection<Snowflake, Message> , countReturn: number, lastMessageIDReturn:Snowflake | undefined, guild: Guild): any {
+    traverseMessageList(msgList: Collection<Snowflake, Message>, countReturn: number, lastMessageIDReturn: Snowflake | undefined, guild: Guild): any {
         msgList.forEach(async (msg: Message) => {
             this.processMessage(msg, guild);
             countReturn++;
@@ -65,7 +62,7 @@ export class ExtractManager extends Manager {
             await new Promise(resolve => setTimeout(resolve, 50)); // 50 ms delay in between
         });
 
-        return {countReturn, lastMessageIDReturn};
+        return { countReturn, lastMessageIDReturn };
     }
 
     processMessage(msg: Message, guild: Guild) {

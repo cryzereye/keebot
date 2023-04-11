@@ -1,8 +1,8 @@
 import { BaseInteraction, Client } from "discord.js";
-import { ManagerInterface } from "./interface/ManagerInterface";
 import { DiscordUtilities } from "../util/DiscordUtilities";
+import { ManagerInterface } from "./interface/ManagerInterface";
 
-export class Manager implements ManagerInterface{
+export class Manager implements ManagerInterface {
     protected client: Client
     protected dUtil: DiscordUtilities;
 
@@ -11,6 +11,6 @@ export class Manager implements ManagerInterface{
         this.dUtil = globalThis.dUtil;
     }
 
-    async doProcess(interaction: BaseInteraction): Promise<void>{};
+    async doProcess(interaction: BaseInteraction): Promise<void> { };
 }
 

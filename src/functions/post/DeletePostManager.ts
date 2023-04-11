@@ -1,10 +1,9 @@
-import { BaseInteraction, ChatInputCommandInteraction, Client, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
+import { BaseInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
 import { PostResult } from "../../processor/types/PostResult";
 
-import { BasePostManager } from './BasePostManager';
 import { DeletePostModal } from '../modal/DeletePostModal';
-import { DiscordUtilities } from "../../util/DiscordUtilities";
 import { ProcessResult } from "../types/ProcessResult";
+import { BasePostManager } from './BasePostManager';
 
 import PostModel = require('../../models/PostModel');
 const { channelsID } = require('../../../json/config.json');
@@ -30,7 +29,7 @@ export class DeletePostManager extends BasePostManager {
         else return this.invalidPost();
     }
 
-    async doProcess(guild: Guild, data: any): Promise <ProcessResult> {
+    async doProcess(guild: Guild, data: any): Promise<ProcessResult> {
         const newListingsCh = channelsID.newListings;
         let record = PostModel.get(data.postID);
 
@@ -91,7 +90,7 @@ export class DeletePostManager extends BasePostManager {
 
     async doModalDataProcess(interaction: ModalSubmitInteraction): Promise<void> {
         const { guild } = interaction;
-        if(!guild) return;
+        if (!guild) return;
 
         const fields = interaction.fields.fields;
         const postID = fields.keys().next().value;
@@ -107,7 +106,7 @@ export class DeletePostManager extends BasePostManager {
             guild, data
         ).catch(console.error);
 
-        if(!result) return;
+        if (!result) return;
         const { processed, errorContent } = result;
 
         if (processed)

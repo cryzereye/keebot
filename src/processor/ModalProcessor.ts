@@ -1,4 +1,4 @@
-import { Client, ModalSubmitInteraction } from "discord.js";
+import { ModalSubmitInteraction } from "discord.js";
 import { PostFactory } from "../functions/post/PostFactory";
 import { BaseProcessor } from "./BaseProcessor";
 

@@ -1,5 +1,4 @@
-import { BaseInteraction, ChatInputCommandInteraction, Client, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
-import { DiscordUtilities } from "../../util/DiscordUtilities";
+import { BaseInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
 import { PostResult } from "../../processor/types/PostResult";
 
 const { BasePostManager } = require('./BasePostManager');
@@ -124,12 +123,12 @@ export class EditPostManager extends BasePostManager {
     }
 
     async doModalDataProcess(interaction: ModalSubmitInteraction) {
-        const {guild, user, fields} = interaction;
-        if(!(guild && user && fields && fields.fields)) return;
-        
+        const { guild, user, fields } = interaction;
+        if (!(guild && user && fields && fields.fields)) return;
+
         const authorID = user.id;
         const extracted = fields.fields;
-        if(extracted.size <= 0 ) return;
+        if (extracted.size <= 0) return;
 
         const postID = extracted.keys().next().value;
         const have = extracted.get("have");
@@ -137,8 +136,8 @@ export class EditPostManager extends BasePostManager {
 
         let data = {
             postID: (postID && postID != "have" ? postID : ""),
-            have: (have ? have.value: ""),
-            want: (want ? want.value: ""),
+            have: (have ? have.value : ""),
+            want: (want ? want.value : ""),
             editDate: new Date(interaction.createdAt).toString()
         };
         let editResult;

@@ -22,7 +22,7 @@ export class StatsManager extends Manager {
 			const isServiceProvider = await this.dUtil.isServiceProvider(guild, target.id);
 
 			const guildmember = await this.dUtil.getGuildMemberFromID(target.id, guild).catch(console.error);
-			if(!guildmember) return;
+			if (!guildmember) return;
 
 			let reports = globalThis.reportmngr.getVerifiedReportsMatrix(target.id.toString());
 			if (reports == "") reports = "CLEAN RECORD";
@@ -35,7 +35,7 @@ export class StatsManager extends Manager {
 			const roles = this.rolesToString(guildmember);
 			const userDates: UserDates = this.getUserDates(guildmember);
 
-			let feedbackCount = (isServiceProvider? await this.countFeedbackForUser(guild, target.id): "0");
+			let feedbackCount = (isServiceProvider ? await this.countFeedbackForUser(guild, target.id) : "0");
 
 			await interaction.followUp({
 				embeds: [
@@ -115,7 +115,7 @@ export class StatsManager extends Manager {
 
 	async countFeedbackForUser(guild: Guild, userID: Snowflake): Promise<string> {
 		let feedback = await this.dUtil.fetchAllMessagesMentionsUser(guild, userID, channelsID.serviceFeedback);
-		if(feedback)
+		if (feedback)
 			return feedback.length.toString();
 		return "0";
 	}
@@ -124,8 +124,8 @@ export class StatsManager extends Manager {
 		let userDates: UserDates = {
 			creaStr: gm.user.createdAt.toString(),
 			creaDur: util.getTimeDiff(gm.user.createdAt).join(' '),
-			joinStr: (gm.joinedAt? gm.joinedAt.toString(): "NOT IN THE SERVER"),
-			joinDur: (gm.joinedAt? util.getTimeDiff(gm.joinedAt).join(' '): "NOT IN THE SERVER"),
+			joinStr: (gm.joinedAt ? gm.joinedAt.toString() : "NOT IN THE SERVER"),
+			joinDur: (gm.joinedAt ? util.getTimeDiff(gm.joinedAt).join(' ') : "NOT IN THE SERVER"),
 		};
 		return userDates;
 	}

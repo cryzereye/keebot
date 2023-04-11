@@ -1,8 +1,8 @@
 const { EmbedBuilder } = require('discord.js');
-import { Client, Guild, Message, Snowflake, User } from "discord.js";
-import { Service } from "./Service";
+import { Guild, Message, Snowflake, User } from "discord.js";
 import { Post } from "../models/types/Post";
 import { DiscordUtilities } from "../util/DiscordUtilities";
+import { Service } from "./Service";
 
 const PostModel = require('../models/PostModel');
 const util = require('../util/Utilities');
@@ -21,7 +21,7 @@ export class BumpService extends Service {
 	override async startService() {
 		console.log(`[${new Date().toLocaleString()}] Bump service started...`);
 		const guild = await this.dUtil.getGuildFromID(channelsID.server);
-		if(!guild) return;
+		if (!guild) return;
 
 		// loop for check intervals
 		while (true) {
@@ -50,7 +50,7 @@ export class BumpService extends Service {
 
 					if (await this.checkExpiry(currPost, origPost, currDate, guild)) break;
 					const mentioned = origPost.mentions.users.at(0);
-					if(!mentioned) {
+					if (!mentioned) {
 						this.queue.push(currPost);
 						continue;
 					}
@@ -66,7 +66,7 @@ export class BumpService extends Service {
 						let newBumpDate = util.addHours(Date.now(), 8 + (Math.random() * 4)); // randoms 8-12 hours
 						if (dev)
 							newBumpDate = util.addHours(Date.now(), Math.floor(Math.random() * 4)); // randoms 0-4 minutes
-							
+
 						PostModel.bumped(currPost.postID, newBumpDate);
 						this.notifyLastBumpBeforeExpiry(newBumpDate, currPost.expiryDate, currPost.authorID, url);
 

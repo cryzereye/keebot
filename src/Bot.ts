@@ -1,21 +1,21 @@
-import { Client, GatewayIntentBits, Partials, ActivityType, PresenceData, ClientUser, Message, BaseInteraction } from 'discord.js';
-import { Routes } from 'discord-api-types/v10';
 import { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v10';
+import { ActivityType, BaseInteraction, Client, ClientUser, GatewayIntentBits, Message, Partials, PresenceData } from 'discord.js';
 
 import { CommandProcessor } from './processor/CommandProcessor';
-import { ModalProcessor } from './processor/ModalProcessor';
-import { MessageProcessor } from './processor/MessageProcessor';
 import { ContextProcessor } from './processor/ContextProcessor';
+import { MessageProcessor } from './processor/MessageProcessor';
+import { ModalProcessor } from './processor/ModalProcessor';
 
-import { StatsManager } from './functions/StatsManager';
-import { RoleGiverManager } from './functions/RoleGiverManager';
+import { ExtractManager } from './functions/ExtractManager';
 import { ReportManager } from './functions/ReportManager';
+import { RoleGiverManager } from './functions/RoleGiverManager';
+import { ScoreManager } from './functions/ScoreManager';
+import { StatsManager } from './functions/StatsManager';
+import { PostFactory } from './functions/post/PostFactory';
 import { BackupService } from './service/BackupService';
 import { BumpService } from './service/BumpService';
-import { PostFactory } from './functions/post/PostFactory';
 import { DiscordUtilities } from './util/DiscordUtilities';
-import { ScoreManager } from './functions/ScoreManager';
-import { ExtractManager } from './functions/ExtractManager';
 
 const { discord_id, discord_token, channelsID } = require('../json/config.json');
 const { commands } = require('./globals/commands.json');
@@ -85,7 +85,7 @@ export default class Bot {
 			console.log(`[${new Date().toLocaleString()}] bot is ready`);
 		});
 
-		this.client.on('messageCreate', (message: Message) => { 
+		this.client.on('messageCreate', (message: Message) => {
 			this.msgproc.processMessage(message);
 		});
 
@@ -94,7 +94,7 @@ export default class Bot {
 				this.contextproc.processContext(interaction);
 			else if (interaction.isChatInputCommand())
 				this.cmdproc.processCommand(interaction);
-			else if (interaction .isModalSubmit())
+			else if (interaction.isModalSubmit())
 				this.modalproc.processModal(interaction, this.postfactory);
 		});
 	}
@@ -108,7 +108,7 @@ export default class Bot {
 	}
 
 	updateBotPresence(): void {
-		let presence:PresenceData = {
+		let presence: PresenceData = {
 			activities: [{
 				type: ActivityType.Streaming,
 				url: "https://github.com/cryzereye/keebot",
@@ -120,7 +120,7 @@ export default class Bot {
 		this.botUser.setPresence(presence);
 	}
 
-	assignGlobals(){
+	assignGlobals() {
 		globalThis.client = this.client;
 		globalThis.dUtil = this.dUtil;
 		globalThis.rolegivermngr = this.rolegivermngr;

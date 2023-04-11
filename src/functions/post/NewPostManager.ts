@@ -1,9 +1,8 @@
-import { ChatInputCommandInteraction, Client, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
-import { DiscordUtilities } from "../../util/DiscordUtilities";
+import { ChatInputCommandInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
+import { TransactionType } from "../../models/enums/TransactionType";
 
 const { BasePostManager } = require('./BasePostManager');
 const { NewPostModal } = require('../modal/NewPostModal');
-import { TransactionType } from "../../models/enums/TransactionType";
 
 import PostModel = require('../../models/PostModel');
 const { channelsID, dev } = require('../../../json/config.json');
@@ -31,7 +30,7 @@ export class NewPostManager extends BasePostManager {
         }
     }
 
-    async doProcess(guild: Guild, type: TransactionType, authorID: Snowflake, postDate: string, data: any): Promise<any>{
+    async doProcess(guild: Guild, type: TransactionType, authorID: Snowflake, postDate: string, data: any): Promise<any> {
         let channelID = PostModel.getChannelFromType(type);
         let content = "";
         let newListContent = "";
@@ -59,7 +58,7 @@ export class NewPostManager extends BasePostManager {
 
         // gets sent message from buy/sell/trade channels then gets id, generates url to be sent in #new-listings
         const message = await this.dUtil.sendMessageToChannel(guild.id, channelID, content);
-        if(!message) {
+        if (!message) {
             return {
                 posted: false,
                 url: "",
@@ -103,12 +102,12 @@ export class NewPostManager extends BasePostManager {
     }
 
     async doModalDataProcess(interaction: ModalSubmitInteraction) {
-        const {guild, user, fields, customId} = interaction;
-        if(!(guild && user && fields && fields.fields)) return;
-        
+        const { guild, user, fields, customId } = interaction;
+        if (!(guild && user && fields && fields.fields)) return;
+
         const authorID = user.id;
         const extracted = fields.fields;
-        if(extracted.size <= 0 ) return;
+        if (extracted.size <= 0) return;
 
         const postDate = new Date(interaction.createdAt).toString();
         const inputType: string = customId.replace("PostModal", "");
@@ -121,10 +120,10 @@ export class NewPostManager extends BasePostManager {
 
         let data = {
             "roleID": (roleID && roleID != "have" ? roleID : null),
-            "have": (have ? have.value: ""),
-            "want": (want ? want.value: ""),
-            "imgur": (imgur ? imgur.value: ""),
-            "details": (details ? details.value: ""),
+            "have": (have ? have.value : ""),
+            "want": (want ? want.value : ""),
+            "imgur": (imgur ? imgur.value : ""),
+            "details": (details ? details.value : ""),
             "editDate": new Date(interaction.createdAt).toString()
         };
         let postResult;

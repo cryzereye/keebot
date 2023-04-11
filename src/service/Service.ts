@@ -1,5 +1,5 @@
 export class Service {
-    constructor() {}
+    constructor() { }
 
-    async startService() {}
+    async startService() { }
 }

@@ -1,57 +1,57 @@
 {
 	"constants": {
-		"selfReport_success" : {
+		"selfReport_success": {
 			"success": false,
 			"content": "Self-reported",
 			"isModal": false,
 			"modal": null
 		},
-		"selfReport_fail" : {
+		"selfReport_fail": {
 			"success": false,
 			"content": "Already self-reported",
 			"isModal": false,
 			"modal": null
 		},
-		"postReport_success" : {
+		"postReport_success": {
 			"success": true,
 			"content": "Post reported",
 			"isModal": false,
 			"modal": null
 		},
-		"postReport_fail" : {
+		"postReport_fail": {
 			"success": true,
 			"content": "Post already reported",
 			"isModal": false,
 			"modal": null
 		},
-		"helpinfo" : [
+		"helpinfo": [
 			{
-				"name" : "#verify-transaction",
-				"value" : "This is where you send vouches for the people that you have transacted with **within the server**. For vouch confirmation, please reply to the vouch where you got mentioned, else you would not be scored for it."
+				"name": "#verify-transaction",
+				"value": "This is where you send vouches for the people that you have transacted with **within the server**. For vouch confirmation, please reply to the vouch where you got mentioned, else you would not be scored for it."
 			},
 			{
-				"name" : "/stats",
-				"value" : "/stats <optional user>: see your stats or your target user's stats"
+				"name": "/stats",
+				"value": "/stats <optional user>: see your stats or your target user's stats"
 			},
 			{
-				"name" : "/report file",
-				"value" : "/report file <user> <category> <summary>: file a report regarding a transaction incident within Keebisoria"
+				"name": "/report file",
+				"value": "/report file <user> <category> <summary>: file a report regarding a transaction incident within Keebisoria"
 			},
 			{
-				"name" : "/post new",
-				"value" : "/post new <buy/sell/trade> <optional item role>: lets you create a new buy/sell/trade post. If item role is entered, there will be an item role ping for you listing upon creation. See #quick-guides-index no14 for more information"
+				"name": "/post new",
+				"value": "/post new <buy/sell/trade> <optional item role>: lets you create a new buy/sell/trade post. If item role is entered, there will be an item role ping for you listing upon creation. See #quick-guides-index no14 for more information"
 			},
 			{
-				"name" : "/post list",
-				"value" : "/post list <optional user> <optional item role>: Lets you see your own posts list. You can also add <user> to see the posts of the target user, or add <item role> to see items under the given item role. Both can be used at the same time."
+				"name": "/post list",
+				"value": "/post list <optional user> <optional item role>: Lets you see your own posts list. You can also add <user> to see the posts of the target user, or add <item role> to see items under the given item role. Both can be used at the same time."
 			},
 			{
-				"name" : "/extract:",
-				"value" : "For admin use only"
+				"name": "/extract:",
+				"value": "For admin use only"
 			},
 			{
-				"name" : "For bugs and data in accuracies",
-				"value" : "Ping <@144788912991240193>"
+				"name": "For bugs and data in accuracies",
+				"value": "Ping <@144788912991240193>"
 			}
 		]
 	}

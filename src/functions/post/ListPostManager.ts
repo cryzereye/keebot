@@ -1,5 +1,4 @@
-import { ChatInputCommandInteraction, Client } from "discord.js";
-import { DiscordUtilities } from "../../util/DiscordUtilities";
+import { ChatInputCommandInteraction } from "discord.js";
 import { Post } from "../../models/types/Post";
 
 const { BasePostManager } = require('./BasePostManager');

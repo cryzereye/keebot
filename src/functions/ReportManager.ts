@@ -1,9 +1,8 @@
-import { ChatInputCommandInteraction, Client, MessageContextMenuCommandInteraction, ModalSubmitInteraction, Snowflake } from "discord.js";
+import { ChatInputCommandInteraction, MessageContextMenuCommandInteraction, Snowflake } from "discord.js";
+import { Report } from "../models/types/Report";
 import { PostResult } from "../processor/types/PostResult";
 import { Manager } from "./Manager";
-import { DiscordUtilities } from "../util/DiscordUtilities";
 import { ReportType } from "./enums/ReportType";
-import { Report } from "../models/types/Report";
 
 const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 const ReportModel = require('../models/ReportModel');
@@ -12,14 +11,14 @@ const dUtil = require('../util/DiscordUtilities');
 const { channelsID, reportTypes } = require('../../json/config.json');
 const { constants } = require('../globals/constants.json');
 
-export class ReportManager extends Manager{
+export class ReportManager extends Manager {
   constructor() {
     super();
   }
 
   async processReport(interaction: ChatInputCommandInteraction) {
-    const {guild, user} = interaction;
-    if(!guild) return;
+    const { guild, user } = interaction;
+    if (!guild) return;
 
     const reportType = interaction.options.getSubcommand(false);
     const author = interaction.user;
@@ -27,7 +26,7 @@ export class ReportManager extends Manager{
     switch (reportType) {
       case "file": {
         const reported = interaction.options.getUser('user');
-        if(!(reported && guild)) return;
+        if (!(reported && guild)) return;
         const reportedName = reported.username + "#" + reported.discriminator;
         const category = interaction.options.getString('category');
         const summary = interaction.options.getString('summary');
@@ -73,9 +72,9 @@ export class ReportManager extends Manager{
     }
   }
 
-  async reportPost(interaction: MessageContextMenuCommandInteraction): Promise <PostResult> {
+  async reportPost(interaction: MessageContextMenuCommandInteraction): Promise<PostResult> {
     const { targetId, guild } = interaction;
-    if(!guild) return constants.postReport_fail;
+    if (!guild) return constants.postReport_fail;
 
     const authorID = interaction.user.id;
     const authorName = interaction.user.username + "#" + interaction.user.discriminator;
@@ -91,20 +90,20 @@ export class ReportManager extends Manager{
 
       // for bot-posted sales
       if (mentioned) {
-        reportedName = mentioned.username + "#" +mentioned.discriminator;
+        reportedName = mentioned.username + "#" + mentioned.discriminator;
         reportedID = mentioned.id;
       }
 
-      if (reportedID === authorID){
+      if (reportedID === authorID) {
         try {
           replied = await interaction.reply({
             content: `**Why are you reporting yourself?**`,
             ephemeral: true
           });
-          if(replied) return constants.selfReport_success;
+          if (replied) return constants.selfReport_success;
         }
-        catch(e){
-          return  constants.selfReport_fail;
+        catch (e) {
+          return constants.selfReport_fail;
         }
       }
 
@@ -124,14 +123,14 @@ export class ReportManager extends Manager{
       let filedReport = await dUtil.sendMessageToChannel(interaction.client, guild.id, channelsID.reports, content);
 
       if (filedReport) {
-        try{
+        try {
           replied = await interaction.reply({
             content: `Report filed ID ${reportID}`,
             ephemeral: true
           });
-          if(replied) return constants.postReport_success;
+          if (replied) return constants.postReport_success;
         }
-        catch(e){
+        catch (e) {
           return constants.postReport_fail;
         }
       }
@@ -142,9 +141,9 @@ export class ReportManager extends Manager{
   getVerifiedReportsMatrix(id: Snowflake) {
     let reports = ReportModel.getVerifiedReportsForUser(id);
     let reportStats = "";
-    reportTypes.forEach((type: ReportType) =>{
+    reportTypes.forEach((type: ReportType) => {
       let fetched = reports.filter((entry: Report) => entry.type === type);
-      if(fetched.length > 0)
+      if (fetched.length > 0)
         reportStats += `${type}: ${fetched.length}\n`;
     });
     return reportStats;

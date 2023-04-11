@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
-import { Post } from "./types/Post";
 import { TransactionType } from "./enums/TransactionType";
+import { Post } from "./types/Post";
 
 const fs = require('fs');
 const fileName = '../../json/post.json';
@@ -20,7 +20,7 @@ export function savePostToFile(): void {
   }
 }
 
-export function newRecord (postID: Snowflake, newListID: Snowflake, authorID: Snowflake, type: TransactionType, itemrole: Snowflake, have: string, want: string, postDate: string, bumpDate: string, expiryDate: string): void {
+export function newRecord(postID: Snowflake, newListID: Snowflake, authorID: Snowflake, type: TransactionType, itemrole: Snowflake, have: string, want: string, postDate: string, bumpDate: string, expiryDate: string): void {
   post[postID] = {
     postID: postID,
     newListID: [newListID],
@@ -41,7 +41,7 @@ export function newRecord (postID: Snowflake, newListID: Snowflake, authorID: Sn
   savePostToFile();
 }
 
-export function get (postID: Snowflake): Post {
+export function get(postID: Snowflake): Post {
   return post[postID];
 }
 
@@ -52,7 +52,7 @@ export function getAllNeedsBump(): Post[] {
   return postArr.filter(post => !post.sold && !post.deleted && !post.expired && new Date(post.bumpDate) < currDate);
 }
 
-export function edit (postID: Snowflake, have: string, want: string, editDate: string, newListingID: Snowflake): void{
+export function edit(postID: Snowflake, have: string, want: string, editDate: string, newListingID: Snowflake): void {
   post[postID].have = have;
   post[postID].want = want;
   post[postID].editDate = editDate;
@@ -90,7 +90,7 @@ export function expired(postID: Snowflake): void {
 export function getPostFromNewListID(newListID: Snowflake): Post {
   let postArr: Post[] = Object.values(post);
   return postArr.filter((currentPost: Post) => currentPost.newListID.includes(newListID))[0];
-} 
+}
 
 export function list(authorID: Snowflake, itemrole: Snowflake, type: TransactionType): Post[] {
   let records: Post[] = [];

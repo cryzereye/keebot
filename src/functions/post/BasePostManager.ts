@@ -1,38 +1,38 @@
 import { Client, Guild, ModalBuilder, Snowflake } from "discord.js";
+import { TransactionType } from "../../models/enums/TransactionType";
 import { Post } from "../../models/types/Post";
 import { PostResult } from "../../processor/types/PostResult";
+import { DiscordUtilities } from "../../util/DiscordUtilities";
 
 import PostModel = require('../../models/PostModel');
 import util = require('../../util/Utilities');
-import { DiscordUtilities } from "../../util/DiscordUtilities";
-import { TransactionType } from "../../models/enums/TransactionType";
 
 const { channelsID, me_id } = require('../../../json/config.json');
 
 export abstract class BasePostManager {
 	protected client: Client;
 	protected dUtil: DiscordUtilities;
-	
+
 
 	constructor() {
 		this.client = globalThis.client;
-        this.dUtil = globalThis.dUtil;
+		this.dUtil = globalThis.dUtil;
 	}
 
 	async getValidPostRecord(msgID: Snowflake, channelID: Snowflake, guild: Guild): Promise<Post | null> {
-			if (channelID == channelsID.newListings)
-				return PostModel.getPostFromNewListID(msgID);
+		if (channelID == channelsID.newListings)
+			return PostModel.getPostFromNewListID(msgID);
+		else {
+			let record = PostModel.get(msgID);
+			if (record) return record;
 			else {
-				let record = PostModel.get(msgID);
+				const origID: Snowflake | void = await this.dUtil.getIdOfRepliedMsg(guild, channelID, msgID);
+				if (origID) record = PostModel.get(origID);
 				if (record) return record;
-				else {
-					const origID: Snowflake | void = await this.dUtil.getIdOfRepliedMsg(guild, channelID, msgID);
-					if(origID) record = PostModel.get(origID);
-					if (record) return record;
-				}
 			}
-	
-			return null;
+		}
+
+		return null;
 	}
 
 	async isValidPostEditor(userID: Snowflake, authorID: Snowflake, guild: Guild) {

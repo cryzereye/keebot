@@ -1,6 +1,5 @@
-import { Client, Snowflake } from "discord.js";
+import { Snowflake } from "discord.js";
 import { Manager } from "./Manager";
-import { DiscordUtilities } from "../util/DiscordUtilities";
 
 const fs = require('fs');
 const fileName = '../../json/scores.json';
@@ -15,7 +14,7 @@ export class ScoreManager extends Manager {
     addPoint(id1: Snowflake, id1_name: string, id2: Snowflake) {
         try {
             scores[id1].points += 1;
-            scores[id1].username = id1_name; 
+            scores[id1].username = id1_name;
         }
         catch (err) {
             this.createNewEntry(id1, id1_name, id2);
@@ -34,7 +33,7 @@ export class ScoreManager extends Manager {
     updateScoreFile() {
         let dataStr = { "scores": scores };
         try {
-            fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err:string) {
+            fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err: string) {
                 if (err) return console.log(err);
             });
         }

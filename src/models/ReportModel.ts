@@ -18,7 +18,7 @@ export function saveReportToFile(): void {
   }
 }
 
-export function fileNewReport(authorID: Snowflake, authorName: string, targetID:Snowflake, targetName: string, category: ReportType, summary: string, date: string): number {
+export function fileNewReport(authorID: Snowflake, authorName: string, targetID: Snowflake, targetName: string, category: ReportType, summary: string, date: string): number {
   const reportID = getReportCountFromFile() + 1;
   reports[reportID] = {
     authorID: authorID,
@@ -34,7 +34,7 @@ export function fileNewReport(authorID: Snowflake, authorName: string, targetID:
   return reportID;
 }
 
-export function verifyReportFromFile (id: number, verified: boolean, verifier: string, verifyDate: string): {}{
+export function verifyReportFromFile(id: number, verified: boolean, verifier: string, verifyDate: string): {} {
   if (reports[id].verified)
     return { verified: false, report: reports[id] };
   else {

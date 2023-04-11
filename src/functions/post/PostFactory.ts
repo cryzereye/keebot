@@ -1,12 +1,12 @@
-import { BaseInteraction, ChatInputCommandInteraction, Client, CommandInteraction, MessageContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
+import { BaseInteraction, ChatInputCommandInteraction, Client, MessageContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
 import { PostResult } from "../../processor/types/PostResult";
 
-import { NewPostManager } from './NewPostManager';
-import { EditPostManager } from './EditPostManager';
-import { SoldPostManager } from './SoldPostManager';
-import { DeletePostManager } from './DeletePostManager';
-import { ListPostManager } from './ListPostManager';
 import { DiscordUtilities } from "../../util/DiscordUtilities";
+import { DeletePostManager } from './DeletePostManager';
+import { EditPostManager } from './EditPostManager';
+import { ListPostManager } from './ListPostManager';
+import { NewPostManager } from './NewPostManager';
+import { SoldPostManager } from './SoldPostManager';
 
 const { channelsID } = require('../../../json/config.json');
 
@@ -65,7 +65,7 @@ export class PostFactory {
         };
     }
 
-    
+
     async processResults(interaction: BaseInteraction, data: PostResult) {
         const { success, content, isModal, modal } = data;
         this.dUtil.postProcess(interaction, success, content, isModal, modal);

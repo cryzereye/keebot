@@ -37,7 +37,7 @@ export class BackupService extends Service {
         util.copyAllFiles(src, dest);
     }
 
-    saveNextBackup(){
+    saveNextBackup() {
         const next = util.addHours(state.next_backup_timedate, 6);
         State.updateState("next_backup_timedate", next.toString());
     }

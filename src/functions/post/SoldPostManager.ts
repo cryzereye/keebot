@@ -1,5 +1,4 @@
-import { BaseInteraction, Client, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
-import { DiscordUtilities } from "../../util/DiscordUtilities";
+import { BaseInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
 import { ProcessResult } from "../types/ProcessResult";
 
 const { BasePostManager } = require('./BasePostManager');
@@ -28,7 +27,7 @@ export class SoldPostManager extends BasePostManager {
         else return this.invalidPost();
     }
 
-    async doProcess(guild: Guild, data: any): Promise <ProcessResult> {
+    async doProcess(guild: Guild, data: any): Promise<ProcessResult> {
         let record = PostModel.get(data.postID);
         const newListingsCh = channelsID.newListings;
 
@@ -82,7 +81,7 @@ export class SoldPostManager extends BasePostManager {
 
     async doModalDataProcess(interaction: ModalSubmitInteraction) {
         const { guild } = interaction;
-        if(!guild) return;
+        if (!guild) return;
 
         const fields = interaction.fields.fields;
         const postID = fields.keys().next().value;
@@ -98,7 +97,7 @@ export class SoldPostManager extends BasePostManager {
             guild, data
         ).catch(console.error);
 
-        if(!result) return;
+        if (!result) return;
         const { processed, url, errorContent } = result;
 
         if (processed)

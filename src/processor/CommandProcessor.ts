@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, Client, CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import { BaseProcessor } from "./BaseProcessor";
 
 const { EmbedBuilder } = require('discord.js');
@@ -27,7 +27,7 @@ export class CommandProcessor extends BaseProcessor {
 			case commands[0].name: return this.doStats(interaction);
 			case commands[1].name: return globalThis.extractmngr.doProcess(interaction);
 			case commands[2].name: await interaction.reply({ embeds: [this.generateHelp(fullName)] }).catch(console.error); break;
-			case commands[3].name: await interaction.reply({ content: await this.processReport(interaction), ephemeral: true}); break;
+			case commands[3].name: await interaction.reply({ content: await this.processReport(interaction), ephemeral: true }); break;
 			case commands[4].name: return globalThis.postfactory.processCommand(interaction);
 		}
 	}
