@@ -3,16 +3,18 @@ import { ReportManager } from "../functions/ReportManager";
 import { PostFactory } from "../functions/post/PostFactory";
 import { PostResult } from "./types/PostResult";
 import { BaseProcessor } from "./BaseProcessor";
+import { DiscordUtilities } from "../util/DiscordUtilities";
 
 const { commands } = require('../globals/commands.json');
-const dUtil = require('../util/DiscordUtilities');
 
 export class ContextProcessor extends BaseProcessor{
-  private postfactory: PostFactory
+  private postfactory: PostFactory;
   private reportmngr: ReportManager;
+  private dUtil: DiscordUtilities;
 
-  constructor(client: Client, postfactory: PostFactory, reportmngr: ReportManager) {
+  constructor(client: Client, dUtil: DiscordUtilities, postfactory: PostFactory, reportmngr: ReportManager) {
     super(client);
+    this.dUtil = dUtil;
     this.postfactory = postfactory;
     this.reportmngr = reportmngr;
   }
@@ -34,6 +36,6 @@ export class ContextProcessor extends BaseProcessor{
  */
   processResults(interaction: MessageContextMenuCommandInteraction, data: PostResult) {
     const { success, content, isModal, modal } = data;
-    dUtil.postProcess(interaction, success, content, isModal, modal);
+    this.dUtil.postProcess(interaction, success, content, isModal, modal);
   }
 }

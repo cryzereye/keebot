@@ -4,7 +4,8 @@ import { Post } from "../../models/types/Post";
 
 const { BasePostManager } = require('./BasePostManager');
 
-const { PostModel } = require('../../models/PostModel');
+import PostModel = require('../../models/PostModel');
+import util = require('../../util/Utilities');
 
 export class ListPostManager extends BasePostManager {
     constructor(client: Client, dUtil: DiscordUtilities) {
@@ -14,16 +15,18 @@ export class ListPostManager extends BasePostManager {
     async doProcess(interaction: ChatInputCommandInteraction) {
         const author = interaction.options.getUser("user");
         const itemrole = interaction.options.getRole("listitemrole");
-        const type = interaction.options.getString("type");
+        const inputType = interaction.options.getString("type");
         let authorID = "";
         let itemroleID = "";
+        let type = "";
         if (author) authorID = author.id;
         if (itemrole) itemroleID = itemrole.id;
+        if (inputType) type = inputType;
 
         if (authorID == "" && itemroleID == "") {
             authorID = interaction.user.id;
         }
-        let records = PostModel.list(authorID, itemroleID, type);
+        let records = PostModel.list(authorID, itemroleID, util.getTransactionType(type));
         let content = "";
         let channel;
 

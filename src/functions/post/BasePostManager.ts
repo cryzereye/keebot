@@ -5,6 +5,7 @@ import { PostResult } from "../../processor/types/PostResult";
 import PostModel = require('../../models/PostModel');
 import util = require('../../util/Utilities');
 import { DiscordUtilities } from "../../util/DiscordUtilities";
+import { TransactionType } from "../../models/enums/TransactionType";
 
 const { channelsID, me_id } = require('../../../json/config.json');
 
@@ -122,7 +123,7 @@ export abstract class BasePostManager {
 
 	cleanUserEntries(data: any) {
 		Object.keys(data).forEach(x => {
-			if (x === "details") return;
+			if (!data[x] || x === "details") return;
 			data[x] = data[x].toString().replace("\n", " ");
 		});
 		return data;

@@ -1,5 +1,6 @@
 import { ActionRowBuilder, Snowflake, TextInputBuilder } from 'discord.js';
 import { BasePostModal } from './BasePostModal';
+import { TransactionType } from '../../models/enums/TransactionType';
 
 export class EditPostModal extends BasePostModal {
     constructor(type: TransactionType, postID: Snowflake, have: string, want: string){

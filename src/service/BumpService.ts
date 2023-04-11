@@ -2,23 +2,28 @@ const { EmbedBuilder } = require('discord.js');
 import { Client, Guild, Message, Snowflake, User } from "discord.js";
 import { Service } from "./Service";
 import { Post } from "../models/types/Post";
+import { DiscordUtilities } from "../util/DiscordUtilities";
 
 const PostModel = require('../models/PostModel');
-const dUtil = require('../util/DiscordUtilities');
 const util = require('../util/Utilities');
 const { channelsID, dev } = require('../../json/config.json');
 
 export class BumpService extends Service {
 	private queue: Array<Post>;
+	private dUtil: DiscordUtilities;
 
-	constructor(client: Client) {
+	constructor(client: Client, dUtil: DiscordUtilities) {
 		super(client);
 		this.queue = [];
+		this.dUtil = dUtil;
 		this.startService();
 	}
 
 	override async startService() {
 		console.log(`[${new Date().toLocaleString()}] Bump service started...`);
+		const guild = await this.dUtil.getGuildFromID(channelsID.server);
+		if(!guild) return;
+
 		// loop for check intervals
 		while (true) {
 			this.queue = PostModel.getAllNeedsBump();
@@ -34,8 +39,8 @@ export class BumpService extends Service {
 
 				// preps to get the original post message from channel
 				let channel = PostModel.getChannelFromType(currPost.type);
-				let origPost = await dUtil.getMessageFromID(
-					await dUtil.getGuildFromID(this.client, channelsID.server),
+				let origPost = await this.dUtil.getMessageFromID(
+					guild,
 					channel,
 					currPost.postID
 				).catch(console.error);
@@ -44,12 +49,17 @@ export class BumpService extends Service {
 				if (origPost) {
 					let url = PostModel.generateUrl(channel, currPost.postID);
 
-					if (await this.checkExpiry(currPost, origPost, currDate)) break;
+					if (await this.checkExpiry(currPost, origPost, currDate, guild)) break;
+					const mentioned = origPost.mentions.users.at(0);
+					if(!mentioned) {
+						this.queue.push(currPost);
+						continue;
+					}
 
 					// the actual bump process
 					let message = await origPost.reply({
 						content: `Bumping this post\n\n${url}`,
-						embeds: [this.getEmbed(origPost.mentions.users.at(0), currPost)]
+						embeds: [this.getEmbed(mentioned, currPost)]
 					}).catch(console.error);
 
 					// updates to the post records or retries fails
@@ -94,23 +104,22 @@ export class BumpService extends Service {
 	 * @param {Snowflake} currPost 
 	 * @returns {Boolean} true
 	 */
-	async spoilExpiredPost(origPost: Message, currPost: Post) {
+	async spoilExpiredPost(origPost: Message, currPost: Post, guild: Guild) {
 		await origPost.edit(`||${origPost.content}||`).catch(console.error);
 
 		let ch = channelsID.newListings;
 
 		currPost.newListID.map(async (x) => {
-			let guild: Guild | null = origPost.guild;
-			let guildId: Snowflake | undefined= guild?.id;
-			await dUtil.makeMessageSpoiler(origPost.client, guildId, ch, x);
+			let guildId: Snowflake = guild.id;
+			await this.dUtil.makeMessageSpoiler(guildId, ch, x);
 		});
 		return true;
 	}
 
-	async checkExpiry(currPost: Post, origPost: Message, currDate: Date) {
+	async checkExpiry(currPost: Post, origPost: Message, currDate: Date, guild: Guild) {
 		if (new Date(currPost.expiryDate) < currDate) {
-			if (await this.spoilExpiredPost(origPost, currPost)) {
-				console.log(`${currPost.have}/${currPost.want} expired`);
+			if (await this.spoilExpiredPost(origPost, currPost, guild)) {
+				console.log(`[${new Date().toLocaleString()}] ${currPost.have}/${currPost.want} expired`);
 				PostModel.expired(currPost.postID);
 				return true;
 			}
@@ -121,7 +130,7 @@ export class BumpService extends Service {
 	async notifyLastBumpBeforeExpiry(newBumpDate: string, expiryDate: string, authorID: Snowflake, url: string) {
 		if (new Date(newBumpDate) < new Date(expiryDate)) return;
 
-		let user = await dUtil.getUserFromID(this.client, authorID);
+		let user = await this.dUtil.getUserFromID(authorID);
 		if (!user) {
 			console.log(`Cannot find user ${authorID}`);
 			return;

@@ -1,5 +1,6 @@
 import { Snowflake } from "discord.js";
 import { Post } from "./types/Post";
+import { TransactionType } from "./enums/TransactionType";
 
 const fs = require('fs');
 const fileName = '../../json/post.json';
@@ -19,7 +20,7 @@ export function savePostToFile(): void {
   }
 }
 
-export function newRecord (postID: Snowflake, newListID: Snowflake, authorID: Snowflake, type: TransactionType, itemrole: Snowflake, have: string, want: string, postDate: string, bumpDate: Date, expiryDate: Date): void {
+export function newRecord (postID: Snowflake, newListID: Snowflake, authorID: Snowflake, type: TransactionType, itemrole: Snowflake, have: string, want: string, postDate: string, bumpDate: string, expiryDate: string): void {
   post[postID] = {
     postID: postID,
     newListID: [newListID],
@@ -28,9 +29,9 @@ export function newRecord (postID: Snowflake, newListID: Snowflake, authorID: Sn
     itemrole: itemrole,
     have: have,
     want: want,
-    postDate: new Date(postDate).toString(),
-    bumpDate: bumpDate.toString(),
-    expiryDate: expiryDate.toString(),
+    postDate: postDate,
+    bumpDate: bumpDate,
+    expiryDate: expiryDate,
     sold: false,
     soldToID: "",
     soldDate: "",

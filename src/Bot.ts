@@ -15,6 +15,7 @@ import { BumpService } from './service/BumpService';
 import { PostFactory } from './functions/post/PostFactory';
 import { DiscordUtilities } from './util/DiscordUtilities';
 import { ScoreManager } from './functions/ScoreManager';
+import { ExtractManager } from './functions/ExtractManager';
 
 const { discord_id, discord_token, channelsID } = require('../json/config.json');
 const { commands } = require('./globals/commands.json');
@@ -24,6 +25,7 @@ export default class Bot {
 	private rolegivermngr: RoleGiverManager;
 	private scoremngr: ScoreManager;
 	private statsmngr: StatsManager;
+	private extractmngr: ExtractManager;
 	private reportmngr: ReportManager;
 	private cmdproc: CommandProcessor;
 	private modalproc: ModalProcessor;
@@ -35,6 +37,7 @@ export default class Bot {
 	private botUser: ClientUser | any;
 
 	constructor() {
+		console.log(`[${new Date().toLocaleString()}] Starting up...`);
 		this.client = new Client({
 			intents: [
 				GatewayIntentBits.Guilds,
@@ -51,16 +54,20 @@ export default class Bot {
 		this.reportmngr = new ReportManager(this.client, this.dUtil);
 		this.scoremngr = new ScoreManager(this.client, this.dUtil);
 		this.statsmngr = new StatsManager(this.client, this.dUtil, this.reportmngr);
+		this.extractmngr = new ExtractManager(this.client, this.dUtil, this.scoremngr, this.rolegivermngr);
 
 		this.postfactory = new PostFactory(this.client, this.dUtil);
 
 		this.msgproc = new MessageProcessor(this.client, this.scoremngr, this.rolegivermngr);
 		this.modalproc = new ModalProcessor(this.client);
-		this.cmdproc = new CommandProcessor(this.client, this.dUtil, this.statsmngr, this.reportmngr, this.postfactory);
-		this.contextproc = new ContextProcessor(this.client, this.postfactory, this.reportmngr);
+		this.cmdproc = new CommandProcessor(this.client, this.dUtil, this.statsmngr, this.reportmngr, this.extractmngr, this.postfactory);
+		this.contextproc = new ContextProcessor(this.client, this.dUtil,this.postfactory, this.reportmngr);
 
 		this.declareListeners();
+
+		console.log(`[${new Date().toLocaleString()}] Logging in ...`);
 		this.client.login(discord_token);
+		console.log(`[${new Date().toLocaleString()}] Logged in ...`);
 	}
 
 	declareListeners(): void {
@@ -71,7 +78,7 @@ export default class Bot {
 
 			// floating services
 			new BackupService(this.client);
-			new BumpService(this.client);
+			new BumpService(this.client, this.dUtil);
 
 			console.log(`[${new Date().toLocaleString()}] bot is ready`);
 		});
@@ -80,7 +87,7 @@ export default class Bot {
 			this.msgproc.processMessage(message);
 		});
 
-		this.client.on('interactionCreate', async (interaction: BaseInteraction) => {
+		this.client.on('interactionCreate', (interaction: BaseInteraction) => {
 			if (interaction.isMessageContextMenuCommand())
 				this.contextproc.processContext(interaction);
 			else if (interaction.isChatInputCommand())

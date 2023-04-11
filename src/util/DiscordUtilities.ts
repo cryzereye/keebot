@@ -1,4 +1,4 @@
-import { BaseInteraction, Channel, Client, CommandInteraction, Emoji, FetchMessagesOptions, Guild, GuildMember, Message, ModalBuilder, ModalSubmitInteraction, Role, Snowflake, TextChannel, User } from "discord.js";
+import { BaseInteraction, Client, CommandInteraction, Emoji, FetchMessagesOptions, Guild, GuildMember, Message, ModalBuilder, ModalSubmitInteraction, Role, Snowflake, TextChannel, User } from "discord.js";
 
 const { channelsID, modRole, serviceProviderRole, adminRole } = require('../../json/config.json');
 
@@ -45,11 +45,18 @@ export class DiscordUtilities {
 	}
 
 	public async getGuildFromID(id: Snowflake): Promise<Guild | void> {
-		return await this.client.guilds.cache.get(id) || await this.client.guilds.fetch(id).catch(console.error);
+		return this.client.guilds.cache.get(id) || await this.client.guilds.fetch(id).catch(console.error);
 	}
 
 	public async getTextChannelFromID(guild: Guild, channelID: Snowflake): Promise<TextChannel | void | null> {
-		let channel = guild.channels.cache.get(channelID) || await guild.channels.fetch(channelID).catch(console.error);
+		const { channels } = guild;
+		if (!channels) return null;
+
+		let channel;
+
+		if (channels.cache) channel = channels.cache.get(channelID);
+		else channel = await guild.channels.fetch(channelID).catch(console.error);
+
 		if (channel instanceof TextChannel) return channel;
 	}
 
@@ -84,7 +91,7 @@ export class DiscordUtilities {
 	}
 
 	public async addRoleToUser(user: User, guild: Guild, role: Role | void): Promise<void> {
-		if(!(guild && role)) return;
+		if (!(guild && role)) return;
 		let gm = await this.getGuildMemberFromID(user.id, guild).catch(console.error);
 		if (gm && !(await this.guildMemberHasRole(gm, role).catch(console.error))) {
 			gm.roles.add(role).catch((e) => console.log(e.message));
@@ -121,14 +128,12 @@ export class DiscordUtilities {
 		if (interaction instanceof CommandInteraction && isModal && modal) {
 			await interaction.showModal(modal).catch(console.error);
 		}
-		else if (interaction instanceof ModalSubmitInteraction){
-			try {
-				await interaction.reply({
-					content: content,
-					ephemeral: true
-				});
-			}
-			catch (e) { }
+		else if (interaction instanceof ModalSubmitInteraction || interaction instanceof CommandInteraction) {
+			await interaction.reply({
+				content: content,
+				ephemeral: true
+			});
+
 		}
 	}
 
@@ -168,7 +173,7 @@ export class DiscordUtilities {
 			if (lastMessageID) options.before = lastMessageID;
 
 			const messages = await channel.messages.fetch(options).catch(console.error);
-			if(!(messages instanceof Array)) return; 
+			if (!(messages instanceof Array)) return;
 			if (messages.length == 0) break;
 
 			messages.forEach(msg => {

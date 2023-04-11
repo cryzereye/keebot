@@ -6,7 +6,7 @@ import { DeletePostModal } from '../modal/DeletePostModal';
 import { DiscordUtilities } from "../../util/DiscordUtilities";
 import { ProcessResult } from "../types/ProcessResult";
 
-const { PostModel } = require('../../models/PostModel');
+import PostModel = require('../../models/PostModel');
 const { channelsID } = require('../../../json/config.json');
 
 export class DeletePostManager extends BasePostManager {

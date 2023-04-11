@@ -1,5 +1,6 @@
 import { ActionRowBuilder, Role, TextInputBuilder } from 'discord.js';
 import { BasePostModal } from './BasePostModal';
+import { TransactionType } from '../../models/enums/TransactionType';
 
 const { relevant_roles } = require('../../../json/config.json');
 

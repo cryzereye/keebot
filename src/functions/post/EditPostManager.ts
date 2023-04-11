@@ -5,7 +5,7 @@ import { PostResult } from "../../processor/types/PostResult";
 const { BasePostManager } = require('./BasePostManager');
 const { EditPostModal } = require('../modal/EditPostModal');
 
-const { PostModel } = require('../../models/PostModel');
+import PostModel = require('../../models/PostModel');
 const { channelsID } = require('../../../json/config.json');
 
 export class EditPostManager extends BasePostManager {

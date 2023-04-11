@@ -6,6 +6,7 @@ json/*
 vouch-bot-js.code-workspace
 backups/*
 package-lock.json
+.vscode/*
 
 # Created by https://www.toptal.com/developers/gitignore/api/node
 # Edit at https://www.toptal.com/developers/gitignore?templates=node

@@ -18,7 +18,7 @@ export class StatsManager extends Manager {
 
 	override async doProcess(interaction: BaseInteraction): Promise<void> {
 		if (interaction instanceof ChatInputCommandInteraction) {
-			interaction.deferReply().catch(console.error);
+			await interaction.deferReply().catch(console.error);
 
 			const { user, guild } = interaction;
 			const argUser = interaction.options.getUser('user');
@@ -41,9 +41,9 @@ export class StatsManager extends Manager {
 
 			let feedbackCount = (isServiceProvider? await this.countFeedbackForUser(guild, target.id): "0");
 
-			interaction.reply({
+			await interaction.followUp({
 				embeds: [
-					await this.generateStats(guildmember, roles, authorDetails, reports, userDates, isServiceProvider, feedbackCount.toString())]
+					this.generateStats(guildmember, roles, authorDetails, reports, userDates, isServiceProvider, feedbackCount.toString())]
 			}).catch(console.error);
 		}
 	}

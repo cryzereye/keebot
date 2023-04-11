@@ -17,11 +17,15 @@ export class ExtractManager extends Manager {
     }
 
     override async doProcess(interaction: BaseInteraction): Promise<void> {
+        
         const { user, guild } = interaction;
         if (!(user && guild && this.dUtil.isAdmin(guild, user.id))) return;
 
-        if (interaction instanceof ChatInputCommandInteraction)
-            await interaction.reply(await this.doExtract(guild)).catch(console.error);;
+        if (interaction instanceof ChatInputCommandInteraction){
+            await interaction.deferReply().catch(console.error);
+            await interaction.followUp(await this.doExtract(guild)).catch(console.error);
+        }
+            
     }
 
     async doExtract(guild: Guild): Promise<InteractionReplyOptions> {

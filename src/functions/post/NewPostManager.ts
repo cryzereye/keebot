@@ -3,8 +3,9 @@ import { DiscordUtilities } from "../../util/DiscordUtilities";
 
 const { BasePostManager } = require('./BasePostManager');
 const { NewPostModal } = require('../modal/NewPostModal');
+import { TransactionType } from "../../models/enums/TransactionType";
 
-const { PostModel } = require('../../models/PostModel');
+import PostModel = require('../../models/PostModel');
 const { channelsID, dev } = require('../../../json/config.json');
 import util = require('../../util/Utilities');
 
@@ -30,7 +31,7 @@ export class NewPostManager extends BasePostManager {
         }
     }
 
-    async doProcess(guild: Guild, type: TransactionType | string, authorID: Snowflake, postDate: string, data: any): Promise<any>{
+    async doProcess(guild: Guild, type: TransactionType, authorID: Snowflake, postDate: string, data: any): Promise<any>{
         let channelID = PostModel.getChannelFromType(type);
         let content = "";
         let newListContent = "";
@@ -51,18 +52,27 @@ export class NewPostManager extends BasePostManager {
 
         // goes into new-listings channel
         newListContent += `**New <#${channelID}> post from <@!${authorID}>**\n`;
-        if ("roleID" in data)
+        if (data.roleID)
             newListContent += `For <@&${data.roleID}>\n`;
         newListContent += `HAVE:  ${data.have}\n`;
         newListContent += `WANT:  ${data.want}\n`;
 
         // gets sent message from buy/sell/trade channels then gets id, generates url to be sent in #new-listings
-        const message = await this.dUtil.sendMessageToChannel(this.client, guild.id, channelID, content);
+        const message = await this.dUtil.sendMessageToChannel(guild.id, channelID, content);
+        if(!message) {
+            return {
+                posted: false,
+                url: "",
+                newListingURL: "",
+                errorContent: "Error in generation"
+            };
+        }
+
         msgURL = PostModel.generateUrl(channelID, message.id);
         newListContent += `${msgURL}`;
 
         let ch = channelsID.newListings;
-        const newListMsg = await this.dUtil.sendMessageToChannel(this.client, guild.id, ch, newListContent);
+        const newListMsg = await this.dUtil.sendMessageToChannel(guild.id, ch, newListContent);
 
         let bumpDate = util.addHours(postDate, 8 + Math.floor(Math.random() * 4)); // randoms 8-12 hours
         let expiryDate = util.addHours(postDate, 24 * 60); // 60 days post expiry
@@ -101,7 +111,8 @@ export class NewPostManager extends BasePostManager {
         if(extracted.size <= 0 ) return;
 
         const postDate = new Date(interaction.createdAt).toString();
-        const type = customId.replace("PostModal", "");
+        const inputType: string = customId.replace("PostModal", "");
+        const type = util.getTransactionType(inputType);
         const roleID = extracted.keys().next().value;
         const have = extracted.get("have");
         const want = extracted.get("want");
@@ -109,12 +120,12 @@ export class NewPostManager extends BasePostManager {
         const details = extracted.get("details");
 
         let data = {
-            roleID: (roleID && roleID != "have" ? roleID : ""),
-            have: (have ? have.value: ""),
-            want: (want ? want.value: ""),
-            imgur: (imgur ? imgur.value: ""),
-            details: (details ? details.value: ""),
-            editDate: new Date(interaction.createdAt).toString()
+            "roleID": (roleID && roleID != "have" ? roleID : null),
+            "have": (have ? have.value: ""),
+            "want": (want ? want.value: ""),
+            "imgur": (imgur ? imgur.value: ""),
+            "details": (details ? details.value: ""),
+            "editDate": new Date(interaction.createdAt).toString()
         };
         let postResult;
 
@@ -129,6 +140,6 @@ export class NewPostManager extends BasePostManager {
         else
             postResult = errorContent;
 
-        this.dUtil.postProcess(interaction, posted, postResult, false, null);
+        await this.dUtil.postProcess(interaction, posted, postResult, false, null);
     }
 }

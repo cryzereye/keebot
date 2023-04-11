@@ -1,6 +1,7 @@
 import fs = require('fs');
 import path = require('path');
 import { TimeDiff } from "./types/TimeDiff";
+import { TransactionType } from '../models/enums/TransactionType';
 
 const { dev } = require('../../json/config.json');
 
@@ -82,4 +83,14 @@ export function createFolder (dest: string) : void {
 	if (!fs.existsSync(dest)) {
 		fs.mkdirSync(dest);
 	}
+}
+
+export function getTransactionType(type: string): TransactionType {
+    switch(type) {
+        case "buy": return TransactionType.buy;
+        case "sell": return TransactionType.sell;
+        case "trade": return TransactionType.trade;
+    }
+
+    return TransactionType.buy;
 }

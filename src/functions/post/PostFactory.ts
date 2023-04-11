@@ -1,4 +1,4 @@
-import { BaseInteraction, ChatInputCommandInteraction, Client, MessageContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
+import { BaseInteraction, ChatInputCommandInteraction, Client, CommandInteraction, MessageContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
 import { PostResult } from "../../processor/types/PostResult";
 
 import { NewPostManager } from './NewPostManager';
@@ -7,6 +7,8 @@ import { SoldPostManager } from './SoldPostManager';
 import { DeletePostManager } from './DeletePostManager';
 import { ListPostManager } from './ListPostManager';
 import { DiscordUtilities } from "../../util/DiscordUtilities";
+
+const { channelsID } = require('../../../json/config.json');
 
 export class PostFactory {
     private client: Client;
@@ -31,7 +33,7 @@ export class PostFactory {
         const postType = interaction.options.getSubcommand(false);
         switch (postType) {
             case "new": this.processResults(interaction, await this.newPostManager.doModal(interaction)); break;
-            case "list": this.processResults(interaction, await this.listPostManager.doProcess(interaction)); break;
+            case "list": this.processResults(interaction, await this.listPostManager.doProcess(interaction));
         }
     }
 
@@ -46,10 +48,10 @@ export class PostFactory {
         }
     }
 
-    async processContext(interaction: MessageContextMenuCommandInteraction): Promise<PostResult>{
+    async processContext(interaction: MessageContextMenuCommandInteraction): Promise<PostResult> {
         const { commandName, targetId } = interaction;
 
-        switch(commandName) {
+        switch (commandName) {
             case "edit": this.processResults(interaction, await this.editPostManager.doModal(interaction, targetId)); break;
             case "sold": this.processResults(interaction, await this.soldPostManager.doModal(interaction, targetId)); break;
             case "delete": this.processResults(interaction, await this.deletePostManager.doModal(interaction, targetId)); break;
@@ -63,12 +65,8 @@ export class PostFactory {
         };
     }
 
-    /**
-     * does the results processing for all modal functions
-     * @param {discord.js.Interaction} interaction 
-     * @param {Object} data 
-     */
-    processResults(interaction: BaseInteraction, data: PostResult) {
+    
+    async processResults(interaction: BaseInteraction, data: PostResult) {
         const { success, content, isModal, modal } = data;
         this.dUtil.postProcess(interaction, success, content, isModal, modal);
     }

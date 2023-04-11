@@ -1,4 +1,5 @@
 import { ActionRowBuilder, ModalBuilder, Role, Snowflake, TextInputBuilder, TextInputStyle } from 'discord.js';
+import { TransactionType } from '../../models/enums/TransactionType';
 
 export class BasePostModal extends ModalBuilder {
 	constructor() {
