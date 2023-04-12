@@ -7,6 +7,8 @@ import { StatsManager } from "./functions/StatsManager";
 import { PostFactory } from "./functions/post/PostFactory";
 import { DiscordUtilities } from "./util/DiscordUtilities";
 
+export { };
+
 declare global {
     var CLIENT: Client;
     var DUTIL: DiscordUtilities;

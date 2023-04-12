@@ -1,12 +1,12 @@
 import { BaseInteraction, Client, CommandInteraction, Emoji, FetchMessagesOptions, Guild, GuildMember, Message, ModalBuilder, ModalSubmitInteraction, Role, Snowflake, TextChannel, User } from "discord.js";
 
-import { channelsID, modRole, serviceProviderRole, adminRole } from '../../json/config.json';
+import { adminRole, channelsID, modRole, serviceProviderRole } from '../../json/config.json';
 
 export class DiscordUtilities {
 	private client: Client;
 
-	constructor() {
-		this.client = globalThis.CLIENT;
+	constructor(client: Client) {
+		this.client = client;
 	}
 
 	public async getGuildMemberFromID(user: Snowflake, guild: Guild | Snowflake): Promise<GuildMember | void> {

@@ -17,7 +17,7 @@ import { BackupService } from './service/BackupService';
 import { BumpService } from './service/BumpService';
 import { DiscordUtilities } from './util/DiscordUtilities';
 
-import { discord_id, discord_token, channelsID } from '../json/config.json';
+import { channelsID, discord_id, discord_token } from '../json/config.json';
 import { commands } from './globals/commands.json';
 
 export default class Bot {
@@ -48,7 +48,9 @@ export default class Bot {
 			partials: [Partials.Channel]
 		});
 
-		this.dUtil = new DiscordUtilities();
+		this.dUtil = new DiscordUtilities(this.client);
+
+		this.assignMainGlobals();
 
 		this.roleGiverMngr = new RoleGiverManager();
 		this.reportMngr = new ReportManager();
@@ -57,6 +59,8 @@ export default class Bot {
 		this.extractMngr = new ExtractManager();
 
 		this.postFactory = new PostFactory();
+
+		this.assignManagerGlobals();
 
 		this.msgProc = new MessageProcessor();
 		this.modalProc = new ModalProcessor();
@@ -68,8 +72,6 @@ export default class Bot {
 		console.log(`[${new Date().toLocaleString()}] Logging in ...`);
 		this.client.login(discord_token);
 		console.log(`[${new Date().toLocaleString()}] Logged in ...`);
-
-		this.assignGlobals();
 	}
 
 	declareListeners(): void {
@@ -120,9 +122,12 @@ export default class Bot {
 		this.botUser.setPresence(presence);
 	}
 
-	assignGlobals() {
+	assignMainGlobals() {
 		globalThis.CLIENT = this.client;
 		globalThis.DUTIL = this.dUtil;
+	}
+
+	assignManagerGlobals() {
 		globalThis.ROLEGIVERMNGR = this.roleGiverMngr;
 		globalThis.SCOREMNGR = this.scoreMngr;
 		globalThis.STATSMNGR = this.statsMngr;

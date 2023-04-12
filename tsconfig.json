@@ -3,13 +3,21 @@
     "target": "es6",
     "module": "commonjs",
     "strict": true,
-    "noImplicitOverride": true,
+    "outDir": "dist",
     "resolveJsonModule": true,
     "esModuleInterop": true
   },
+  "files": [
+    "src/Global.d.ts"
+  ],
+  "typeRoots": [
+    "src/Global.d.ts"
+  ],
   "include": [
     "index.ts",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.json",
+    "json/**/*.json"
   ],
   "exclude": [
     "node_modules",
