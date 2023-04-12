@@ -15,7 +15,7 @@ export class BumpService extends Service {
 	constructor() {
 		super();
 		this.queue = [];
-		this.dUtil = globalThis.dUtil;
+		this.dUtil = globalThis.DUTIL;
 	}
 
 	override async startService() {

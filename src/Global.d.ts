@@ -8,12 +8,12 @@ import { PostFactory } from "./functions/post/PostFactory";
 import { DiscordUtilities } from "./util/DiscordUtilities";
 
 declare global {
-    var client: Client;
-    var dUtil: DiscordUtilities;
-    var rolegivermngr: RoleGiverManager;
-    var scoremngr: ScoreManager;
-    var statsmngr: StatsManager;
-    var extractmngr: ExtractManager;
-    var reportmngr: ReportManager;
-    var postfactory: PostFactory;
+    var CLIENT: Client;
+    var DUTIL: DiscordUtilities;
+    var ROLEGIVERMNGR: RoleGiverManager;
+    var SCOREMNGR: ScoreManager;
+    var STATSMNGR: StatsManager;
+    var EXTRACTMNGR: ExtractManager;
+    var REPORTMNGR: ReportManager;
+    var POSTFACTORY: PostFactory;
 }

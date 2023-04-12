@@ -22,16 +22,16 @@ const { commands } = require('./globals/commands.json');
 
 export default class Bot {
 	private client: Client;
-	private rolegivermngr: RoleGiverManager;
-	private scoremngr: ScoreManager;
-	private statsmngr: StatsManager;
-	private extractmngr: ExtractManager;
-	private reportmngr: ReportManager;
-	private cmdproc: CommandProcessor;
-	private modalproc: ModalProcessor;
-	private msgproc: MessageProcessor;
-	private contextproc: ContextProcessor;
-	private postfactory: PostFactory;
+	private roleGiverMngr: RoleGiverManager;
+	private scoreMngr: ScoreManager;
+	private statsMngr: StatsManager;
+	private extractMngr: ExtractManager;
+	private reportMngr: ReportManager;
+	private cmdProc: CommandProcessor;
+	private modalProc: ModalProcessor;
+	private msgProc: MessageProcessor;
+	private contextProc: ContextProcessor;
+	private postFactory: PostFactory;
 	private dUtil: DiscordUtilities;
 
 	private botUser: ClientUser | any;
@@ -50,18 +50,18 @@ export default class Bot {
 
 		this.dUtil = new DiscordUtilities();
 
-		this.rolegivermngr = new RoleGiverManager();
-		this.reportmngr = new ReportManager();
-		this.scoremngr = new ScoreManager();
-		this.statsmngr = new StatsManager();
-		this.extractmngr = new ExtractManager();
+		this.roleGiverMngr = new RoleGiverManager();
+		this.reportMngr = new ReportManager();
+		this.scoreMngr = new ScoreManager();
+		this.statsMngr = new StatsManager();
+		this.extractMngr = new ExtractManager();
 
-		this.postfactory = new PostFactory();
+		this.postFactory = new PostFactory();
 
-		this.msgproc = new MessageProcessor();
-		this.modalproc = new ModalProcessor();
-		this.cmdproc = new CommandProcessor();
-		this.contextproc = new ContextProcessor();
+		this.msgProc = new MessageProcessor();
+		this.modalProc = new ModalProcessor();
+		this.cmdProc = new CommandProcessor();
+		this.contextProc = new ContextProcessor();
 
 		this.declareListeners();
 
@@ -86,16 +86,16 @@ export default class Bot {
 		});
 
 		this.client.on('messageCreate', (message: Message) => {
-			this.msgproc.processMessage(message);
+			this.msgProc.processMessage(message);
 		});
 
 		this.client.on('interactionCreate', (interaction: BaseInteraction) => {
 			if (interaction.isMessageContextMenuCommand())
-				this.contextproc.processContext(interaction);
+				this.contextProc.processContext(interaction);
 			else if (interaction.isChatInputCommand())
-				this.cmdproc.processCommand(interaction);
+				this.cmdProc.processCommand(interaction);
 			else if (interaction.isModalSubmit())
-				this.modalproc.processModal(interaction, this.postfactory);
+				this.modalProc.processModal(interaction, this.postFactory);
 		});
 	}
 
@@ -121,12 +121,12 @@ export default class Bot {
 	}
 
 	assignGlobals() {
-		globalThis.client = this.client;
-		globalThis.dUtil = this.dUtil;
-		globalThis.rolegivermngr = this.rolegivermngr;
-		globalThis.scoremngr = this.scoremngr;
-		globalThis.statsmngr = this.statsmngr;
-		globalThis.extractmngr = this.extractmngr;
-		globalThis.reportmngr = this.reportmngr;
+		globalThis.CLIENT = this.client;
+		globalThis.DUTIL = this.dUtil;
+		globalThis.ROLEGIVERMNGR = this.roleGiverMngr;
+		globalThis.SCOREMNGR = this.scoreMngr;
+		globalThis.STATSMNGR = this.statsMngr;
+		globalThis.EXTRACTMNGR = this.extractMngr;
+		globalThis.REPORTMNGR = this.reportMngr;
 	}
 }

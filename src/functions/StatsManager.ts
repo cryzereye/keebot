@@ -24,7 +24,7 @@ export class StatsManager extends Manager {
 			const guildmember = await this.dUtil.getGuildMemberFromID(target.id, guild).catch(console.error);
 			if (!guildmember) return;
 
-			let reports = globalThis.reportmngr.getVerifiedReportsMatrix(target.id.toString());
+			let reports = globalThis.REPORTMNGR.getVerifiedReportsMatrix(target.id.toString());
 			if (reports == "") reports = "CLEAN RECORD";
 
 			const authorDetails: EmbedAuthorData = {

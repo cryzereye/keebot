@@ -6,7 +6,7 @@ export class DiscordUtilities {
 	private client: Client;
 
 	constructor() {
-		this.client = globalThis.client;
+		this.client = globalThis.CLIENT;
 	}
 
 	public async getGuildMemberFromID(user: Snowflake, guild: Guild | Snowflake): Promise<GuildMember | void> {
