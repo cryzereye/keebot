@@ -7,10 +7,12 @@ export class Manager implements ManagerInterface {
     protected dUtil: DiscordUtilities;
 
     constructor() {
-        this.client = globalThis.client;
-        this.dUtil = globalThis.dUtil;
+        this.client = globalThis.CLIENT;
+        this.dUtil = globalThis.DUTIL;
     }
 
-    async doProcess(interaction: BaseInteraction): Promise<void> { };
+    async doProcess(interaction: BaseInteraction): Promise<void> {
+        return;
+    }
 }
 

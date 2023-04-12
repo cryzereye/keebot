@@ -14,7 +14,7 @@ export type Post = {
 	soldDate: string,
 	deleteDate: string,
 	expiryDate: string,
-	sold: Boolean,
-	deleted: Boolean,
-	expired: Boolean
+	sold: boolean,
+	deleted: boolean,
+	expired: boolean
 }

@@ -15,8 +15,8 @@ export abstract class BasePostManager {
 
 
 	constructor() {
-		this.client = globalThis.client;
-		this.dUtil = globalThis.dUtil;
+		this.client = globalThis.CLIENT;
+		this.dUtil = globalThis.DUTIL;
 	}
 
 	async getValidPostRecord(msgID: Snowflake, channelID: Snowflake, guild: Guild): Promise<Post | null> {

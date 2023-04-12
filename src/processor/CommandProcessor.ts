@@ -1,10 +1,10 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { BaseProcessor } from "./BaseProcessor";
 
-const { EmbedBuilder } = require('discord.js');
-const { channelsID } = require('../../json/config.json');
-const { commands } = require('../globals/commands.json');
-const { constants } = require('../globals/constants.json');
+import { EmbedBuilder } from 'discord.js';
+import { channelsID } from '../../json/config.json';
+import { commands } from '../globals/commands.json';
+import { constants } from '../globals/constants.json';
 
 export class CommandProcessor extends BaseProcessor {
 	constructor() {
@@ -25,10 +25,10 @@ export class CommandProcessor extends BaseProcessor {
 
 		switch (commandName) {
 			case commands[0].name: return this.doStats(interaction);
-			case commands[1].name: return globalThis.extractmngr.doProcess(interaction);
+			case commands[1].name: return globalThis.EXTRACTMNGR.doProcess(interaction);
 			case commands[2].name: await interaction.reply({ embeds: [this.generateHelp(fullName)] }).catch(console.error); break;
 			case commands[3].name: await interaction.reply({ content: await this.processReport(interaction), ephemeral: true }); break;
-			case commands[4].name: return globalThis.postfactory.processCommand(interaction);
+			case commands[4].name: return globalThis.POSTFACTORY.processCommand(interaction);
 		}
 	}
 
@@ -37,7 +37,7 @@ export class CommandProcessor extends BaseProcessor {
 			.setColor("Default")
 			.setTitle(`Help | ${username}`);
 
-		constants.helpinfo.forEach((info: {}) => {
+		constants.helpinfo.forEach((info: any) => {
 			embedBuilder.addFields(info);
 		})
 
@@ -45,11 +45,11 @@ export class CommandProcessor extends BaseProcessor {
 	}
 
 	async doStats(interaction: ChatInputCommandInteraction) {
-		globalThis.statsmngr.doProcess(interaction);
+		globalThis.STATSMNGR.doProcess(interaction);
 	}
 
 	async processReport(interaction: ChatInputCommandInteraction) {
-		return await globalThis.reportmngr.processReport(interaction);
+		return await globalThis.REPORTMNGR.processReport(interaction);
 	}
 
 }

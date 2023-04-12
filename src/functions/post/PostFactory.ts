@@ -8,8 +8,6 @@ import { ListPostManager } from './ListPostManager';
 import { NewPostManager } from './NewPostManager';
 import { SoldPostManager } from './SoldPostManager';
 
-const { channelsID } = require('../../../json/config.json');
-
 export class PostFactory {
     private client: Client;
     private dUtil: DiscordUtilities
@@ -20,8 +18,8 @@ export class PostFactory {
     private listPostManager: ListPostManager;
 
     constructor() {
-        this.client = globalThis.client;
-        this.dUtil = globalThis.dUtil;
+        this.client = globalThis.CLIENT;
+        this.dUtil = globalThis.DUTIL;
         this.newPostManager = new NewPostManager();
         this.editPostManager = new EditPostManager();
         this.soldPostManager = new SoldPostManager();

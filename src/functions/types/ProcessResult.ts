@@ -1,5 +1,5 @@
 export type ProcessResult = {
-    processed: Boolean;
+    processed: boolean;
     url: string;
     errorContent: string;
 }

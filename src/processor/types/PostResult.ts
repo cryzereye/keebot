@@ -1,8 +1,8 @@
 import { ModalBuilder } from "discord.js";
 
 export type PostResult = {
-    success: Boolean;
+    success: boolean;
     content: string;
-    isModal: Boolean;
+    isModal: boolean;
     modal: ModalBuilder | null;
 }
