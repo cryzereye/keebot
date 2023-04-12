@@ -1,8 +1,8 @@
 import { Service } from "./Service";
 
-const { state } = require('../../json/state.json');
-const State = require('../models/State');
-const util = require('../util/Utilities');
+import { state } from '../../json/state.json';
+import State from '../models/State';
+import util from '../util/Utilities';
 
 export class BackupService extends Service {
     constructor() {

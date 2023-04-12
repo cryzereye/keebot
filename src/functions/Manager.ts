@@ -11,6 +11,8 @@ export class Manager implements ManagerInterface {
         this.dUtil = globalThis.DUTIL;
     }
 
-    async doProcess(interaction: BaseInteraction): Promise<void> { };
+    async doProcess(interaction: BaseInteraction): Promise<void> {
+        return;
+    }
 }
 

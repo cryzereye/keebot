@@ -2,9 +2,9 @@ import { BaseInteraction, ChatInputCommandInteraction, EmbedAuthorData, EmbedBui
 import { Manager } from "./Manager";
 import { UserDates } from "./types/UserDates";
 
-const { relevant_roles, channelsID } = require('../../json/config.json');
+import { relevant_roles, channelsID } from '../../json/config.json';
 const fileName = '../../json/scores.json';
-let { scores } = require(fileName);
+const { scores } = require(fileName);
 import util = require('../util/Utilities');
 
 export class StatsManager extends Manager {
@@ -35,7 +35,7 @@ export class StatsManager extends Manager {
 			const roles = this.rolesToString(guildmember);
 			const userDates: UserDates = this.getUserDates(guildmember);
 
-			let feedbackCount = (isServiceProvider ? await this.countFeedbackForUser(guild, target.id) : "0");
+			const feedbackCount = (isServiceProvider ? await this.countFeedbackForUser(guild, target.id) : "0");
 
 			await interaction.followUp({
 				embeds: [
@@ -44,7 +44,7 @@ export class StatsManager extends Manager {
 		}
 	}
 
-	generateStats(gm: GuildMember, roles: string, authorDetails: EmbedAuthorData, reports: string, userDates: UserDates, isServiceProvider: Boolean, feedbackCount: string): EmbedBuilder {
+	generateStats(gm: GuildMember, roles: string, authorDetails: EmbedAuthorData, reports: string, userDates: UserDates, isServiceProvider: boolean, feedbackCount: string): EmbedBuilder {
 		let record = scores[gm.user.id];
 		let transStr = "";
 
@@ -54,8 +54,8 @@ export class StatsManager extends Manager {
 			transStr = "NO TRANSACTIONS YET!";
 		}
 		else {
-			let sortedTrans = [];
-			for (let t in record.transactions) {
+			const sortedTrans = [];
+			for (const t in record.transactions) {
 				sortedTrans.push([t, record.transactions[t]]);
 			}
 
@@ -84,8 +84,8 @@ export class StatsManager extends Manager {
 		else return scores[id].points;
 	}
 
-	generateScoreCard(authorDetails: EmbedAuthorData, points: string, roles: string, transStr: string, reports: string, userDates: UserDates, isServiceProvider: Boolean, feedbackCount: string) {
-		let embedBuilder = new EmbedBuilder()
+	generateScoreCard(authorDetails: EmbedAuthorData, points: string, roles: string, transStr: string, reports: string, userDates: UserDates, isServiceProvider: boolean, feedbackCount: string) {
+		const embedBuilder = new EmbedBuilder()
 			.setColor("DarkAqua")
 			.setTitle(`${points} Points`)
 			.setAuthor(authorDetails)
@@ -114,14 +114,14 @@ export class StatsManager extends Manager {
 	}
 
 	async countFeedbackForUser(guild: Guild, userID: Snowflake): Promise<string> {
-		let feedback = await this.dUtil.fetchAllMessagesMentionsUser(guild, userID, channelsID.serviceFeedback);
+		const feedback = await this.dUtil.fetchAllMessagesMentionsUser(guild, userID, channelsID.serviceFeedback);
 		if (feedback)
 			return feedback.length.toString();
 		return "0";
 	}
 
 	getUserDates(gm: GuildMember): UserDates {
-		let userDates: UserDates = {
+		const userDates: UserDates = {
 			creaStr: gm.user.createdAt.toString(),
 			creaDur: util.getTimeDiff(gm.user.createdAt).join(' '),
 			joinStr: (gm.joinedAt ? gm.joinedAt.toString() : "NOT IN THE SERVER"),

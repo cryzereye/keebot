@@ -1,17 +1,18 @@
 import { Snowflake } from "discord.js";
 import { ReportType } from "../functions/enums/ReportType";
 
-const fs = require('fs');
+import fs from 'fs';
 const fileName = '../../json/reports.json';
 const osFile = './json/reports.json';
-let { reports } = require(fileName);
+const { reports } = require(fileName);
 
 export function saveReportToFile(): void {
-  let dataStr = { "reports": reports };
+  const dataStr = { "reports": reports };
   try {
-    fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err: string) {
-      if (err) return console.log(err);
-    });
+    fs.writeFile(osFile, JSON.stringify(dataStr), (err) => {
+        if (err)
+          return console.log(err);
+      });
   }
   catch (err) {
     console.log(err);
@@ -34,7 +35,7 @@ export function fileNewReport(authorID: Snowflake, authorName: string, targetID:
   return reportID;
 }
 
-export function verifyReportFromFile(id: number, verified: boolean, verifier: string, verifyDate: string): {} {
+export function verifyReportFromFile(id: number, verified: boolean, verifier: string, verifyDate: string): { verified: boolean, report: string} {
   if (reports[id].verified)
     return { verified: false, report: reports[id] };
   else {
@@ -51,7 +52,7 @@ export function getReportCountFromFile(): number {
 }
 
 export function getVerifiedReportsForUser(targetid: Snowflake): any[] {
-  let verifiedReports: any = [];
+  const verifiedReports: any = [];
   Object.keys(reports).forEach((key: string) => {
     if (reports[key].targetID === targetid && reports[key].verified) {
       verifiedReports.push(reports[key]);

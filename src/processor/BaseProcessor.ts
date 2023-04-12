@@ -11,5 +11,7 @@ export class BaseProcessor implements ProcessorInterface {
         this.dUtil = globalThis.DUTIL;
     }
 
-    process(): void { }
+    process(): void {
+        return;
+    }
 }

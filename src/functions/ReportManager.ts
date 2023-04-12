@@ -4,12 +4,12 @@ import { PostResult } from "../processor/types/PostResult";
 import { Manager } from "./Manager";
 import { ReportType } from "./enums/ReportType";
 
-const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const ReportModel = require('../models/ReportModel');
-const PostModel = require('../models/PostModel');
-const dUtil = require('../util/DiscordUtilities');
-const { channelsID, reportTypes } = require('../../json/config.json');
-const { constants } = require('../globals/constants.json');
+import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from 'discord.js';
+import ReportModel from '../models/ReportModel';
+import PostModel from '../models/PostModel';
+import dUtil from '../util/DiscordUtilities';
+import { channelsID, reportTypes } from '../../json/config.json';
+import { constants } from '../globals/constants.json';
 
 export class ReportManager extends Manager {
   constructor() {
@@ -119,8 +119,8 @@ export class ReportManager extends Manager {
 
       console.log(`[${new Date().toLocaleString()}] Report for ${reportedName} saved`);
 
-      let content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${reportedID}>\n${PostModel.generateUrl(channelID, targetId)}`;
-      let filedReport = await dUtil.sendMessageToChannel(interaction.client, guild.id, channelsID.reports, content);
+      const content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${reportedID}>\n${PostModel.generateUrl(channelID, targetId)}`;
+      const filedReport = await dUtil.sendMessageToChannel(interaction.client, guild.id, channelsID.reports, content);
 
       if (filedReport) {
         try {
@@ -139,19 +139,19 @@ export class ReportManager extends Manager {
   }
 
   getVerifiedReportsMatrix(id: Snowflake) {
-    let reports = ReportModel.getVerifiedReportsForUser(id);
+    const reports = ReportModel.getVerifiedReportsForUser(id);
     let reportStats = "";
     reportTypes.forEach((type: ReportType) => {
-      let fetched = reports.filter((entry: Report) => entry.type === type);
+      const fetched = reports.filter((entry: Report) => entry.type === type);
       if (fetched.length > 0)
         reportStats += `${type}: ${fetched.length}\n`;
     });
     return reportStats;
   }
 
-  generateModal(target: Snowflake): typeof ModalBuilder {
-    let modal = new ModalBuilder();
-    let components = [
+  generateModal(target: Snowflake): ModalBuilder {
+    const modal = new ModalBuilder();
+    const components = [
       new ActionRowBuilder().addComponents(this.buildShortField("target", "User", target)),
       new ActionRowBuilder().addComponents(this.buildReportSummaryField())
     ];
@@ -161,7 +161,7 @@ export class ReportManager extends Manager {
     return modal;
   }
 
-  buildShortField(id: Snowflake, label: string, value: string): typeof TextInputBuilder {
+  buildShortField(id: Snowflake, label: string, value: string): TextInputBuilder {
     const field = new TextInputBuilder()
       .setCustomId(id)
       .setLabel(label)

@@ -1,7 +1,7 @@
 import { BaseInteraction, ChatInputCommandInteraction, Collection, FetchMessagesOptions, Guild, InteractionReplyOptions, Message, Snowflake, TextChannel } from "discord.js";
 import { Manager } from "./Manager";
 
-const { channelsID } = require('../../json/config.json');
+import { channelsID } from '../../json/config.json';
 
 export class ExtractManager extends Manager {
     constructor() {
@@ -35,7 +35,7 @@ export class ExtractManager extends Manager {
 
         while (hasMoreMessages) {
             // from https://stackoverflow.com/questions/55153125/fetch-more-than-100-messages
-            let options: FetchMessagesOptions = { limit: 100 };
+            const options: FetchMessagesOptions = { limit: 100 };
             if (lastMessageID) options.before = lastMessageID;
 
             await vouchChannel.messages.fetch(options).then((msglist: Collection<Snowflake, Message>) => {
@@ -66,9 +66,9 @@ export class ExtractManager extends Manager {
     }
 
     processMessage(msg: Message, guild: Guild) {
-        let owner = msg.author.username + '#' + msg.author.discriminator;
+        const owner = msg.author.username + '#' + msg.author.discriminator;
         try {
-            let mentions = msg.mentions.users; // mentioned by initial vouch
+            const mentions = msg.mentions.users; // mentioned by initial vouch
             mentions.map(x => {
                 globalThis.SCOREMNGR.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator);
                 globalThis.ROLEGIVERMNGR.roleCheck(globalThis.SCOREMNGR.getScore(msg.author.id.toString()), msg.author, guild);

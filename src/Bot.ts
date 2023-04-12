@@ -17,8 +17,8 @@ import { BackupService } from './service/BackupService';
 import { BumpService } from './service/BumpService';
 import { DiscordUtilities } from './util/DiscordUtilities';
 
-const { discord_id, discord_token, channelsID } = require('../json/config.json');
-const { commands } = require('./globals/commands.json');
+import { discord_id, discord_token, channelsID } from '../json/config.json';
+import { commands } from './globals/commands.json';
 
 export default class Bot {
 	private client: Client;
@@ -108,7 +108,7 @@ export default class Bot {
 	}
 
 	updateBotPresence(): void {
-		let presence: PresenceData = {
+		const presence: PresenceData = {
 			activities: [{
 				type: ActivityType.Streaming,
 				url: "https://github.com/cryzereye/keebot",

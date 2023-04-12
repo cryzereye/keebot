@@ -3,7 +3,7 @@ import path = require('path');
 import { TransactionType } from '../models/enums/TransactionType';
 import { TimeDiff } from "./types/TimeDiff";
 
-const { dev } = require('../../json/config.json');
+import { dev } from '../../json/config.json';
 
 /**
  * from: https://www.codegrepper.com/code-examples/javascript/node+js+time+difference+in+hours
@@ -38,7 +38,7 @@ export function getTimeDiff(target: Date): TimeDiff {
  * @returns {string}
  */
 export function addHours(start: string, hours: number): string {
-	let date = new Date(start);
+	const date = new Date(start);
 	if (dev)
 		date.setTime(date.getTime() + hours * 60 * 1000); // x mins for test purposes
 	else
@@ -58,9 +58,9 @@ export function getMinutes(mins: number): number {
 /**
  * returns true if str is a digit string sandwiched in words
  * @param {string} str 
- * @returns {Boolean}
+ * @returns {boolean}
  */
-export function isValidAmount(str: string): Boolean {
+export function isValidAmount(str: string): boolean {
 	const regexp = /\w*\d+\w*/gi;
 	return regexp.test(str);
 }
@@ -72,7 +72,7 @@ export function copyAllFiles(src: string, dest: string): void {
 	const files = fs.readdirSync(src);
 
 	// Copy each file to the destination directory
-	files.forEach((file: any) => {
+	files.forEach((file: string) => {
 		const srcPath = path.join(src, file);
 		const destPath = path.join(dest, file);
 		fs.copyFileSync(srcPath, destPath);

@@ -2,18 +2,19 @@ import { Snowflake } from "discord.js";
 import { TransactionType } from "./enums/TransactionType";
 import { Post } from "./types/Post";
 
-const fs = require('fs');
+import fs from 'fs';
 const fileName = '../../json/post.json';
 const osFile = './json/post.json';
-let { post } = require(fileName);
-const { channelsID } = require('../../json/config.json');
+const { post } = require(fileName);
+import { channelsID } from '../../json/config.json';
 
 export function savePostToFile(): void {
-  let dataStr = { "post": post };
+  const dataStr = { "post": post };
   try {
-    fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err: string) {
-      if (err) return console.log(err);
-    });
+    fs.writeFile(osFile, JSON.stringify(dataStr), (err) => {
+        if (err)
+          return console.log(err);
+      });
   }
   catch (err) {
     console.log(err);
@@ -46,7 +47,7 @@ export function get(postID: Snowflake): Post {
 }
 
 export function getAllNeedsBump(): Post[] {
-  let postArr: Post[] = Object.values(post);
+  const postArr: Post[] = Object.values(post);
   const currDate = new Date();
 
   return postArr.filter(post => !post.sold && !post.deleted && !post.expired && new Date(post.bumpDate) < currDate);
@@ -88,12 +89,12 @@ export function expired(postID: Snowflake): void {
 }
 
 export function getPostFromNewListID(newListID: Snowflake): Post {
-  let postArr: Post[] = Object.values(post);
+  const postArr: Post[] = Object.values(post);
   return postArr.filter((currentPost: Post) => currentPost.newListID.includes(newListID))[0];
 }
 
 export function list(authorID: Snowflake, itemrole: Snowflake, type: TransactionType): Post[] {
-  let records: Post[] = [];
+  const records: Post[] = [];
   let matchedAuthorID;
   let matchedItemRole;
   let matchedType;
