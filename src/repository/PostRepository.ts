@@ -44,4 +44,25 @@ export class PostRepository extends BaseRepository {
 	new(post: Post): void {
 		this.cache.push(post);
 	}
+
+	delete(id: Snowflake): void {
+		const record = this.find(id);
+		if (record) {
+			const index = this.cache.indexOf(record);
+			this.cache[index].delete();
+		}
+	}
+
+	edit(postID: Snowflake, have: string, want: string, editDate: Date, newListingID: Snowflake) {
+		const record = this.find(postID);
+		if (record) {
+			const index = this.cache.indexOf(record);
+			this.cache[index].edit(
+				have,
+				want,
+				editDate,
+				newListingID
+			);
+		}
+	}
 }

@@ -1,13 +1,12 @@
 import { BaseInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
 import { PostResult } from "../../processor/types/PostResult.js";
-
-import { channelsID } from '../../../json/config.json';
+import { PostRepository } from "../../repository/PostRepository.js";
 import { DeletePostModal } from '../modal/DeletePostModal.js';
 import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
 
-import * as PostModel from '../../repository/PostRepository.js';
-import { PostRepository } from "../../repository/PostRepository.js";
+import { channelsID } from '../../../json/config.json';
+import { Post } from "../../models/Post.js";
 
 export class DeletePostManager extends BasePostManager {
     constructor(repo: PostRepository) {
@@ -32,11 +31,11 @@ export class DeletePostManager extends BasePostManager {
 
     async doProcess(guild: Guild, data: any): Promise<ProcessResult> {
         const newListingsCh = channelsID.newListings;
-        const record = PostModel.get(data.postID);
+        const record = this.repo.find(data.postID);
 
         if (record) {
-            const channelID = PostModel.getChannelFromType(record.type);
-            const postMsg = await this.dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
+            const channelID = Post.getChannelFromType(record.type);
+            const postMsg = await DUTIL.getMessageFromID(guild, channelID, data.postID).catch(console.error);
 
             if (!postMsg) {
                 return {
@@ -47,7 +46,7 @@ export class DeletePostManager extends BasePostManager {
                 };
             }
 
-            const deletedPostMsg = await this.dUtil.sendMessageToChannel(guild.id, channelsID.deletedPost, `<@${record.authorID}> deleted ${record.postID}\n\n${postMsg.content}`);
+            const deletedPostMsg = await DUTIL.sendMessageToChannel(guild.id, channelsID.deletedPost, `<@${record.authorID}> deleted ${record.postID}\n\n${postMsg.content}`);
             if (!deletedPostMsg) {
                 return {
                     processed: false,
@@ -66,15 +65,12 @@ export class DeletePostManager extends BasePostManager {
                     errorContent: "Unable to delete post message"
                 };
             }
-            const msgURL = PostModel.generateUrl(message.channel.id, message.id);
+            const msgURL = Post.generateURL(message.channel.id, message.id);
 
-            PostModel.deletes(
-                data.postID,
-                data.deleteDate
-            );
+            this.repo.delete(data.postID);
 
             record.newListID.map(async (x: Snowflake) => {
-                await this.dUtil.makeMessageSpoiler(guild.id, newListingsCh, x);
+                await DUTIL.makeMessageSpoiler(guild.id, newListingsCh, x);
             });
 
             return {
@@ -120,6 +116,6 @@ export class DeletePostManager extends BasePostManager {
         else
             deleteResult = errorContent;
 
-        this.dUtil.postProcess(interaction, processed, deleteResult, false, null);
+        DUTIL.postProcess(interaction, processed, deleteResult, false, null);
     }
 }

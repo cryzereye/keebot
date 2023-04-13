@@ -1,20 +1,19 @@
 import { BaseInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
-import * as PostResult from "../../processor/types/PostResult.js";
+import { Post } from "../../models/Post.js";
+import { PostResult } from "../../processor/types/PostResult.js";
+import { PostRepository } from "../../repository/PostRepository.js";
+import { EditPostModal } from '../modal/EditPostModal.js';
+import { ProcessResult } from "../types/ProcessResult.js";
+import { BasePostManager } from './BasePostManager.js';
 
 import { channelsID } from '../../../json/config.json';
-import * as EditPostModal from '../modal/EditPostModal.js';
-import * as BasePostManager from './BasePostManager.js';
 
-import * as PostModel from '../../repository/PostRepository.js';
-import { PostRepository } from "../../repository/PostRepository.js";
-import { ProcessResult } from "../types/ProcessResult.js";
-
-export class EditPostManager extends BasePostManager.BasePostManager {
+export class EditPostManager extends BasePostManager {
     constructor(repo: PostRepository) {
         super(repo);
     }
 
-    async doModal(interaction: BaseInteraction, argPostID: Snowflake): Promise<PostResult.PostResult> {
+    async doModal(interaction: BaseInteraction, argPostID: Snowflake): Promise<PostResult> {
         const { guild, user, channelId } = interaction;
         if (!(guild && user && channelId)) return this.invalidPost();
         const post = await this.getValidPostRecord(argPostID, channelId, guild);
@@ -23,7 +22,7 @@ export class EditPostManager extends BasePostManager.BasePostManager {
             const errors = await this.postUpdatePreValidations(post, user.id, post.authorID, guild);
             if (errors) return errors;
 
-            const modal = new EditPostModal.EditPostModal(post.type, post.postID, post.have, post.want);
+            const modal = new EditPostModal(post.type, post.postID, post.have, post.want);
             if (modal) return this.successModal(modal);
             else return this.failModal();
         }
@@ -31,11 +30,11 @@ export class EditPostManager extends BasePostManager.BasePostManager {
     }
 
     async doProcess(guild: Guild, authorID: Snowflake, data: any): Promise<ProcessResult> {
-        const record = PostModel.get(data.postID);
+        const record = this.repo.find(data.postID);
 
         if (record) {
-            const channelID = PostModel.getChannelFromType(record.type);
-            const postMsg = await this.dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
+            const channelID = Post.getChannelFromType(record.type);
+            const postMsg = await DUTIL.getMessageFromID(guild, channelID, data.postID).catch(console.error);
 
             if (!postMsg) {
                 return {
@@ -73,7 +72,7 @@ export class EditPostManager extends BasePostManager.BasePostManager {
                     errorContent: ""
                 };
             }
-            const msgURL = PostModel.generateUrl(message.channel.id, message.id);
+            const msgURL = Post.generateURL(message.channel.id, message.id);
 
             if (record.authorID !== authorID)
                 newListContent += `**UPDATED <#${channelID}> post by Mod <@!${authorID}> in behalf of <@${record.authorID}>**\n`;
@@ -85,10 +84,10 @@ export class EditPostManager extends BasePostManager.BasePostManager {
             newListContent += `${msgURL}`;
 
             const ch = channelsID.newListings;
-            const newListMsg = await this.dUtil.sendMessageToChannel(guild.id, ch, newListContent).catch(console.error);
+            const newListMsg = await DUTIL.sendMessageToChannel(guild.id, ch, newListContent).catch(console.error);
 
             if (newListMsg) {
-                PostModel.edit(
+                this.repo.edit(
                     data.postID,
                     data.have,
                     data.want,
@@ -97,7 +96,7 @@ export class EditPostManager extends BasePostManager.BasePostManager {
                 );
             }
             else {
-                PostModel.edit(
+                this.repo.edit(
                     data.postID,
                     data.have,
                     data.want,
@@ -110,7 +109,7 @@ export class EditPostManager extends BasePostManager.BasePostManager {
             return {
                 processed: true,
                 url: msgURL,
-                newListingURL: PostModel.generateUrl(ch, (newListMsg ? newListMsg.id : "")),
+                newListingURL: Post.generateURL(ch, (newListMsg ? newListMsg.id : "")),
                 errorContent: ""
             };
         }
@@ -155,6 +154,6 @@ export class EditPostManager extends BasePostManager.BasePostManager {
         else
             editResult = errorContent;
 
-        this.dUtil.postProcess(interaction, processed, editResult, false, null);
+        DUTIL.postProcess(interaction, processed, editResult, false, null);
     }
 }
