@@ -78,4 +78,14 @@ export class Post implements PostType, Model {
             case TransactionType.trade: return channelsID.trading;
         }
     }
+
+    static getTransactionType(type: string | null): TransactionType {
+        switch (type) {
+            case "buy": return TransactionType.buy;
+            case "sell": return TransactionType.sell;
+            case "trade": return TransactionType.trade;
+        }
+
+        return TransactionType.buy;
+    }
 }

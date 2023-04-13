@@ -5,8 +5,6 @@ import { PostResult } from "../../processor/types/PostResult.js";
 import { PostRepository } from "../../repository/PostRepository.js";
 import { ProcessResult } from "../types/ProcessResult.js";
 
-import * as util from '../../util/Utilities.js';
-
 import { channelsID, me_id } from '../../../json/config.json';
 
 export class BasePostManager {
@@ -65,11 +63,11 @@ export class BasePostManager {
 	haveWantValidation(type: TransactionType, have: string, want: string): null | ProcessResult {
 		switch (type) {
 			case TransactionType.sell: {
-				if (!util.isValidAmount(want)) return this.invalidWantError();
+				if (!globalThis.UTIL.isValidAmount(want)) return this.invalidWantError();
 				break;
 			}
 			case TransactionType.buy: {
-				if (!util.isValidAmount(have)) return this.invalidHaveError();
+				if (!globalThis.UTIL.isValidAmount(have)) return this.invalidHaveError();
 				break;
 			}
 		}
