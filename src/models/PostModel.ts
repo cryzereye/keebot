@@ -1,27 +1,26 @@
 import { Snowflake } from "discord.js";
-import { TransactionType } from "./enums/TransactionType";
-import { Post } from "./types/Post";
+import * as TransactionType from "./enums/TransactionType.js";
+import * as Post from "./types/Post.js";
 
 import fs from 'fs';
-const fileName = '../../json/post.json';
-const osFile = './json/post.json';
-const { post } = require(fileName);
 import { channelsID } from '../../json/config.json';
+import { post } from '../../json/post.json';
+const osFile = './json/post.json';
 
 export function savePostToFile(): void {
   const dataStr = { "post": post };
   try {
     fs.writeFile(osFile, JSON.stringify(dataStr), (err) => {
-        if (err)
-          return console.log(err);
-      });
+      if (err)
+        return console.log(err);
+    });
   }
   catch (err) {
     console.log(err);
   }
 }
 
-export function newRecord(postID: Snowflake, newListID: Snowflake, authorID: Snowflake, type: TransactionType, itemrole: Snowflake, have: string, want: string, postDate: string, bumpDate: string, expiryDate: string): void {
+export function newRecord(postID: Snowflake, newListID: Snowflake | undefined, authorID: Snowflake, type: TransactionType.TransactionType, itemrole: Snowflake, have: string, want: string, postDate: string, bumpDate: string, expiryDate: string): void {
   post[postID] = {
     postID: postID,
     newListID: [newListID],
@@ -42,12 +41,12 @@ export function newRecord(postID: Snowflake, newListID: Snowflake, authorID: Sno
   savePostToFile();
 }
 
-export function get(postID: Snowflake): Post {
+export function get(postID: Snowflake): Post.Post {
   return post[postID];
 }
 
-export function getAllNeedsBump(): Post[] {
-  const postArr: Post[] = Object.values(post);
+export function getAllNeedsBump(): Post.Post[] {
+  const postArr: Post.Post[] = Object.values(post);
   const currDate = new Date();
 
   return postArr.filter(post => !post.sold && !post.deleted && !post.expired && new Date(post.bumpDate) < currDate);
@@ -88,13 +87,13 @@ export function expired(postID: Snowflake): void {
   savePostToFile();
 }
 
-export function getPostFromNewListID(newListID: Snowflake): Post {
-  const postArr: Post[] = Object.values(post);
-  return postArr.filter((currentPost: Post) => currentPost.newListID.includes(newListID))[0];
+export function getPostFromNewListID(newListID: Snowflake): Post.Post {
+  const postArr: Post.Post[] = Object.values(post);
+  return postArr.filter((currentPost: Post.Post) => currentPost.newListID.includes(newListID))[0];
 }
 
-export function list(authorID: Snowflake, itemrole: Snowflake, type: TransactionType): Post[] {
-  const records: Post[] = [];
+export function list(authorID: Snowflake, itemrole: Snowflake, type: TransactionType.TransactionType): Post.Post[] {
+  const records: Post.Post[] = [];
   let matchedAuthorID;
   let matchedItemRole;
   let matchedType;
@@ -129,10 +128,10 @@ export function generateUrl(chid: Snowflake, msgid: Snowflake): string {
   return `https://discord.com/channels/${channelsID.server}/${chid}/${msgid}`;
 }
 
-export function getChannelFromType(type: TransactionType): string {
+export function getChannelFromType(type: TransactionType.TransactionType): string {
   switch (type) {
-    case TransactionType.buy: return channelsID.buying;
-    case TransactionType.sell: return channelsID.selling;
-    case TransactionType.trade: return channelsID.trading;
+    case TransactionType.TransactionType.buy: return channelsID.buying;
+    case TransactionType.TransactionType.sell: return channelsID.selling;
+    case TransactionType.TransactionType.trade: return channelsID.trading;
   }
 }

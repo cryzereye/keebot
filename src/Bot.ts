@@ -1,40 +1,38 @@
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
-import { ActivityType, BaseInteraction, Client, ClientUser, GatewayIntentBits, Message, Partials, PresenceData } from 'discord.js';
+import { ActivityType, BaseInteraction, Client, GatewayIntentBits, Message, Partials, PresenceData } from 'discord.js';
 
-import { CommandProcessor } from './processor/CommandProcessor';
-import { ContextProcessor } from './processor/ContextProcessor';
-import { MessageProcessor } from './processor/MessageProcessor';
-import { ModalProcessor } from './processor/ModalProcessor';
+import * as CommandProcessor from './processor/CommandProcessor.js';
+import * as ContextProcessor from './processor/ContextProcessor.js';
+import * as MessageProcessor from './processor/MessageProcessor.js';
+import * as ModalProcessor from './processor/ModalProcessor.js';
 
-import { ExtractManager } from './functions/ExtractManager';
-import { ReportManager } from './functions/ReportManager';
-import { RoleGiverManager } from './functions/RoleGiverManager';
-import { ScoreManager } from './functions/ScoreManager';
-import { StatsManager } from './functions/StatsManager';
-import { PostFactory } from './functions/post/PostFactory';
-import { BackupService } from './service/BackupService';
-import { BumpService } from './service/BumpService';
-import { DiscordUtilities } from './util/DiscordUtilities';
+import * as ExtractManager from './functions/ExtractManager.js';
+import * as ReportManager from './functions/ReportManager.js';
+import * as RoleGiverManager from './functions/RoleGiverManager.js';
+import * as ScoreManager from './functions/ScoreManager.js';
+import * as StatsManager from './functions/StatsManager.js';
+import * as PostFactory from './functions/post/PostFactory.js';
+import * as BackupService from './service/BackupService.js';
+import * as BumpService from './service/BumpService.js';
+import * as DiscordUtilities from './util/DiscordUtilities.js';
 
 import { channelsID, discord_id, discord_token } from '../json/config.json';
 import { commands } from './globals/commands.json';
 
 export default class Bot {
 	private client: Client;
-	private roleGiverMngr: RoleGiverManager;
-	private scoreMngr: ScoreManager;
-	private statsMngr: StatsManager;
-	private extractMngr: ExtractManager;
-	private reportMngr: ReportManager;
-	private cmdProc: CommandProcessor;
-	private modalProc: ModalProcessor;
-	private msgProc: MessageProcessor;
-	private contextProc: ContextProcessor;
-	private postFactory: PostFactory;
-	private dUtil: DiscordUtilities;
-
-	private botUser: ClientUser | any;
+	private roleGiverMngr: RoleGiverManager.RoleGiverManager;
+	private scoreMngr: ScoreManager.ScoreManager;
+	private statsMngr: StatsManager.StatsManager;
+	private extractMngr: ExtractManager.ExtractManager;
+	private reportMngr: ReportManager.ReportManager;
+	private cmdProc: CommandProcessor.CommandProcessor;
+	private modalProc: ModalProcessor.ModalProcessor;
+	private msgProc: MessageProcessor.MessageProcessor;
+	private contextProc: ContextProcessor.ContextProcessor;
+	private postFactory: PostFactory.PostFactory;
+	private dUtil: DiscordUtilities.DiscordUtilities;
 
 	constructor() {
 		console.log(`[${new Date().toLocaleString()}] Starting up...`);
@@ -48,24 +46,24 @@ export default class Bot {
 			partials: [Partials.Channel]
 		});
 
-		this.dUtil = new DiscordUtilities(this.client);
+		this.dUtil = new DiscordUtilities.DiscordUtilities(this.client);
 
 		this.assignMainGlobals();
 
-		this.roleGiverMngr = new RoleGiverManager();
-		this.reportMngr = new ReportManager();
-		this.scoreMngr = new ScoreManager();
-		this.statsMngr = new StatsManager();
-		this.extractMngr = new ExtractManager();
+		this.roleGiverMngr = new RoleGiverManager.RoleGiverManager();
+		this.reportMngr = new ReportManager.ReportManager();
+		this.scoreMngr = new ScoreManager.ScoreManager();
+		this.statsMngr = new StatsManager.StatsManager();
+		this.extractMngr = new ExtractManager.ExtractManager();
 
-		this.postFactory = new PostFactory();
+		this.postFactory = new PostFactory.PostFactory();
 
 		this.assignManagerGlobals();
 
-		this.msgProc = new MessageProcessor();
-		this.modalProc = new ModalProcessor();
-		this.cmdProc = new CommandProcessor();
-		this.contextProc = new ContextProcessor();
+		this.msgProc = new MessageProcessor.MessageProcessor();
+		this.modalProc = new ModalProcessor.ModalProcessor();
+		this.cmdProc = new CommandProcessor.CommandProcessor();
+		this.contextProc = new ContextProcessor.ContextProcessor();
 
 		this.declareListeners();
 
@@ -76,13 +74,12 @@ export default class Bot {
 
 	declareListeners(): void {
 		this.client.on('ready', () => {
-			this.botUser = this.client.user;
 			this.buildSlashCommands();
 			this.updateBotPresence();
 
 			// floating services
-			new BackupService();
-			new BumpService();
+			new BackupService.BackupService();
+			new BumpService.BumpService();
 
 			console.log(`[${new Date().toLocaleString()}] bot is ready`);
 		});
@@ -104,9 +101,11 @@ export default class Bot {
 	async buildSlashCommands() {
 		const rest = new REST({ version: '10' }).setToken(discord_token);
 
-		await rest.put(Routes.applicationGuildCommands(discord_id, channelsID.server), { body: commands })
-			.then((data: any) => console.log(`[${new Date().toLocaleString()}] Successfully registered ${data.length} application commands.`))
-			.catch(console.error);
+		const success = await rest.put(Routes.applicationGuildCommands(discord_id, channelsID.server), { body: commands }).catch(console.error);
+
+		if (success) {
+			console.log(`[${new Date().toLocaleString()}] Successfully registered application commands.`);
+		}
 	}
 
 	updateBotPresence(): void {
@@ -118,8 +117,8 @@ export default class Bot {
 			}],
 			status: "online"
 		}
-
-		this.botUser.setPresence(presence);
+		if (this.client.user)
+			this.client.user.setPresence(presence);
 	}
 
 	assignMainGlobals() {

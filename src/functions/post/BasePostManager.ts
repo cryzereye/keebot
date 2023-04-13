@@ -1,13 +1,15 @@
 import { Client, Guild, ModalBuilder, Snowflake } from "discord.js";
-import { TransactionType } from "../../models/enums/TransactionType";
-import { Post } from "../../models/types/Post";
-import { PostResult } from "../../processor/types/PostResult";
-import { DiscordUtilities } from "../../util/DiscordUtilities";
+import { TransactionType } from "../../models/enums/TransactionType.js";
+import { Post } from "../../models/types/Post.js";
+import { PostResult } from "../../processor/types/PostResult.js";
+import { DiscordUtilities } from "../../util/DiscordUtilities.js";
+import { ProcessResult } from "../types/ProcessResult.js";
 
-import PostModel = require('../../models/PostModel');
-import util = require('../../util/Utilities');
+import * as PostModel from '../../models/PostModel.js';
+import * as util from '../../util/Utilities.js';
 
-const { channelsID, me_id } = require('../../../json/config.json');
+import { channelsID, me_id } from '../../../json/config.json';
+
 
 export abstract class BasePostManager {
 	protected client: Client;
@@ -36,13 +38,13 @@ export abstract class BasePostManager {
 	}
 
 	async isValidPostEditor(userID: Snowflake, authorID: Snowflake, guild: Guild) {
-		let isMod = await this.dUtil.isMod(guild, userID);
+		const isMod = await this.dUtil.isMod(guild, userID);
 		return (authorID == userID || isMod);
 	}
 
 	async postUpdatePreValidations(postRecord: Post, userID: Snowflake, authorID: Snowflake, guild: Guild): Promise<PostResult | void> {
-		let validEditor = await this.isValidPostEditor(userID, authorID, guild);
-		let result: PostResult = {
+		const validEditor = await this.isValidPostEditor(userID, authorID, guild);
+		const result: PostResult = {
 			success: false,
 			content: "",
 			isModal: false,
@@ -65,33 +67,39 @@ export abstract class BasePostManager {
 		}
 	}
 
-	haveWantValidation(type: TransactionType, have: string, want: string) {
+	haveWantValidation(type: TransactionType, have: string, want: string): null | ProcessResult {
 		switch (type) {
 			case TransactionType.sell: {
-				if (!util.isValidAmount(want)) this.invalidWantError();
+				if (!util.isValidAmount(want)) return this.invalidWantError();
 				break;
 			}
 			case TransactionType.buy: {
-				if (!util.isValidAmount(have)) this.invalidHaveError();
+				if (!util.isValidAmount(have)) return this.invalidHaveError();
 				break;
 			}
 		}
+
+		return null;
 	}
 
-	invalidWantError() {
-		return {
-			posted: false,
+	invalidWantError(): ProcessResult {
+		const result: ProcessResult = {
+			processed: false,
 			url: "",
+			newListingURL: "",
 			errorContent: "WANT should be a valid amount"
 		};
+		return result;
 	}
 
-	invalidHaveError() {
-		return {
-			posted: false,
+	invalidHaveError(): ProcessResult {
+		const result: ProcessResult = {
+			processed: false,
 			url: "",
+			newListingURL: "",
 			errorContent: "HAVE should be a valid amount"
 		};
+		return result;
 	}
 
 	successModal(modal: ModalBuilder) {

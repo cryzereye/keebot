@@ -1,25 +1,24 @@
 import { Snowflake } from "discord.js";
-import { ReportType } from "../functions/enums/ReportType";
+import * as ReportType from "../functions/enums/ReportType.js";
 
 import fs from 'fs';
-const fileName = '../../json/reports.json';
+import reports from '../../json/reports.json';
 const osFile = './json/reports.json';
-const { reports } = require(fileName);
 
 export function saveReportToFile(): void {
   const dataStr = { "reports": reports };
   try {
     fs.writeFile(osFile, JSON.stringify(dataStr), (err) => {
-        if (err)
-          return console.log(err);
-      });
+      if (err)
+        return console.log(err);
+    });
   }
   catch (err) {
     console.log(err);
   }
 }
 
-export function fileNewReport(authorID: Snowflake, authorName: string, targetID: Snowflake, targetName: string, category: ReportType, summary: string, date: string): number {
+export function fileNewReport(authorID: Snowflake, authorName: string, targetID: Snowflake, targetName: string, category: ReportType.ReportType, summary: string, date: string): number {
   const reportID = getReportCountFromFile() + 1;
   reports[reportID] = {
     authorID: authorID,
@@ -35,7 +34,7 @@ export function fileNewReport(authorID: Snowflake, authorName: string, targetID:
   return reportID;
 }
 
-export function verifyReportFromFile(id: number, verified: boolean, verifier: string, verifyDate: string): { verified: boolean, report: string} {
+export function verifyReportFromFile(id: number, verified: boolean, verifier: string, verifyDate: string): { verified: boolean, report: string } {
   if (reports[id].verified)
     return { verified: false, report: reports[id] };
   else {

@@ -1,14 +1,15 @@
 import { ChatInputCommandInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
-import { TransactionType } from "../../models/enums/TransactionType";
+import * as TransactionType from "../../models/enums/TransactionType.js";
 
-const { BasePostManager } = require('./BasePostManager');
-const { NewPostModal } = require('../modal/NewPostModal');
+import { channelsID, dev } from '../../../json/config.json';
+import * as NewPostModal from '../modal/NewPostModal.js';
+import * as BasePostManager from './BasePostManager.js';
 
-import PostModel = require('../../models/PostModel');
-const { channelsID, dev } = require('../../../json/config.json');
-import util = require('../../util/Utilities');
+import * as PostModel from '../../models/PostModel.js';
+import * as util from '../../util/Utilities.js';
+import { ProcessResult } from "../types/ProcessResult.js";
 
-export class NewPostManager extends BasePostManager {
+export class NewPostManager extends BasePostManager.BasePostManager {
     constructor() {
         super();
     }
@@ -17,7 +18,7 @@ export class NewPostManager extends BasePostManager {
         const type = interaction.options.getString('type');
         const itemrole = interaction.options.getRole('itemrole');
 
-        let modal = new NewPostModal(type, itemrole);
+        const modal = new NewPostModal.NewPostModal(util.getTransactionType(type), itemrole);
         if (modal)
             return this.successModal(modal);
         else {
@@ -30,8 +31,8 @@ export class NewPostManager extends BasePostManager {
         }
     }
 
-    async doProcess(guild: Guild, type: TransactionType, authorID: Snowflake, postDate: string, data: any): Promise<any> {
-        let channelID = PostModel.getChannelFromType(type);
+    async doProcess(guild: Guild, type: TransactionType.TransactionType, authorID: Snowflake, postDate: string, data: any): Promise<ProcessResult> {
+        const channelID = PostModel.getChannelFromType(type);
         let content = "";
         let newListContent = "";
         let msgURL = "";
@@ -60,7 +61,7 @@ export class NewPostManager extends BasePostManager {
         const message = await this.dUtil.sendMessageToChannel(guild.id, channelID, content);
         if (!message) {
             return {
-                posted: false,
+                processed: false,
                 url: "",
                 newListingURL: "",
                 errorContent: "Error in generation"
@@ -70,7 +71,7 @@ export class NewPostManager extends BasePostManager {
         msgURL = PostModel.generateUrl(channelID, message.id);
         newListContent += `${msgURL}`;
 
-        let ch = channelsID.newListings;
+        const ch = channelsID.newListings;
         const newListMsg = await this.dUtil.sendMessageToChannel(guild.id, ch, newListContent);
 
         let bumpDate = util.addHours(postDate, 8 + Math.floor(Math.random() * 4)); // randoms 8-12 hours
@@ -83,7 +84,7 @@ export class NewPostManager extends BasePostManager {
 
         PostModel.newRecord(
             message.id,
-            newListMsg.id,
+            (newListMsg ? newListMsg.id : undefined),
             authorID,
             type,
             data.roleID,
@@ -95,9 +96,10 @@ export class NewPostManager extends BasePostManager {
         );
 
         return {
-            posted: true,
+            processed: true,
             url: msgURL,
-            newListingURL: PostModel.generateUrl(ch, newListMsg.id),
+            newListingURL: PostModel.generateUrl(ch, (newListMsg ? newListMsg.id : "")),
+            errorContent: ""
         };
     }
 
@@ -130,15 +132,15 @@ export class NewPostManager extends BasePostManager {
 
         data = this.cleanUserEntries(data);
 
-        const { posted, url, newListingURL, errorContent } = await this.doProcess(
+        const { processed, url, newListingURL, errorContent } = await this.doProcess(
             guild, type, authorID, postDate, data
         );
 
-        if (posted)
+        if (processed)
             postResult = `Your item has been listed:\n${url}\nNew listing:${newListingURL}`;
         else
             postResult = errorContent;
 
-        await this.dUtil.postProcess(interaction, posted, postResult, false, null);
+        await this.dUtil.postProcess(interaction, processed, postResult, false, null);
     }
 }

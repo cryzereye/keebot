@@ -1,12 +1,12 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { Post } from "../../models/types/Post";
+import * as Post from "../../models/types/Post.js";
 
-const { BasePostManager } = require('./BasePostManager');
+import * as BasePostManager from './BasePostManager.js';
 
-import PostModel = require('../../models/PostModel');
-import util = require('../../util/Utilities');
+import * as PostModel from '../../models/PostModel.js';
+import * as util from '../../util/Utilities.js';
 
-export class ListPostManager extends BasePostManager {
+export class ListPostManager extends BasePostManager.BasePostManager {
     constructor() {
         super();
     }
@@ -25,7 +25,7 @@ export class ListPostManager extends BasePostManager {
         if (authorID == "" && itemroleID == "") {
             authorID = interaction.user.id;
         }
-        let records = PostModel.list(authorID, itemroleID, util.getTransactionType(type));
+        const records = PostModel.list(authorID, itemroleID, util.getTransactionType(type));
         let content = "";
         let channel;
 
@@ -38,9 +38,9 @@ export class ListPostManager extends BasePostManager {
             }
         }
 
-        records.map((x: Post) => {
+        records.map((x: Post.Post) => {
             channel = PostModel.getChannelFromType(x.type);
-            let newContent = `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${PostModel.generateUrl(channel, x.postID)}\nExpires ${x.expiryDate}\n\n`;
+            const newContent = `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${PostModel.generateUrl(channel, x.postID)}\nExpires ${x.expiryDate}\n\n`;
             if (content.length + newContent.length <= 2000)
                 content += newContent;
         });

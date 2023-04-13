@@ -59,8 +59,18 @@ export class DiscordUtilities {
 		if (channel instanceof TextChannel) return channel;
 	}
 
-	public async guildMemberHasRole(gm: GuildMember, role: Role): Promise<boolean> {
+	public async guildMemberHasRole(gm: GuildMember, argRole: Role | Snowflake): Promise<boolean> {
 		let targetRole: Role | undefined;
+		let role: Role | null;
+
+		if (!gm) return false;
+
+		if (argRole instanceof Role)
+			role = argRole;
+		else {
+			const fetchedRole = await gm.guild.roles.fetch(argRole);
+			role = (fetchedRole ? fetchedRole : null);
+		}
 		if (gm && role) {
 			targetRole = gm.roles.cache.get(role.id);
 			if (targetRole) return true;

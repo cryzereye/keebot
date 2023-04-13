@@ -1,34 +1,36 @@
 import { BaseInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
-import { ProcessResult } from "../types/ProcessResult";
+import * as ProcessResult from "../types/ProcessResult.js";
 
-const { BasePostManager } = require('./BasePostManager');
-const { SoldPostModal } = require('../modal/SoldPostModal');
+import * as SoldPostModal from '../modal/SoldPostModal.js';
+import * as BasePostManager from './BasePostManager.js';
 
-const { PostModel } = require('../../models/PostModel');
-const { channelsID } = require('../../../json/config.json');
+import { channelsID } from '../../../json/config.json';
+import * as PostModel from '../../models/PostModel.js';
+import { PostResult } from "../../processor/types/PostResult.js";
 
-export class SoldPostManager extends BasePostManager {
+export class SoldPostManager extends BasePostManager.BasePostManager {
     constructor() {
         super();
     }
 
-    async doModal(interaction: BaseInteraction, argPostID: Snowflake) {
-        let { guild, user, channelId } = interaction;
-        let post = await this.getValidPostRecord(argPostID, channelId, guild);
+    async doModal(interaction: BaseInteraction, argPostID: Snowflake): Promise<PostResult> {
+        const { guild, user, channelId } = interaction;
+        if (!(guild && user && channelId)) return this.invalidPost();
+        const post = await this.getValidPostRecord(argPostID, channelId, guild);
 
         if (post) {
-            const errors = this.postUpdatePreValidations(post, user.id, post.authorID, guild);
+            const errors = await this.postUpdatePreValidations(post, user.id, post.authorID, guild);
             if (errors) return errors;
 
-            let modal = new SoldPostModal(post.type, post.postID, post.have, post.want);
+            const modal = new SoldPostModal.SoldPostModal(post.type, post.postID, post.have, post.want);
             if (modal) return this.successModal(modal);
             else return this.failModal();
         }
         else return this.invalidPost();
     }
 
-    async doProcess(guild: Guild, data: any): Promise<ProcessResult> {
-        let record = PostModel.get(data.postID);
+    async doProcess(guild: Guild, data: any): Promise<ProcessResult.ProcessResult> {
+        const record = PostModel.get(data.postID);
         const newListingsCh = channelsID.newListings;
 
         if (record) {
@@ -39,21 +41,23 @@ export class SoldPostManager extends BasePostManager {
                 return {
                     processed: false,
                     url: "",
+                    newListingURL: "",
                     errorContent: "Unable to fetch message from channel."
                 };
             }
 
-            let newContent = `||${postMsg.content}||`;
+            const newContent = `||${postMsg.content}||`;
 
             const message = await postMsg.edit(newContent).catch(console.error);
             if (!message) {
                 return {
                     processed: false,
                     url: "",
+                    newListingURL: "",
                     errorContent: "Unable to mark post as sold"
                 };
             }
-            let msgURL = PostModel.generateUrl(message.channel.id, message.id);
+            const msgURL = PostModel.generateUrl(message.channel.id, message.id);
 
             PostModel.markSold(
                 data.postID,
@@ -61,12 +65,13 @@ export class SoldPostManager extends BasePostManager {
             );
 
             record.newListID.map(async (x: Snowflake) => {
-                await this.dUtil.makeMessageSpoiler(guild.client, guild.id, newListingsCh, x);
+                await this.dUtil.makeMessageSpoiler(guild.id, newListingsCh, x);
             });
 
             return {
                 processed: true,
                 url: msgURL,
+                newListingURL: "",
                 errorContent: ""
             };
         }
@@ -74,6 +79,7 @@ export class SoldPostManager extends BasePostManager {
             return {
                 processed: false,
                 url: "",
+                newListingURL: "",
                 errorContent: "Invalid! Post/ID does not exist."
             };
         }
@@ -93,7 +99,7 @@ export class SoldPostManager extends BasePostManager {
 
         data = this.cleanUserEntries(data);
 
-        const result: ProcessResult | void = await this.doProcess(
+        const result: ProcessResult.ProcessResult | void = await this.doProcess(
             guild, data
         ).catch(console.error);
 

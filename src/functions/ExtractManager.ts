@@ -1,15 +1,14 @@
 import { BaseInteraction, ChatInputCommandInteraction, Collection, FetchMessagesOptions, Guild, InteractionReplyOptions, Message, Snowflake, TextChannel } from "discord.js";
-import { Manager } from "./Manager";
+import * as Manager from "./Manager.js";
 
 import { channelsID } from '../../json/config.json';
 
-export class ExtractManager extends Manager {
+export class ExtractManager extends Manager.Manager {
     constructor() {
         super();
     }
 
     override async doProcess(interaction: BaseInteraction): Promise<void> {
-
         const { user, guild } = interaction;
         if (!(user && guild && this.dUtil.isAdmin(guild, user.id))) return;
 
@@ -29,14 +28,14 @@ export class ExtractManager extends Manager {
 
         let count = 0;
         let hasMoreMessages = true;
-        let lastMessageID: Snowflake | undefined;
+        let lastMessageID: Snowflake = "";
 
         globalThis.SCOREMNGR.clearScores();
 
         while (hasMoreMessages) {
             // from https://stackoverflow.com/questions/55153125/fetch-more-than-100-messages
             const options: FetchMessagesOptions = { limit: 100 };
-            if (lastMessageID) options.before = lastMessageID;
+            if (lastMessageID == "") options.before = lastMessageID;
 
             await vouchChannel.messages.fetch(options).then((msglist: Collection<Snowflake, Message>) => {
                 const { countReturn, lastMessageIDReturn } = this.traverseMessageList(msglist, count, lastMessageID, guild);
@@ -54,7 +53,7 @@ export class ExtractManager extends Manager {
         };
     }
 
-    traverseMessageList(msgList: Collection<Snowflake, Message>, countReturn: number, lastMessageIDReturn: Snowflake | undefined, guild: Guild): any {
+    traverseMessageList(msgList: Collection<Snowflake, Message>, countReturn: number, lastMessageIDReturn: Snowflake, guild: Guild): { countReturn: number, lastMessageIDReturn: Snowflake } {
         msgList.forEach(async (msg: Message) => {
             this.processMessage(msg, guild);
             countReturn++;

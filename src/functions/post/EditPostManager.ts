@@ -1,35 +1,36 @@
 import { BaseInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
-import { PostResult } from "../../processor/types/PostResult";
+import * as PostResult from "../../processor/types/PostResult.js";
 
-const { BasePostManager } = require('./BasePostManager');
-const { EditPostModal } = require('../modal/EditPostModal');
+import { channelsID } from '../../../json/config.json';
+import * as EditPostModal from '../modal/EditPostModal.js';
+import * as BasePostManager from './BasePostManager.js';
 
-import PostModel = require('../../models/PostModel');
-const { channelsID } = require('../../../json/config.json');
+import * as PostModel from '../../models/PostModel.js';
+import { ProcessResult } from "../types/ProcessResult.js";
 
-export class EditPostManager extends BasePostManager {
+export class EditPostManager extends BasePostManager.BasePostManager {
     constructor() {
         super();
     }
 
-    async doModal(interaction: BaseInteraction, argPostID: Snowflake): Promise<PostResult> {
-        let { guild, user, channelId } = interaction;
+    async doModal(interaction: BaseInteraction, argPostID: Snowflake): Promise<PostResult.PostResult> {
+        const { guild, user, channelId } = interaction;
         if (!(guild && user && channelId)) return this.invalidPost();
-        let post = await this.getValidPostRecord(argPostID, channelId, guild);
+        const post = await this.getValidPostRecord(argPostID, channelId, guild);
 
         if (post) {
             const errors = await this.postUpdatePreValidations(post, user.id, post.authorID, guild);
             if (errors) return errors;
 
-            let modal = new EditPostModal(post.type, null, post.postID, post.have, post.want);
+            const modal = new EditPostModal.EditPostModal(post.type, post.postID, post.have, post.want);
             if (modal) return this.successModal(modal);
             else return this.failModal();
         }
         else return this.invalidPost();
     }
 
-    async doProcess(guild: Guild, authorID: Snowflake, data: any) {
-        let record = PostModel.get(data.postID);
+    async doProcess(guild: Guild, authorID: Snowflake, data: any): Promise<ProcessResult> {
+        const record = PostModel.get(data.postID);
 
         if (record) {
             const channelID = PostModel.getChannelFromType(record.type);
@@ -37,7 +38,7 @@ export class EditPostManager extends BasePostManager {
 
             if (!postMsg) {
                 return {
-                    edited: false,
+                    processed: false,
                     url: "",
                     newListingURL: "",
                     errorContent: "Unable to fetch message from channel."
@@ -47,11 +48,11 @@ export class EditPostManager extends BasePostManager {
             const errors = this.haveWantValidation(record.type, data.have, data.want);
             if (errors) return errors;
 
-            let content = postMsg.content.split('\n');
+            const content = postMsg.content.split('\n');
             let newContent = "";
             let newListContent = "";
-            let haveEdited = (record.have !== data.have);
-            let wantEdited = (record.want !== data.want);
+            const haveEdited = (record.have !== data.have);
+            const wantEdited = (record.want !== data.want);
 
             content.map((line: string) => {
                 if (line.startsWith("HAVE: ") && !haveEdited)
@@ -65,13 +66,13 @@ export class EditPostManager extends BasePostManager {
             const message = await postMsg.edit(newContent).catch(console.error);
             if (!message) {
                 return {
-                    edited: false,
+                    processed: false,
                     url: "",
                     newListingURL: "",
                     errorContent: ""
                 };
             }
-            let msgURL = PostModel.generateUrl(message.channel.id, message.id);
+            const msgURL = PostModel.generateUrl(message.channel.id, message.id);
 
             if (record.authorID !== authorID)
                 newListContent += `**UPDATED <#${channelID}> post by Mod <@!${authorID}> in behalf of <@${record.authorID}>**\n`;
@@ -82,8 +83,8 @@ export class EditPostManager extends BasePostManager {
             newListContent += "WANT: " + (wantEdited ? `~~${record.want}~~` : "") + ` ${data.want}\n`;
             newListContent += `${msgURL}`;
 
-            let ch = channelsID.newListings;
-            const newListMsg = await this.dUtil.sendMessageToChannel(this.client, guild.id, ch, newListContent).catch(console.error);
+            const ch = channelsID.newListings;
+            const newListMsg = await this.dUtil.sendMessageToChannel(guild.id, ch, newListContent).catch(console.error);
 
             if (newListMsg) {
                 PostModel.edit(
@@ -106,15 +107,15 @@ export class EditPostManager extends BasePostManager {
 
 
             return {
-                edited: true,
+                processed: true,
                 url: msgURL,
-                newListingURL: PostModel.generateUrl(ch, newListMsg.id),
+                newListingURL: PostModel.generateUrl(ch, (newListMsg ? newListMsg.id : "")),
                 errorContent: ""
             };
         }
         else {
             return {
-                edited: false,
+                processed: false,
                 url: "",
                 newListingURL: "",
                 errorContent: "Invalid! Post/ID does not exist."
@@ -144,15 +145,15 @@ export class EditPostManager extends BasePostManager {
 
         data = this.cleanUserEntries(data);
 
-        const { edited, url, newListingURL, errorContent } = await this.doProcess(
+        const { processed, url, newListingURL, errorContent } = await this.doProcess(
             guild, authorID, data
-        ).catch(console.error);
+        );
 
-        if (edited)
+        if (processed)
             editResult = `Your post has been edited:\n${url}\nUpdated notif: ${newListingURL}`;
         else
             editResult = errorContent;
 
-        this.dUtil.postProcess(interaction, edited, editResult, false, null);
+        this.dUtil.postProcess(interaction, processed, editResult, false, null);
     }
 }

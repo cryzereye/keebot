@@ -1,12 +1,12 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { BaseProcessor } from "./BaseProcessor";
+import * as BaseProcessor from "./BaseProcessor.js";
 
 import { EmbedBuilder } from 'discord.js';
 import { channelsID } from '../../json/config.json';
 import { commands } from '../globals/commands.json';
 import { constants } from '../globals/constants.json';
 
-export class CommandProcessor extends BaseProcessor {
+export class CommandProcessor extends BaseProcessor.BaseProcessor {
 	constructor() {
 		super();
 	}
@@ -37,7 +37,7 @@ export class CommandProcessor extends BaseProcessor {
 			.setColor("Default")
 			.setTitle(`Help | ${username}`);
 
-		constants.helpinfo.forEach((info: any) => {
+		constants.helpinfo.forEach((info) => {
 			embedBuilder.addFields(info);
 		})
 

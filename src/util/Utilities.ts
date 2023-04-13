@@ -1,7 +1,7 @@
 import fs = require('fs');
 import path = require('path');
-import { TransactionType } from '../models/enums/TransactionType';
-import { TimeDiff } from "./types/TimeDiff";
+import * as TransactionType from '../models/enums/TransactionType.js';
+import * as TimeDiff from "./types/TimeDiff.js";
 
 import { dev } from '../../json/config.json';
 
@@ -10,7 +10,7 @@ import { dev } from '../../json/config.json';
  * returns time difference from now to target
  * @param {Date} target 
  */
-export function getTimeDiff(target: Date): TimeDiff {
+export function getTimeDiff(target: Date): TimeDiff.TimeDiff {
 	const now = Date.now(); // already in milliseconds
 	const ms = (now - target.getMilliseconds());
 
@@ -20,7 +20,7 @@ export function getTimeDiff(target: Date): TimeDiff {
 	const hours: number = Math.floor((((ms % 31557600000) % 2629800000) % 86400000) / 3600000);
 	const mins: number = Math.round(((((ms % 31557600000) % 2629800000) % 86400000) % 3600000) / 60000);
 
-	const result: TimeDiff = [
+	const result: TimeDiff.TimeDiff = [
 		(years > 0 ? `${years} years` : ""),
 		(months > 0 ? `${months} months` : ""),
 		(days > 0 ? `${days} days` : ""),
@@ -85,12 +85,12 @@ export function createFolder(dest: string): void {
 	}
 }
 
-export function getTransactionType(type: string): TransactionType {
+export function getTransactionType(type: string | null): TransactionType.TransactionType {
 	switch (type) {
-		case "buy": return TransactionType.buy;
-		case "sell": return TransactionType.sell;
-		case "trade": return TransactionType.trade;
+		case "buy": return TransactionType.TransactionType.buy;
+		case "sell": return TransactionType.TransactionType.sell;
+		case "trade": return TransactionType.TransactionType.trade;
 	}
 
-	return TransactionType.buy;
+	return TransactionType.TransactionType.buy;
 }

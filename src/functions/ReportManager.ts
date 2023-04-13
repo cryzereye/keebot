@@ -1,15 +1,12 @@
-import { ChatInputCommandInteraction, MessageContextMenuCommandInteraction, Snowflake } from "discord.js";
-import { Report } from "../models/types/Report";
-import { PostResult } from "../processor/types/PostResult";
-import { Manager } from "./Manager";
-import { ReportType } from "./enums/ReportType";
-
-import { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } from 'discord.js';
-import ReportModel from '../models/ReportModel';
-import PostModel from '../models/PostModel';
-import dUtil from '../util/DiscordUtilities';
+import { ActionRowBuilder, ChatInputCommandInteraction, MessageContextMenuCommandInteraction, ModalBuilder, Snowflake, TextInputBuilder, TextInputStyle } from "discord.js";
 import { channelsID, reportTypes } from '../../json/config.json';
 import { constants } from '../globals/constants.json';
+import { PostModel } from '../models/PostModel.js';
+import { ReportModel } from '../models/ReportModel.js';
+import { Report } from "../models/types/Report.js";
+import { PostResult } from "../processor/types/PostResult.js";
+import { dUtil } from '../util/DiscordUtilities.js';
+import { Manager } from "./Manager.js";
 
 export class ReportManager extends Manager {
   constructor() {
@@ -141,7 +138,7 @@ export class ReportManager extends Manager {
   getVerifiedReportsMatrix(id: Snowflake) {
     const reports = ReportModel.getVerifiedReportsForUser(id);
     let reportStats = "";
-    reportTypes.forEach((type: ReportType) => {
+    reportTypes.forEach((type) => {
       const fetched = reports.filter((entry: Report) => entry.type === type);
       if (fetched.length > 0)
         reportStats += `${type}: ${fetched.length}\n`;
@@ -152,8 +149,8 @@ export class ReportManager extends Manager {
   generateModal(target: Snowflake): ModalBuilder {
     const modal = new ModalBuilder();
     const components = [
-      new ActionRowBuilder().addComponents(this.buildShortField("target", "User", target)),
-      new ActionRowBuilder().addComponents(this.buildReportSummaryField())
+      new ActionRowBuilder<TextInputBuilder>().addComponents(this.buildShortField("target", "User", target)),
+      new ActionRowBuilder<TextInputBuilder>().addComponents(this.buildReportSummaryField())
     ];
 
     modal.setCustomId("reportModal").setTitle("Submit a report");

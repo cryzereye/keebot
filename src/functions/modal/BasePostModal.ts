@@ -1,14 +1,14 @@
-import { ActionRowBuilder, ModalBuilder, Role, Snowflake, TextInputBuilder, TextInputStyle } from 'discord.js';
-import { TransactionType } from '../../models/enums/TransactionType';
+import { APIRole, ActionRowBuilder, ModalBuilder, Role, Snowflake, TextInputBuilder, TextInputStyle } from 'discord.js';
+import * as TransactionType from '../../models/enums/TransactionType.js';
 
 export class BasePostModal extends ModalBuilder {
 	constructor() {
 		super();
 	}
 
-	buildBaseComponents(type: TransactionType, have: string, want: string): Array<ActionRowBuilder<TextInputBuilder>> {
-		let haveField = this.buildHaveField(have);
-		let wantField = this.buildWantField(want);
+	buildBaseComponents(type: TransactionType.TransactionType, have: string, want: string): Array<ActionRowBuilder<TextInputBuilder>> {
+		const haveField = this.buildHaveField(have);
+		const wantField = this.buildWantField(want);
 
 		switch (type) {
 			case "sell": {
@@ -34,7 +34,7 @@ export class BasePostModal extends ModalBuilder {
 		];
 	}
 
-	buildRoleField(itemrole: Role) {
+	buildRoleField(itemrole: Role | APIRole) {
 		const role = new TextInputBuilder()
 			.setCustomId(itemrole.id.toString())
 			.setLabel("Item Role [DO NOT EDIT ROLE]")
@@ -101,7 +101,7 @@ export class BasePostModal extends ModalBuilder {
 		return postId;
 	}
 
-	getIdTitleFromType(type: TransactionType): any {
+	getIdTitleFromType(type: TransactionType.TransactionType): any {
 		switch (type) {
 			case "buy": return { id: "buyPostModal", title: "Buy" };
 			case "sell": return { id: "sellPostModal", title: "Sell" };

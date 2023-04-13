@@ -1,11 +1,11 @@
 import { Client } from "discord.js";
-import { ExtractManager } from "./functions/ExtractManager";
-import { ReportManager } from "./functions/ReportManager";
-import { RoleGiverManager } from "./functions/RoleGiverManager";
-import { ScoreManager } from "./functions/ScoreManager";
-import { StatsManager } from "./functions/StatsManager";
-import { PostFactory } from "./functions/post/PostFactory";
-import { DiscordUtilities } from "./util/DiscordUtilities";
+import { ExtractManager } from "./functions/ExtractManager.js";
+import { ReportManager } from "./functions/ReportManager.js";
+import { RoleGiverManager } from "./functions/RoleGiverManager.js";
+import { ScoreManager } from "./functions/ScoreManager.js";
+import { StatsManager } from "./functions/StatsManager.js";
+import { PostFactory } from "./functions/post/PostFactory.js";
+import { DiscordUtilities } from "./util/DiscordUtilities.js";
 
 export { };
 

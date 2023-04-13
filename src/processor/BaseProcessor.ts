@@ -1,10 +1,10 @@
 import { Client } from "discord.js";
-import { DiscordUtilities } from "../util/DiscordUtilities";
-import { ProcessorInterface } from "./interface/ProcessorInterface";
+import * as DiscordUtilities from "../util/DiscordUtilities.js";
+import * as ProcessorInterface from "./interface/ProcessorInterface.js";
 
-export class BaseProcessor implements ProcessorInterface {
+export class BaseProcessor implements ProcessorInterface.ProcessorInterface {
     protected client: Client;
-    protected dUtil: DiscordUtilities;
+    protected dUtil: DiscordUtilities.DiscordUtilities;
 
     constructor() {
         this.client = globalThis.CLIENT;

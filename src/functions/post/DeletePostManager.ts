@@ -1,12 +1,12 @@
 import { BaseInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
-import { PostResult } from "../../processor/types/PostResult";
+import { PostResult } from "../../processor/types/PostResult.js";
 
-import { DeletePostModal } from '../modal/DeletePostModal';
-import { ProcessResult } from "../types/ProcessResult";
-import { BasePostManager } from './BasePostManager';
+import { channelsID } from '../../../json/config.json';
+import { DeletePostModal } from '../modal/DeletePostModal.js';
+import { ProcessResult } from "../types/ProcessResult.js";
+import { BasePostManager } from './BasePostManager.js';
 
-import PostModel = require('../../models/PostModel');
-const { channelsID } = require('../../../json/config.json');
+import * as PostModel from '../../models/PostModel.js';
 
 export class DeletePostManager extends BasePostManager {
     constructor() {
@@ -14,15 +14,15 @@ export class DeletePostManager extends BasePostManager {
     }
 
     async doModal(interaction: BaseInteraction, argPostID: Snowflake): Promise<PostResult> {
-        let { guild, user, channelId } = interaction;
+        const { guild, user, channelId } = interaction;
         if (!(guild && user && channelId)) return this.invalidPost();
-        let post = await this.getValidPostRecord(argPostID, channelId, guild);
+        const post = await this.getValidPostRecord(argPostID, channelId, guild);
 
         if (post) {
             const errors = await this.postUpdatePreValidations(post, user.id, post.authorID, guild);
             if (errors) return errors;
 
-            let modal = new DeletePostModal(post.type, post.postID, post.have, post.want);
+            const modal = new DeletePostModal(post.type, post.postID, post.have, post.want);
             if (modal) return this.successModal(modal);
             else return this.failModal();
         }
@@ -31,7 +31,7 @@ export class DeletePostManager extends BasePostManager {
 
     async doProcess(guild: Guild, data: any): Promise<ProcessResult> {
         const newListingsCh = channelsID.newListings;
-        let record = PostModel.get(data.postID);
+        const record = PostModel.get(data.postID);
 
         if (record) {
             const channelID = PostModel.getChannelFromType(record.type);
@@ -41,6 +41,7 @@ export class DeletePostManager extends BasePostManager {
                 return {
                     processed: false,
                     url: "",
+                    newListingURL: "",
                     errorContent: "Unable to fetch message from channel."
                 };
             }
@@ -50,6 +51,7 @@ export class DeletePostManager extends BasePostManager {
                 return {
                     processed: false,
                     url: "",
+                    newListingURL: "",
                     errorContent: "Unable to delete post message"
                 };
             }
@@ -59,10 +61,11 @@ export class DeletePostManager extends BasePostManager {
                 return {
                     processed: false,
                     url: "",
+                    newListingURL: "",
                     errorContent: "Unable to delete post message"
                 };
             }
-            let msgURL = PostModel.generateUrl(message.channel.id, message.id);
+            const msgURL = PostModel.generateUrl(message.channel.id, message.id);
 
             PostModel.deletes(
                 data.postID,
@@ -76,6 +79,7 @@ export class DeletePostManager extends BasePostManager {
             return {
                 processed: true,
                 url: msgURL,
+                newListingURL: "",
                 errorContent: ""
             };
         }
@@ -83,6 +87,7 @@ export class DeletePostManager extends BasePostManager {
         return {
             processed: false,
             url: "",
+            newListingURL: "",
             errorContent: "Invalid! Post/ID does not exist."
         };
 

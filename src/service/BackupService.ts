@@ -1,10 +1,10 @@
-import { Service } from "./Service";
+import * as Service from "./Service.js";
 
 import { state } from '../../json/state.json';
-import State from '../models/State';
-import util from '../util/Utilities';
+import * as State from '../models/State.js';
+import * as util from '../util/Utilities.js';
 
-export class BackupService extends Service {
+export class BackupService extends Service.Service {
     constructor() {
         super();
         this.startService();
@@ -39,6 +39,6 @@ export class BackupService extends Service {
 
     saveNextBackup() {
         const next = util.addHours(state.next_backup_timedate, 6);
-        State.updateState("next_backup_timedate", next.toString());
+        State.next_backup_timedate(next.toString());
     }
 }

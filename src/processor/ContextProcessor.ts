@@ -1,10 +1,10 @@
 import { MessageContextMenuCommandInteraction } from "discord.js";
-import { BaseProcessor } from "./BaseProcessor";
-import { PostResult } from "./types/PostResult";
+import * as BaseProcessor from "./BaseProcessor.js";
+import * as PostResult from "./types/PostResult.js";
 
-const { commands } = require('../globals/commands.json');
+import { commands } from '../globals/commands.json';
 
-export class ContextProcessor extends BaseProcessor {
+export class ContextProcessor extends BaseProcessor.BaseProcessor {
   constructor() {
     super();
   }
@@ -24,7 +24,7 @@ export class ContextProcessor extends BaseProcessor {
  * @param {discord.js.Interaction} interaction 
  * @param {Object} data 
  */
-  processResults(interaction: MessageContextMenuCommandInteraction, data: PostResult) {
+  processResults(interaction: MessageContextMenuCommandInteraction, data: PostResult.PostResult) {
     const { success, content, isModal, modal } = data;
     this.dUtil.postProcess(interaction, success, content, isModal, modal);
   }

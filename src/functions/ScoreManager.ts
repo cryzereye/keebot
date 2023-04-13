@@ -1,12 +1,11 @@
 import { Snowflake } from "discord.js";
-import { Manager } from "./Manager";
+import * as Manager from "./Manager.js";
 
-const fs = require('fs');
-const fileName = '../../json/scores.json';
+import fs from 'fs';
+import scores from '../../json/scores.json';
 const osFile = './json/scores.json';
-let { scores } = require(fileName);
 
-export class ScoreManager extends Manager {
+export class ScoreManager extends Manager.Manager {
     constructor() {
         super();
     }
@@ -31,7 +30,7 @@ export class ScoreManager extends Manager {
     }
 
     updateScoreFile() {
-        let dataStr = { "scores": scores };
+        const dataStr = { "scores": scores };
         try {
             fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err: string) {
                 if (err) return console.log(err);

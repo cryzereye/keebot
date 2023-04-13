@@ -1,9 +1,9 @@
 import { Message, MessageType, Snowflake } from "discord.js";
-import { BaseProcessor } from "./BaseProcessor";
+import * as BaseProcessor from "./BaseProcessor.js";
 
-import { dev, me_id, command_sign, channelsID, discord_id } from '../../json/config.json';
+import { channelsID, command_sign, dev, discord_id, me_id } from '../../json/config.json';
 
-export class MessageProcessor extends BaseProcessor {
+export class MessageProcessor extends BaseProcessor.BaseProcessor {
   constructor() {
     super();
   }

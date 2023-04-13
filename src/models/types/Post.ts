@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import { TransactionType } from "../enums/TransactionType";
+import { TransactionType } from "../enums/TransactionType.js";
 
 export type Post = {
 	postID: Snowflake,

@@ -1,18 +1,17 @@
 import { BaseInteraction, ChatInputCommandInteraction, EmbedAuthorData, EmbedBuilder, Guild, GuildMember, Role, Snowflake, User } from "discord.js";
-import { Manager } from "./Manager";
-import { UserDates } from "./types/UserDates";
+import * as Manager from "./Manager.js";
+import * as UserDates from "./types/UserDates.js";
 
-import { relevant_roles, channelsID } from '../../json/config.json';
-const fileName = '../../json/scores.json';
-const { scores } = require(fileName);
-import util = require('../util/Utilities');
+import { channelsID, relevant_roles } from '../../json/config.json';
+import { scores } from '../../json/scores.json';
+import * as util from '../util/Utilities.js';
 
-export class StatsManager extends Manager {
+export class StatsManager extends Manager.Manager {
 	constructor() {
 		super();
 	}
 
-	override async doProcess(interaction: BaseInteraction): Promise<void> {
+	async doProcess(interaction: BaseInteraction): Promise<void> {
 		if (interaction instanceof ChatInputCommandInteraction) {
 			await interaction.reply({
 				content: "Processing...",
@@ -36,7 +35,7 @@ export class StatsManager extends Manager {
 			}
 
 			const roles = this.rolesToString(guildmember);
-			const userDates: UserDates = this.getUserDates(guildmember);
+			const userDates: UserDates.UserDates = this.getUserDates(guildmember);
 
 			const feedbackCount = (isServiceProvider ? await this.countFeedbackForUser(guild, target.id) : "0");
 
@@ -48,7 +47,7 @@ export class StatsManager extends Manager {
 		}
 	}
 
-	generateStats(gm: GuildMember, roles: string, authorDetails: EmbedAuthorData, reports: string, userDates: UserDates, isServiceProvider: boolean, feedbackCount: string): EmbedBuilder {
+	generateStats(gm: GuildMember, roles: string, authorDetails: EmbedAuthorData, reports: string, userDates: UserDates.UserDates, isServiceProvider: boolean, feedbackCount: string): EmbedBuilder {
 		let record = scores[gm.user.id];
 		let transStr = "";
 
@@ -88,7 +87,7 @@ export class StatsManager extends Manager {
 		else return scores[id].points;
 	}
 
-	generateScoreCard(authorDetails: EmbedAuthorData, points: string, roles: string, transStr: string, reports: string, userDates: UserDates, isServiceProvider: boolean, feedbackCount: string) {
+	generateScoreCard(authorDetails: EmbedAuthorData, points: string, roles: string, transStr: string, reports: string, userDates: UserDates.UserDates, isServiceProvider: boolean, feedbackCount: string) {
 		const embedBuilder = new EmbedBuilder()
 			.setColor("DarkAqua")
 			.setTitle(`${points} Points`)
@@ -124,8 +123,8 @@ export class StatsManager extends Manager {
 		return "0";
 	}
 
-	getUserDates(gm: GuildMember): UserDates {
-		const userDates: UserDates = {
+	getUserDates(gm: GuildMember): UserDates.UserDates {
+		const userDates: UserDates.UserDates = {
 			creaStr: gm.user.createdAt.toString(),
 			creaDur: util.getTimeDiff(gm.user.createdAt).join(' '),
 			joinStr: (gm.joinedAt ? gm.joinedAt.toString() : "NOT IN THE SERVER"),

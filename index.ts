@@ -1,3 +1,3 @@
-import Bot from './src/Bot';
+import Bot from './src/Bot.js';
 
 new Bot();
