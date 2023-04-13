@@ -6,11 +6,12 @@ import * as EditPostModal from '../modal/EditPostModal.js';
 import * as BasePostManager from './BasePostManager.js';
 
 import * as PostModel from '../../repository/PostRepository.js';
+import { PostRepository } from "../../repository/PostRepository.js";
 import { ProcessResult } from "../types/ProcessResult.js";
 
 export class EditPostManager extends BasePostManager.BasePostManager {
-    constructor() {
-        super();
+    constructor(repo: PostRepository) {
+        super(repo);
     }
 
     async doModal(interaction: BaseInteraction, argPostID: Snowflake): Promise<PostResult.PostResult> {

@@ -14,8 +14,8 @@ export class ContextProcessor extends BaseProcessor.BaseProcessor {
     switch (commandName) {
       case commands[5].name:
       case commands[6].name:
-      case commands[7].name: this.processResults(interaction, await globalThis.POSTFACTORY.processContext(interaction)); break;
-      case commands[8].name: this.processResults(interaction, await globalThis.REPORTMNGR.reportPost(interaction)); break;
+      case commands[7].name: this.processResults(interaction, await POSTFACTORY.processContext(interaction)); break;
+      case commands[8].name: this.processResults(interaction, await REPORTMNGR.reportPost(interaction)); break;
     }
   }
 

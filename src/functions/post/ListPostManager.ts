@@ -1,14 +1,11 @@
 import { ChatInputCommandInteraction } from "discord.js";
-import { PostType } from "../../models/types/PostType.js";
-
+import { Post } from "../../models/Post.js";
+import { PostRepository } from "../../repository/PostRepository.js";
 import * as BasePostManager from './BasePostManager.js';
 
-import * as PostModel from '../../repository/PostRepository.js';
-import * as util from '../../util/Utilities.js';
-
 export class ListPostManager extends BasePostManager.BasePostManager {
-    constructor() {
-        super();
+    constructor(repo: PostRepository) {
+        super(repo);
     }
 
     async doProcess(interaction: ChatInputCommandInteraction) {
@@ -25,7 +22,7 @@ export class ListPostManager extends BasePostManager.BasePostManager {
         if (authorID == "" && itemroleID == "") {
             authorID = interaction.user.id;
         }
-        const records = PostModel.list(authorID, itemroleID, util.getTransactionType(type));
+        const records = this.repo.list(authorID, itemroleID, Post.getTransactionType(type));
         let content = "";
         let channel;
 
@@ -38,9 +35,9 @@ export class ListPostManager extends BasePostManager.BasePostManager {
             }
         }
 
-        records.map((x: PostType) => {
-            channel = PostModel.getChannelFromType(x.type);
-            const newContent = `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${PostModel.generateUrl(channel, x.postID)}\nExpires ${x.expiryDate}\n\n`;
+        records.map((x: Post) => {
+            channel = Post.getChannelFromType(x.type);
+            const newContent = `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\nExpires ${x.expiryDate}\n\n`;
             if (content.length + newContent.length <= 2000)
                 content += newContent;
         });

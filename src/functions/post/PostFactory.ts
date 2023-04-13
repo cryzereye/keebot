@@ -1,30 +1,28 @@
-import { BaseInteraction, ChatInputCommandInteraction, Client, MessageContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
-import * as PostResult from "../../processor/types/PostResult.js";
+import { BaseInteraction, ChatInputCommandInteraction, MessageContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
+import { PostResult } from "../../processor/types/PostResult.js";
 
-import * as DiscordUtilities from "../../util/DiscordUtilities.js";
-import * as DeletePostManager from './DeletePostManager.js';
-import * as EditPostManager from './EditPostManager.js';
-import * as ListPostManager from './ListPostManager.js';
-import * as NewPostManager from './NewPostManager.js';
-import * as SoldPostManager from './SoldPostManager.js';
+import { PostRepository } from "../../repository/PostRepository.js";
+import { DeletePostManager } from './DeletePostManager.js';
+import { EditPostManager } from './EditPostManager.js';
+import { ListPostManager } from './ListPostManager.js';
+import { NewPostManager } from './NewPostManager.js';
+import { SoldPostManager } from './SoldPostManager.js';
 
 export class PostFactory {
-    private client: Client;
-    private dUtil: DiscordUtilities.DiscordUtilities
-    private newPostManager: NewPostManager.NewPostManager;
-    private editPostManager: EditPostManager.EditPostManager;
-    private soldPostManager: SoldPostManager.SoldPostManager;
-    private deletePostManager: DeletePostManager.DeletePostManager;
-    private listPostManager: ListPostManager.ListPostManager;
+    repo: PostRepository;
+    private newPostManager: NewPostManager;
+    private editPostManager: EditPostManager;
+    private soldPostManager: SoldPostManager;
+    private deletePostManager: DeletePostManager;
+    private listPostManager: ListPostManager;
 
     constructor() {
-        this.client = globalThis.CLIENT;
-        this.dUtil = globalThis.DUTIL;
-        this.newPostManager = new NewPostManager.NewPostManager();
-        this.editPostManager = new EditPostManager.EditPostManager();
-        this.soldPostManager = new SoldPostManager.SoldPostManager();
-        this.deletePostManager = new DeletePostManager.DeletePostManager();
-        this.listPostManager = new ListPostManager.ListPostManager();
+        this.repo = new PostRepository();
+        this.newPostManager = new NewPostManager(this.repo);
+        this.editPostManager = new EditPostManager(this.repo);
+        this.soldPostManager = new SoldPostManager(this.repo);
+        this.deletePostManager = new DeletePostManager(this.repo);
+        this.listPostManager = new ListPostManager(this.repo);
     }
 
     async processCommand(interaction: ChatInputCommandInteraction) {
@@ -46,7 +44,7 @@ export class PostFactory {
         }
     }
 
-    async processContext(interaction: MessageContextMenuCommandInteraction): Promise<PostResult.PostResult> {
+    async processContext(interaction: MessageContextMenuCommandInteraction): Promise<PostResult> {
         const { commandName, targetId } = interaction;
 
         switch (commandName) {
@@ -64,8 +62,8 @@ export class PostFactory {
     }
 
 
-    async processResults(interaction: BaseInteraction, data: PostResult.PostResult) {
+    async processResults(interaction: BaseInteraction, data: PostResult) {
         const { success, content, isModal, modal } = data;
-        this.dUtil.postProcess(interaction, success, content, isModal, modal);
+        DUTIL.postProcess(interaction, success, content, isModal, modal);
     }
 }

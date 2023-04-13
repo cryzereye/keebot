@@ -24,7 +24,7 @@ export class StatsManager extends Manager.Manager {
 			const guildmember = await this.dUtil.getGuildMemberFromID(target.id, guild).catch(console.error);
 			if (!guildmember) return;
 
-			let reports = globalThis.REPORTMNGR.getVerifiedReportsMatrix(target.id.toString());
+			let reports = REPORTMNGR.getVerifiedReportsMatrix(target.id.toString());
 			if (reports == "") reports = "CLEAN RECORD";
 
 			const authorDetails: EmbedAuthorData = {
@@ -120,9 +120,9 @@ export class StatsManager extends Manager.Manager {
 	getUserDates(gm: GuildMember): UserDates.UserDates {
 		const userDates: UserDates.UserDates = {
 			creaStr: gm.user.createdAt.toString(),
-			creaDur: globalThis.UTIL.getTimeDiff(gm.user.createdAt).join(' '),
+			creaDur: UTIL.getTimeDiff(gm.user.createdAt).join(' '),
 			joinStr: (gm.joinedAt ? gm.joinedAt.toString() : "NOT IN THE SERVER"),
-			joinDur: (gm.joinedAt ? globalThis.UTIL.getTimeDiff(gm.joinedAt).join(' ') : "NOT IN THE SERVER"),
+			joinDur: (gm.joinedAt ? UTIL.getTimeDiff(gm.joinedAt).join(' ') : "NOT IN THE SERVER"),
 		};
 		return userDates;
 	}

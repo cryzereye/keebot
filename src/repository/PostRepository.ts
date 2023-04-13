@@ -40,4 +40,8 @@ export class PostRepository extends BaseRepository {
 	find(id: Snowflake) {
 		return this.cache.find(post => post.postID === id);
 	}
+
+	new(post: Post): void {
+		this.cache.push(post);
+	}
 }

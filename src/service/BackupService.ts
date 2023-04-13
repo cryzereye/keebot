@@ -2,7 +2,6 @@ import * as Service from "./Service.js";
 
 import { state } from '../../json/state.json';
 import * as State from '../models/State.js';
-import * as util from '../util/Utilities.js';
 
 export class BackupService extends Service.Service {
     constructor() {
@@ -16,7 +15,7 @@ export class BackupService extends Service.Service {
             this.saveNextBackup();
 
             // every 3 hours
-            await new Promise(resolve => setTimeout(resolve, util.getMinutes(6 * 60)));
+            await new Promise(resolve => setTimeout(resolve, UTIL.getMinutes(6 * 60)));
         }
     }
 
@@ -33,12 +32,12 @@ export class BackupService extends Service.Service {
         const src = 'json/';
         const dest = `backups/${now.getMonth() + 1}_${now.getDate()}_${now.getFullYear()}`;
 
-        util.createFolder('backups');
-        util.copyAllFiles(src, dest);
+        UTIL.createFolder('backups');
+        UTIL.copyAllFiles(src, dest);
     }
 
     saveNextBackup() {
-        const next = util.addHours(state.next_backup_timedate, 6);
+        const next = UTIL.addHours(new Date(state.next_backup_timedate), 6);
         State.next_backup_timedate(next.toString());
     }
 }

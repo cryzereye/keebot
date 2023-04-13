@@ -35,13 +35,12 @@ export class Utilities {
 		return result;
 	}
 
-	public addHours(start: string, hours: number): string {
-		const date = new Date(start);
+	public addHours(start: Date, hours: number): Date {
 		if (dev)
-			date.setTime(date.getTime() + hours * 60 * 1000); // x mins for test purposes
+			start.setTime(start.getTime() + hours * 60 * 1000); // x mins for test purposes
 		else
-			date.setTime(date.getTime() + hours * 60 * 60 * 1000); // hours * 1 hour
-		return date.toString();
+			start.setTime(start.getTime() + hours * 60 * 60 * 1000); // hours * 1 hour
+		return start;
 	}
 
 	/**

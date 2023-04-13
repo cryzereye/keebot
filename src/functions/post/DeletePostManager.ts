@@ -7,10 +7,11 @@ import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
 
 import * as PostModel from '../../repository/PostRepository.js';
+import { PostRepository } from "../../repository/PostRepository.js";
 
 export class DeletePostManager extends BasePostManager {
-    constructor() {
-        super();
+    constructor(repo: PostRepository) {
+        super(repo);
     }
 
     async doModal(interaction: BaseInteraction, argPostID: Snowflake): Promise<PostResult> {

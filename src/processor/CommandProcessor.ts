@@ -25,10 +25,10 @@ export class CommandProcessor extends BaseProcessor.BaseProcessor {
 
 		switch (commandName) {
 			case commands[0].name: return this.doStats(interaction);
-			case commands[1].name: return globalThis.EXTRACTMNGR.doProcess(interaction);
+			case commands[1].name: return EXTRACTMNGR.doProcess(interaction);
 			case commands[2].name: await interaction.reply({ embeds: [this.generateHelp(fullName)] }).catch(console.error); break;
 			case commands[3].name: await interaction.reply({ content: await this.processReport(interaction), ephemeral: true }); break;
-			case commands[4].name: return globalThis.POSTFACTORY.processCommand(interaction);
+			case commands[4].name: return POSTFACTORY.processCommand(interaction);
 		}
 	}
 
@@ -45,11 +45,11 @@ export class CommandProcessor extends BaseProcessor.BaseProcessor {
 	}
 
 	async doStats(interaction: ChatInputCommandInteraction) {
-		globalThis.STATSMNGR.doProcess(interaction);
+		STATSMNGR.doProcess(interaction);
 	}
 
 	async processReport(interaction: ChatInputCommandInteraction) {
-		return await globalThis.REPORTMNGR.processReport(interaction);
+		return await REPORTMNGR.processReport(interaction);
 	}
 
 }

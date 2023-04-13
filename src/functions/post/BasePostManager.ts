@@ -8,10 +8,10 @@ import { ProcessResult } from "../types/ProcessResult.js";
 import { channelsID, me_id } from '../../../json/config.json';
 
 export class BasePostManager {
-	repo: PostRepository;
 
-	constructor() {
-		this.repo = new PostRepository();
+	repo: PostRepository;
+	constructor(repo: PostRepository) {
+		this.repo = repo;
 	}
 
 	async getValidPostRecord(msgID: Snowflake, channelID: Snowflake, guild: Guild): Promise<Post | undefined> {
@@ -21,7 +21,7 @@ export class BasePostManager {
 			let record = this.repo.find(msgID);
 			if (record) return record;
 			else {
-				const origID: Snowflake | void = await globalThis.DUTIL.getIdOfRepliedMsg(guild, channelID, msgID);
+				const origID: Snowflake | void = await DUTIL.getIdOfRepliedMsg(guild, channelID, msgID);
 				if (origID) record = this.repo.find(origID);
 				if (record) return record;
 			}
@@ -31,7 +31,7 @@ export class BasePostManager {
 	}
 
 	async isValidPostEditor(userID: Snowflake, authorID: Snowflake, guild: Guild) {
-		const isMod = await globalThis.DUTIL.isMod(guild, userID);
+		const isMod = await DUTIL.isMod(guild, userID);
 		return (authorID == userID || isMod);
 	}
 
@@ -63,11 +63,11 @@ export class BasePostManager {
 	haveWantValidation(type: TransactionType, have: string, want: string): null | ProcessResult {
 		switch (type) {
 			case TransactionType.sell: {
-				if (!globalThis.UTIL.isValidAmount(want)) return this.invalidWantError();
+				if (!UTIL.isValidAmount(want)) return this.invalidWantError();
 				break;
 			}
 			case TransactionType.buy: {
-				if (!globalThis.UTIL.isValidAmount(have)) return this.invalidHaveError();
+				if (!UTIL.isValidAmount(have)) return this.invalidHaveError();
 				break;
 			}
 		}

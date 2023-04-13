@@ -7,10 +7,11 @@ import * as BasePostManager from './BasePostManager.js';
 import { channelsID } from '../../../json/config.json';
 import { PostResult } from "../../processor/types/PostResult.js";
 import * as PostModel from '../../repository/PostRepository.js';
+import { PostRepository } from "../../repository/PostRepository.js";
 
 export class SoldPostManager extends BasePostManager.BasePostManager {
-    constructor() {
-        super();
+    constructor(repo: PostRepository) {
+        super(repo);
     }
 
     async doModal(interaction: BaseInteraction, argPostID: Snowflake): Promise<PostResult> {

@@ -7,8 +7,8 @@ export class BaseProcessor implements ProcessorInterface.ProcessorInterface {
     protected dUtil: DiscordUtilities.DiscordUtilities;
 
     constructor() {
-        this.client = globalThis.CLIENT;
-        this.dUtil = globalThis.DUTIL;
+        this.client = CLIENT;
+        this.dUtil = DUTIL;
     }
 
     process(): void {

@@ -14,7 +14,7 @@ export class Post implements PostType {
     want: string;
     postDate: Date;
     editDate: Date | undefined;
-    bumpDate: Date | undefined;
+    bumpDate: Date;
     soldDate: Date | undefined;
     deleteDate: Date | undefined;
     expiryDate: Date;
@@ -23,20 +23,23 @@ export class Post implements PostType {
     isExpired: boolean;
     URL: string;
 
-    constructor(postID: Snowflake, newListID: Array<Snowflake>, authorID: Snowflake, type: TransactionType, itemrole: Snowflake, have: string, want: string, postDate: Date, expireDate: Date) {
+    constructor(postID: Snowflake, newListID: Snowflake, authorID: Snowflake, type: TransactionType, itemrole: Snowflake, have: string, want: string, postDate: Date, bumpDate: Date, expireDate: Date) {
         this.postID = postID;
-        this.newListID = newListID;
+        this.newListID = new Array<Snowflake>();
         this.authorID = authorID;
         this.type = type;
         this.itemrole = itemrole;
         this.have = have;
         this.want = want;
         this.postDate = postDate;
+        this.bumpDate = bumpDate;
         this.expiryDate = expireDate;
         this.isSold = false;
         this.isDeleted = false;
         this.isExpired = false;
-        this.URL = `https://discord.com/channels/${channelsID.server}/${Post.getChannelFromType(type)}/${postID}`;
+        this.URL = Post.generateURL(Post.getChannelFromType(type), postID);
+
+        this.newListID.push(newListID);
     }
 
     edit(have: string, want: string, editDate: Date, newListingID: Snowflake): void {
@@ -46,8 +49,8 @@ export class Post implements PostType {
         this.newListID.push(newListingID);
     }
 
-    bumped(): void {
-        this.bumpDate = new Date();
+    bumped(newDate: Date): void {
+        this.bumpDate = newDate;
     }
 
     delete(): void {
@@ -60,20 +63,21 @@ export class Post implements PostType {
         this.isSold = true;
     }
 
-    gotExpired(): void {
+    expire(): void {
         this.isExpired = true;
     }
 
-    generateUrl(chid: Snowflake, msgid: Snowflake): string {
+    static generateURL(chid: Snowflake | undefined, msgid: Snowflake): string {
         return `https://discord.com/channels/${channelsID.server}/${chid}/${msgid}`;
     }
 
-    static getChannelFromType(type: TransactionType): Snowflake | undefined {
+    static getChannelFromType(type: TransactionType): Snowflake {
         switch (type) {
             case TransactionType.buy: return channelsID.buying;
             case TransactionType.sell: return channelsID.selling;
             case TransactionType.trade: return channelsID.trading;
         }
+        return channelsID.buying;
     }
 
     static getTransactionType(type: string | null): TransactionType {

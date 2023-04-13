@@ -30,7 +30,7 @@ export class ExtractManager extends Manager.Manager {
         let hasMoreMessages = true;
         let lastMessageID: Snowflake = "";
 
-        globalThis.SCOREMNGR.clearScores();
+        SCOREMNGR.clearScores();
 
         while (hasMoreMessages) {
             // from https://stackoverflow.com/questions/55153125/fetch-more-than-100-messages
@@ -69,8 +69,8 @@ export class ExtractManager extends Manager.Manager {
         try {
             const mentions = msg.mentions.users; // mentioned by initial vouch
             mentions.map(x => {
-                globalThis.SCOREMNGR.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator);
-                globalThis.ROLEGIVERMNGR.roleCheck(globalThis.SCOREMNGR.getScore(msg.author.id.toString()), msg.author, guild);
+                SCOREMNGR.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator);
+                ROLEGIVERMNGR.roleCheck(SCOREMNGR.getScore(msg.author.id.toString()), msg.author, guild);
             });
         }
         catch (e) {

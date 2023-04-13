@@ -5,20 +5,20 @@ import { channelsID, dev } from '../../../json/config.json';
 import { NewPostModal } from '../modal/NewPostModal.js';
 import { BasePostManager } from './BasePostManager.js';
 
-import * as PostModel from '../../repository/PostRepository.js';
-import * as util from '../../util/Utilities.js';
+import { Post } from "../../models/Post.js";
+import { PostRepository } from "../../repository/PostRepository.js";
 import { ProcessResult } from "../types/ProcessResult.js";
 
 export class NewPostManager extends BasePostManager {
-    constructor() {
-        super();
+    constructor(repo: PostRepository) {
+        super(repo);
     }
 
     doModal(interaction: ChatInputCommandInteraction) {
         const type = interaction.options.getString('type');
         const itemrole = interaction.options.getRole('itemrole');
 
-        const modal = new NewPostModal(util.getTransactionType(type), itemrole);
+        const modal = new NewPostModal(Post.getTransactionType(type), itemrole);
         if (modal)
             return this.successModal(modal);
         else {
@@ -31,8 +31,8 @@ export class NewPostManager extends BasePostManager {
         }
     }
 
-    async doProcess(guild: Guild, type: TransactionType, authorID: Snowflake, postDate: string, data: any): Promise<ProcessResult> {
-        const channelID = PostModel.getChannelFromType(type);
+    async doProcess(guild: Guild, type: TransactionType, authorID: Snowflake, postDate: Date, data: any): Promise<ProcessResult> {
+        const channelID = Post.getChannelFromType(type);
         let content = "";
         let newListContent = "";
         let msgURL = "";
@@ -58,7 +58,7 @@ export class NewPostManager extends BasePostManager {
         newListContent += `WANT:  ${data.want}\n`;
 
         // gets sent message from buy/sell/trade channels then gets id, generates url to be sent in #new-listings
-        const message = await this.dUtil.sendMessageToChannel(guild.id, channelID, content);
+        const message = await DUTIL.sendMessageToChannel(guild.id, channelID, content);
         if (!message) {
             return {
                 processed: false,
@@ -68,37 +68,43 @@ export class NewPostManager extends BasePostManager {
             };
         }
 
-        msgURL = PostModel.generateUrl(channelID, message.id);
+        msgURL = Post.generateURL(channelID, message.id);
         newListContent += `${msgURL}`;
 
         const ch = channelsID.newListings;
-        const newListMsg = await this.dUtil.sendMessageToChannel(guild.id, ch, newListContent);
+        const newListMsg = await DUTIL.sendMessageToChannel(guild.id, ch, newListContent);
 
-        let bumpDate = util.addHours(postDate, 8 + Math.floor(Math.random() * 4)); // randoms 8-12 hours
-        let expiryDate = util.addHours(postDate, 24 * 60); // 60 days post expiry
+        let bumpDate: Date;
+        let expiryDate: Date;
 
         if (dev) {
-            bumpDate = util.addHours(postDate, Math.floor(Math.random() * 4)); // randoms 0-4 minutes
-            expiryDate = util.addHours(postDate, 10); // 10 minutes post expiry
+            bumpDate = UTIL.addHours(postDate, Math.floor(Math.random() * 4)); // randoms 0-4 minutes
+            expiryDate = UTIL.addHours(postDate, 10); // 10 minutes post expiry
+        }
+        else {
+            bumpDate = UTIL.addHours(postDate, 8 + Math.floor(Math.random() * 4)); // randoms 8-12 hours
+            expiryDate = UTIL.addHours(postDate, 24 * 60); // 60 days post expiry
         }
 
-        PostModel.newRecord(
-            message.id,
-            (newListMsg ? newListMsg.id : undefined),
-            authorID,
-            type,
-            data.roleID,
-            data.have,
-            data.want,
-            postDate,
-            bumpDate,
-            expiryDate
+        this.repo.new(
+            new Post(
+                message.id,
+                (newListMsg ? newListMsg.id : ""),
+                authorID,
+                type,
+                data.roleID,
+                data.have,
+                data.want,
+                postDate,
+                bumpDate,
+                expiryDate
+            )
         );
 
         return {
             processed: true,
             url: msgURL,
-            newListingURL: PostModel.generateUrl(ch, (newListMsg ? newListMsg.id : "")),
+            newListingURL: Post.generateURL(ch, (newListMsg ? newListMsg.id : "")),
             errorContent: ""
         };
     }
@@ -111,9 +117,9 @@ export class NewPostManager extends BasePostManager {
         const extracted = fields.fields;
         if (extracted.size <= 0) return;
 
-        const postDate = new Date(interaction.createdAt).toString();
+        const postDate = new Date(interaction.createdAt);
         const inputType: string = customId.replace("PostModal", "");
-        const type = util.getTransactionType(inputType);
+        const type = Post.getTransactionType(inputType);
         const roleID = extracted.keys().next().value;
         const have = extracted.get("have");
         const want = extracted.get("want");
@@ -141,6 +147,6 @@ export class NewPostManager extends BasePostManager {
         else
             postResult = errorContent;
 
-        await this.dUtil.postProcess(interaction, processed, postResult, false, null);
+        await DUTIL.postProcess(interaction, processed, postResult, false, null);
     }
 }

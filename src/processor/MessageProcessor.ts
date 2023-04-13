@@ -39,18 +39,18 @@ export class MessageProcessor extends BaseProcessor.BaseProcessor {
 
         const replyto = repliedUser.username + '#' + repliedUser.discriminator;
         if (authorName == replyto) message.reply(`**DO NOT CONFIRM FOR YOURSELF!** pinging <@${me_id}>`);
-        else globalThis.SCOREMNGR.addPoint(authorID, authorName, replyto);
+        else SCOREMNGR.addPoint(authorID, authorName, replyto);
       }
       else {
         // initial send
         message.mentions.users.map(x => {
           const mentioned = x.username + '#' + x.discriminator;
           if (authorName == mentioned) message.reply(`**DO NOT VOUCH YOURSELF!** pinging <@${me_id}>`);
-          else globalThis.SCOREMNGR.addPoint(authorID, authorName, mentioned);
+          else SCOREMNGR.addPoint(authorID, authorName, mentioned);
         });
       }
       if (!dev)
-        globalThis.ROLEGIVERMNGR.roleCheck(globalThis.SCOREMNGR.getScore(authorID), message.author, message.guild);
+        ROLEGIVERMNGR.roleCheck(SCOREMNGR.getScore(authorID), message.author, message.guild);
     }
   }
 
