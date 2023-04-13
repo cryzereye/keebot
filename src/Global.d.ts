@@ -6,6 +6,7 @@ import { ScoreManager } from "./functions/ScoreManager.js";
 import { StatsManager } from "./functions/StatsManager.js";
 import { PostFactory } from "./functions/post/PostFactory.js";
 import { DiscordUtilities } from "./util/DiscordUtilities.js";
+import { Utilities } from "./util/Utilities.js";
 
 export { };
 
@@ -18,4 +19,5 @@ declare global {
     var EXTRACTMNGR: ExtractManager;
     var REPORTMNGR: ReportManager;
     var POSTFACTORY: PostFactory;
+    var UTIL: Utilities;
 }

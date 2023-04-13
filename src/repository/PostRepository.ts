@@ -4,13 +4,13 @@ import { TransactionType } from "../models/enums/TransactionType.js";
 import { BaseRepository } from "./BaseRepository.js";
 
 export class PostRepository extends BaseRepository {
-	cache: Post[];
+	cache: Array<Post>;
 	constructor() {
 		super(`json/post.json`);
-		this.cache = <Post[]>this.load();
+		this.cache = <Array<Post>>this.load();
 	}
 
-	getAllNeedsBump(): Post[] {
+	getAllNeedsBump(): Array<Post> {
 		const currDate = new Date();
 		return this.cache.filter(post =>
 			!post.isSold &&
@@ -26,7 +26,7 @@ export class PostRepository extends BaseRepository {
 		);
 	}
 
-	list(authorID: Snowflake, itemrole: Snowflake, type: TransactionType): Post[] {
+	list(authorID: Snowflake, itemrole: Snowflake, type: TransactionType): Array<Post> {
 		return this.cache.filter(post =>
 			!post.isSold &&
 			!post.isDeleted &&

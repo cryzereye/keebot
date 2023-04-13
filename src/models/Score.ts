@@ -1,16 +1,14 @@
 import { Snowflake } from "discord.js";
-import { Model } from "./Model.js";
 import { ScoreType } from "./types/ScoreType.js";
 import { TransactionTally } from "./types/TransactionTally.js";
 
-export class Score extends Model implements ScoreType {
-    userId: Snowflake;
+export class Score implements ScoreType {
+    userID: Snowflake;
     points: number;
     transactions: Array<TransactionTally>;
 
-    constructor(userId: Snowflake, targetID: Snowflake, targetName: string) {
-        super();
-        this.userId = userId;
+    constructor(userID: Snowflake, targetID: Snowflake, targetName: string) {
+        this.userID = userID;
         this.points = 1;
         this.transactions = new Array<TransactionTally>;
         this.transactions.push({

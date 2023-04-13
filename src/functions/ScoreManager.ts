@@ -1,53 +1,32 @@
 import { Snowflake } from "discord.js";
-import * as Manager from "./Manager.js";
+import { Score } from "../models/Score.js";
+import { ScoreRepository } from "../repository/ScoreRepository.js";
+import { Manager } from "./Manager.js";
 
-import fs from 'fs';
-import scores from '../../json/scores.json';
-const osFile = './json/scores.json';
+export class ScoreManager extends Manager {
+    repo: ScoreRepository;
 
-export class ScoreManager extends Manager.Manager {
     constructor() {
         super();
+        this.repo = new ScoreRepository();
     }
 
-    addPoint(id1: Snowflake, id1_name: string, id2: Snowflake) {
-        try {
-            scores[id1].points += 1;
-            scores[id1].username = id1_name;
-        }
-        catch (err) {
-            this.createNewEntry(id1, id1_name, id2);
-        }
-        if (scores[id1]['transactions'][id2] == null)
-            scores[id1]['transactions'][id2] = 0;
-        scores[id1]['transactions'][id2] += 1;
-
-        this.updateScoreFile();
+    addPoint(userID: Snowflake, targetID: Snowflake, targetName: string): void {
+        this.repo.updateScore(userID, targetID, targetName);
     }
 
-    createNewEntry(id1: Snowflake, id1_name: string, id2: Snowflake): void {
-        scores[id1] = JSON.parse(`{"username":"${id1_name}","points" : 1,"transactions":{"${id2}":0}}`);
+    clearScores(): void {
+        this.repo.clearScores();
     }
 
-    updateScoreFile() {
-        const dataStr = { "scores": scores };
-        try {
-            fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err) {
-                if (err) return console.log(err);
-            });
-        }
-        catch (err) {
-            console.log(err);
-        }
+    getStats(userID: Snowflake): Score | undefined {
+        const record = this.repo.find(userID);
+        return (record ? record : undefined);
     }
 
-    clearScores() {
-        scores = {};
-        this.updateScoreFile();
-    }
-
-    getScore(id: Snowflake) {
-        if (scores[id] == null) return 0;
-        else return scores[id].points;
+    getScore(userID: Snowflake): number {
+        const record = this.repo.find(userID);
+        if (record) return record.points;
+        return 0;
     }
 }

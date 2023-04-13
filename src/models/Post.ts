@@ -3,9 +3,8 @@ import { TransactionType } from "./enums/TransactionType.js";
 import { PostType } from "./types/PostType.js";
 
 import { channelsID } from '../../json/config.json';
-import { Model } from "./Model.js";
 
-export class Post implements PostType, Model {
+export class Post implements PostType {
     postID: Snowflake;
     newListID: Array<Snowflake>;
     authorID: Snowflake;
@@ -23,10 +22,8 @@ export class Post implements PostType, Model {
     isDeleted: boolean;
     isExpired: boolean;
     URL: string;
-    model: boolean;
 
     constructor(postID: Snowflake, newListID: Array<Snowflake>, authorID: Snowflake, type: TransactionType, itemrole: Snowflake, have: string, want: string, postDate: Date, expireDate: Date) {
-        this.model = true;
         this.postID = postID;
         this.newListID = newListID;
         this.authorID = authorID;

@@ -3,8 +3,6 @@ import * as Manager from "./Manager.js";
 import * as UserDates from "./types/UserDates.js";
 
 import { channelsID, relevant_roles } from '../../json/config.json';
-import { scores } from '../../json/scores.json';
-import * as util from '../util/Utilities.js';
 
 export class StatsManager extends Manager.Manager {
 	constructor() {
@@ -48,7 +46,8 @@ export class StatsManager extends Manager.Manager {
 	}
 
 	generateStats(gm: GuildMember, roles: string, authorDetails: EmbedAuthorData, reports: string, userDates: UserDates.UserDates, isServiceProvider: boolean, feedbackCount: string): EmbedBuilder {
-		let record = scores[gm.user.id];
+		let record;
+		//= scores[gm.user.id];
 		let transStr = "";
 
 		if (record == null) {
@@ -80,11 +79,6 @@ export class StatsManager extends Manager.Manager {
 			isServiceProvider,
 			feedbackCount
 		);
-	}
-
-	getScore(id: Snowflake) {
-		if (scores[id] == null) return 0;
-		else return scores[id].points;
 	}
 
 	generateScoreCard(authorDetails: EmbedAuthorData, points: string, roles: string, transStr: string, reports: string, userDates: UserDates.UserDates, isServiceProvider: boolean, feedbackCount: string) {
@@ -126,9 +120,9 @@ export class StatsManager extends Manager.Manager {
 	getUserDates(gm: GuildMember): UserDates.UserDates {
 		const userDates: UserDates.UserDates = {
 			creaStr: gm.user.createdAt.toString(),
-			creaDur: util.getTimeDiff(gm.user.createdAt).join(' '),
+			creaDur: globalThis.UTIL.getTimeDiff(gm.user.createdAt).join(' '),
 			joinStr: (gm.joinedAt ? gm.joinedAt.toString() : "NOT IN THE SERVER"),
-			joinDur: (gm.joinedAt ? util.getTimeDiff(gm.joinedAt).join(' ') : "NOT IN THE SERVER"),
+			joinDur: (gm.joinedAt ? globalThis.UTIL.getTimeDiff(gm.joinedAt).join(' ') : "NOT IN THE SERVER"),
 		};
 		return userDates;
 	}
