@@ -1,9 +1,9 @@
 import { ChatInputCommandInteraction } from "discord.js";
 import { Post } from "../../models/Post.js";
 import { PostRepository } from "../../repository/PostRepository.js";
-import * as BasePostManager from './BasePostManager.js';
+import { BasePostManager } from './BasePostManager.js';
 
-export class ListPostManager extends BasePostManager.BasePostManager {
+export class ListPostManager extends BasePostManager {
     constructor(repo: PostRepository) {
         super(repo);
     }
@@ -37,7 +37,7 @@ export class ListPostManager extends BasePostManager.BasePostManager {
 
         records.map((x: Post) => {
             channel = Post.getChannelFromType(x.type);
-            const newContent = `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateUrl(channel, x.postID)}\nExpires ${x.expiryDate}\n\n`;
+            const newContent = `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateURL(channel, x.postID)}\nExpires ${x.expiryDate}\n\n`;
             if (content.length + newContent.length <= 2000)
                 content += newContent;
         });

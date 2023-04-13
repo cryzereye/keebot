@@ -1,13 +1,12 @@
 import { ChatInputCommandInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
+import { Post } from "../../models/Post.js";
 import { TransactionType } from "../../models/enums/TransactionType.js";
-
-import { channelsID, dev } from '../../../json/config.json';
+import { PostRepository } from "../../repository/PostRepository.js";
 import { NewPostModal } from '../modal/NewPostModal.js';
+import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
 
-import { Post } from "../../models/Post.js";
-import { PostRepository } from "../../repository/PostRepository.js";
-import { ProcessResult } from "../types/ProcessResult.js";
+import { channelsID, dev } from '../../../json/config.json';
 
 export class NewPostManager extends BasePostManager {
     constructor(repo: PostRepository) {

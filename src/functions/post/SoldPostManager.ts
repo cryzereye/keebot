@@ -1,15 +1,14 @@
 import { BaseInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
-import * as ProcessResult from "../types/ProcessResult.js";
-
-import * as SoldPostModal from '../modal/SoldPostModal.js';
-import * as BasePostManager from './BasePostManager.js';
+import { Post } from "../../models/Post.js";
+import { PostResult } from "../../processor/types/PostResult.js";
+import { PostRepository } from "../../repository/PostRepository.js";
+import { SoldPostModal } from '../modal/SoldPostModal.js';
+import { ProcessResult } from "../types/ProcessResult.js";
+import { BasePostManager } from './BasePostManager.js';
 
 import { channelsID } from '../../../json/config.json';
-import { PostResult } from "../../processor/types/PostResult.js";
-import * as PostModel from '../../repository/PostRepository.js';
-import { PostRepository } from "../../repository/PostRepository.js";
 
-export class SoldPostManager extends BasePostManager.BasePostManager {
+export class SoldPostManager extends BasePostManager {
     constructor(repo: PostRepository) {
         super(repo);
     }
@@ -23,20 +22,20 @@ export class SoldPostManager extends BasePostManager.BasePostManager {
             const errors = await this.postUpdatePreValidations(post, user.id, post.authorID, guild);
             if (errors) return errors;
 
-            const modal = new SoldPostModal.SoldPostModal(post.type, post.postID, post.have, post.want);
+            const modal = new SoldPostModal(post.type, post.postID, post.have, post.want);
             if (modal) return this.successModal(modal);
             else return this.failModal();
         }
         else return this.invalidPost();
     }
 
-    async doProcess(guild: Guild, data: any): Promise<ProcessResult.ProcessResult> {
-        const record = PostModel.get(data.postID);
+    async doProcess(guild: Guild, data: any): Promise<ProcessResult> {
+        const record = this.repo.find(data.postID);
         const newListingsCh = channelsID.newListings;
 
         if (record) {
-            const channelID = PostModel.getChannelFromType(record.type);
-            const postMsg = await this.dUtil.getMessageFromID(guild, channelID, data.postID).catch(console.error);
+            const channelID = Post.getChannelFromType(record.type);
+            const postMsg = await DUTIL.getMessageFromID(guild, channelID, data.postID).catch(console.error);
 
             if (!postMsg) {
                 return {
@@ -58,15 +57,12 @@ export class SoldPostManager extends BasePostManager.BasePostManager {
                     errorContent: "Unable to mark post as sold"
                 };
             }
-            const msgURL = PostModel.generateUrl(message.channel.id, message.id);
+            const msgURL = Post.generateURL(message.channel.id, message.id);
 
-            PostModel.markSold(
-                data.postID,
-                data.soldDate
-            );
+            record.sold();
 
             record.newListID.map(async (x: Snowflake) => {
-                await this.dUtil.makeMessageSpoiler(guild.id, newListingsCh, x);
+                await DUTIL.makeMessageSpoiler(guild.id, newListingsCh, x);
             });
 
             return {
@@ -100,7 +96,7 @@ export class SoldPostManager extends BasePostManager.BasePostManager {
 
         data = this.cleanUserEntries(data);
 
-        const result: ProcessResult.ProcessResult | void = await this.doProcess(
+        const result: ProcessResult | void = await this.doProcess(
             guild, data
         ).catch(console.error);
 
@@ -112,6 +108,6 @@ export class SoldPostManager extends BasePostManager.BasePostManager {
         else
             soldResult = errorContent;
 
-        this.dUtil.postProcess(interaction, processed, soldResult, false, null);
+        DUTIL.postProcess(interaction, processed, soldResult, false, null);
     }
 }
