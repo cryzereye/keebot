@@ -5,7 +5,7 @@ import { channelsID } from '../../../json/config.json';
 import * as EditPostModal from '../modal/EditPostModal.js';
 import * as BasePostManager from './BasePostManager.js';
 
-import * as PostModel from '../../models/PostModel.js';
+import * as PostModel from '../../repository/PostRepository.js';
 import { ProcessResult } from "../types/ProcessResult.js";
 
 export class EditPostManager extends BasePostManager.BasePostManager {

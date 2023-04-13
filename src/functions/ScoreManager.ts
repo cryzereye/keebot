@@ -32,7 +32,7 @@ export class ScoreManager extends Manager.Manager {
     updateScoreFile() {
         const dataStr = { "scores": scores };
         try {
-            fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err: string) {
+            fs.writeFile(osFile, JSON.stringify(dataStr), function writeJSON(err) {
                 if (err) return console.log(err);
             });
         }

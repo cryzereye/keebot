@@ -6,7 +6,7 @@ import { DeletePostModal } from '../modal/DeletePostModal.js';
 import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
 
-import * as PostModel from '../../models/PostModel.js';
+import * as PostModel from '../../repository/PostRepository.js';
 
 export class DeletePostManager extends BasePostManager {
     constructor() {

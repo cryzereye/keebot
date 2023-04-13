@@ -1,14 +1,14 @@
 import { EmbedAuthorData, EmbedBuilder, Guild, Message, Snowflake, User } from 'discord.js';
-import * as Post from "../models/types/Post.js";
+import { PostType } from "../models/types/PostType.js";
 import * as DiscordUtilities from "../util/DiscordUtilities.js";
 import * as Service from "./Service.js";
 
 import { channelsID, dev } from '../../json/config.json';
-import * as PostModel from '../models/PostModel.js';
+import * as PostModel from '../repository/PostRepository.js';
 import * as util from '../util/Utilities.js';
 
 export class BumpService extends Service.Service {
-	private queue: Array<Post.Post>;
+	private queue: Array<PostType>;
 	private dUtil: DiscordUtilities.DiscordUtilities;
 
 	constructor() {
@@ -30,7 +30,7 @@ export class BumpService extends Service.Service {
 			while (true) {
 				const currDate: Date = new Date();
 
-				const currPost: Post.Post | undefined = this.queue.shift();
+				const currPost: PostType | undefined = this.queue.shift();
 
 				if (!currPost) break;
 				console.log(`[${new Date().toLocaleString()}] Processing bump/expiry ${currPost.have}/${currPost.want}`);
@@ -80,7 +80,7 @@ export class BumpService extends Service.Service {
 		}
 	}
 
-	getEmbed(user: User, post: Post.Post) {
+	getEmbed(user: User, post: PostType) {
 		const authorName = user.username + '#' + user.discriminator;
 		const avatarURL = user.displayAvatarURL();
 		const authorDetails: EmbedAuthorData = {
@@ -103,7 +103,7 @@ export class BumpService extends Service.Service {
 	 * @param {Snowflake} currPost 
 	 * @returns {boolean} true
 	 */
-	async spoilExpiredPost(origPost: Message, currPost: Post.Post, guild: Guild) {
+	async spoilExpiredPost(origPost: Message, currPost: PostType, guild: Guild) {
 		await origPost.edit(`||${origPost.content}||`).catch(console.error);
 
 		const ch = channelsID.newListings;
@@ -115,7 +115,7 @@ export class BumpService extends Service.Service {
 		return true;
 	}
 
-	async checkExpiry(currPost: Post.Post, origPost: Message, currDate: Date, guild: Guild) {
+	async checkExpiry(currPost: PostType, origPost: Message, currDate: Date, guild: Guild) {
 		if (new Date(currPost.expiryDate) < currDate) {
 			if (await this.spoilExpiredPost(origPost, currPost, guild)) {
 				console.log(`[${new Date().toLocaleString()}] ${currPost.have}/${currPost.want} expired`);

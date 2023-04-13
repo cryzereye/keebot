@@ -1,44 +1,39 @@
-import { Client, Guild, ModalBuilder, Snowflake } from "discord.js";
+import { Guild, ModalBuilder, Snowflake } from "discord.js";
+import { Post } from "../../models/Post.js";
 import { TransactionType } from "../../models/enums/TransactionType.js";
-import { Post } from "../../models/types/Post.js";
 import { PostResult } from "../../processor/types/PostResult.js";
-import { DiscordUtilities } from "../../util/DiscordUtilities.js";
+import { PostRepository } from "../../repository/PostRepository.js";
 import { ProcessResult } from "../types/ProcessResult.js";
 
-import * as PostModel from '../../models/PostModel.js';
 import * as util from '../../util/Utilities.js';
 
 import { channelsID, me_id } from '../../../json/config.json';
 
-
-export abstract class BasePostManager {
-	protected client: Client;
-	protected dUtil: DiscordUtilities;
-
+export class BasePostManager {
+	repo: PostRepository;
 
 	constructor() {
-		this.client = globalThis.CLIENT;
-		this.dUtil = globalThis.DUTIL;
+		this.repo = new PostRepository();
 	}
 
-	async getValidPostRecord(msgID: Snowflake, channelID: Snowflake, guild: Guild): Promise<Post | null> {
+	async getValidPostRecord(msgID: Snowflake, channelID: Snowflake, guild: Guild): Promise<Post | undefined> {
 		if (channelID == channelsID.newListings)
-			return PostModel.getPostFromNewListID(msgID);
+			return this.repo.getPostFromNewListID(msgID);
 		else {
-			let record = PostModel.get(msgID);
+			let record = this.repo.find(msgID);
 			if (record) return record;
 			else {
-				const origID: Snowflake | void = await this.dUtil.getIdOfRepliedMsg(guild, channelID, msgID);
-				if (origID) record = PostModel.get(origID);
+				const origID: Snowflake | void = await globalThis.DUTIL.getIdOfRepliedMsg(guild, channelID, msgID);
+				if (origID) record = this.repo.find(origID);
 				if (record) return record;
 			}
 		}
 
-		return null;
+		return undefined;
 	}
 
 	async isValidPostEditor(userID: Snowflake, authorID: Snowflake, guild: Guild) {
-		const isMod = await this.dUtil.isMod(guild, userID);
+		const isMod = await globalThis.DUTIL.isMod(guild, userID);
 		return (authorID == userID || isMod);
 	}
 
@@ -56,12 +51,12 @@ export abstract class BasePostManager {
 			return result;
 		}
 
-		if (postRecord.sold) {
+		if (postRecord.isSold) {
 			result.content = `Invalid! Post is already marked as sold`;
 			return result;
 		}
 
-		if (postRecord.deleted) {
+		if (postRecord.isDeleted) {
 			result.content = `Invalid! Post is already deleted`;
 			return result;
 		}

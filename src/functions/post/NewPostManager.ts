@@ -1,15 +1,15 @@
 import { ChatInputCommandInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
-import * as TransactionType from "../../models/enums/TransactionType.js";
+import { TransactionType } from "../../models/enums/TransactionType.js";
 
 import { channelsID, dev } from '../../../json/config.json';
-import * as NewPostModal from '../modal/NewPostModal.js';
-import * as BasePostManager from './BasePostManager.js';
+import { NewPostModal } from '../modal/NewPostModal.js';
+import { BasePostManager } from './BasePostManager.js';
 
-import * as PostModel from '../../models/PostModel.js';
+import * as PostModel from '../../repository/PostRepository.js';
 import * as util from '../../util/Utilities.js';
 import { ProcessResult } from "../types/ProcessResult.js";
 
-export class NewPostManager extends BasePostManager.BasePostManager {
+export class NewPostManager extends BasePostManager {
     constructor() {
         super();
     }
@@ -18,7 +18,7 @@ export class NewPostManager extends BasePostManager.BasePostManager {
         const type = interaction.options.getString('type');
         const itemrole = interaction.options.getRole('itemrole');
 
-        const modal = new NewPostModal.NewPostModal(util.getTransactionType(type), itemrole);
+        const modal = new NewPostModal(util.getTransactionType(type), itemrole);
         if (modal)
             return this.successModal(modal);
         else {
@@ -31,7 +31,7 @@ export class NewPostManager extends BasePostManager.BasePostManager {
         }
     }
 
-    async doProcess(guild: Guild, type: TransactionType.TransactionType, authorID: Snowflake, postDate: string, data: any): Promise<ProcessResult> {
+    async doProcess(guild: Guild, type: TransactionType, authorID: Snowflake, postDate: string, data: any): Promise<ProcessResult> {
         const channelID = PostModel.getChannelFromType(type);
         let content = "";
         let newListContent = "";

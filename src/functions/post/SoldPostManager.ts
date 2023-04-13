@@ -5,8 +5,8 @@ import * as SoldPostModal from '../modal/SoldPostModal.js';
 import * as BasePostManager from './BasePostManager.js';
 
 import { channelsID } from '../../../json/config.json';
-import * as PostModel from '../../models/PostModel.js';
 import { PostResult } from "../../processor/types/PostResult.js";
+import * as PostModel from '../../repository/PostRepository.js';
 
 export class SoldPostManager extends BasePostManager.BasePostManager {
     constructor() {

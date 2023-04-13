@@ -1,10 +1,10 @@
 import { ActionRowBuilder, ChatInputCommandInteraction, MessageContextMenuCommandInteraction, ModalBuilder, Snowflake, TextInputBuilder, TextInputStyle } from "discord.js";
 import { channelsID, reportTypes } from '../../json/config.json';
 import { constants } from '../globals/constants.json';
-import { PostModel } from '../models/PostModel.js';
-import { ReportModel } from '../models/ReportModel.js';
-import { Report } from "../models/types/Report.js";
+import { ReportType } from "../models/types/ReportType.js";
 import { PostResult } from "../processor/types/PostResult.js";
+import { PostRepository } from '../repository/PostRepository.js';
+import { ReportRepository } from '../repository/ReportRepository.js';
 import { dUtil } from '../util/DiscordUtilities.js';
 import { Manager } from "./Manager.js";
 
@@ -28,7 +28,7 @@ export class ReportManager extends Manager {
         const category = interaction.options.getString('category');
         const summary = interaction.options.getString('summary');
 
-        const reportID = ReportModel.fileNewReport(
+        const reportID = ReportRepository.fileNewReport(
           author.id,
           authorName,
           reported.id,
@@ -51,7 +51,7 @@ export class ReportManager extends Manager {
           const reportID = interaction.options.getString('id');
           const verifier = authorName;
           const verifyDate = new Date(interaction.createdAt).toString();
-          const { verified, report } = ReportModel.verifyReportFromFile(reportID, true, verifier, verifyDate);
+          const { verified, report } = ReportRepository.verifyReportFromFile(reportID, true, verifier, verifyDate);
 
           if (verified) {
             reply = `**VERIFIED REPORT #${reportID}**`;
@@ -104,7 +104,7 @@ export class ReportManager extends Manager {
         }
       }
 
-      const reportID = ReportModel.fileNewReport(
+      const reportID = ReportRepository.fileNewReport(
         authorID,
         authorName,
         reportedID,
@@ -116,7 +116,7 @@ export class ReportManager extends Manager {
 
       console.log(`[${new Date().toLocaleString()}] Report for ${reportedName} saved`);
 
-      const content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${reportedID}>\n${PostModel.generateUrl(channelID, targetId)}`;
+      const content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${reportedID}>\n${PostRepository.generateUrl(channelID, targetId)}`;
       const filedReport = await dUtil.sendMessageToChannel(interaction.client, guild.id, channelsID.reports, content);
 
       if (filedReport) {
@@ -136,10 +136,10 @@ export class ReportManager extends Manager {
   }
 
   getVerifiedReportsMatrix(id: Snowflake) {
-    const reports = ReportModel.getVerifiedReportsForUser(id);
+    const reports = ReportRepository.getVerifiedReportsForUser(id);
     let reportStats = "";
     reportTypes.forEach((type) => {
-      const fetched = reports.filter((entry: Report) => entry.type === type);
+      const fetched = reports.filter((entry: ReportType) => entry.type === type);
       if (fetched.length > 0)
         reportStats += `${type}: ${fetched.length}\n`;
     });

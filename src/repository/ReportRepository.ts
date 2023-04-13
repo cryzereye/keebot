@@ -1,5 +1,5 @@
 import { Snowflake } from "discord.js";
-import * as ReportType from "../functions/enums/ReportType.js";
+import { ReportCategory } from "../models/enums/ReportCategory.js";
 
 import fs from 'fs';
 import reports from '../../json/reports.json';
@@ -18,7 +18,7 @@ export function saveReportToFile(): void {
   }
 }
 
-export function fileNewReport(authorID: Snowflake, authorName: string, targetID: Snowflake, targetName: string, category: ReportType.ReportType, summary: string, date: string): number {
+export function fileNewReport(authorID: Snowflake, authorName: string, targetID: Snowflake, targetName: string, category: ReportCategory, summary: string, date: string): number {
   const reportID = getReportCountFromFile() + 1;
   reports[reportID] = {
     authorID: authorID,

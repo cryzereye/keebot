@@ -1,9 +1,9 @@
-export enum ReportType {
+export enum ReportCategory {
     Flaking = "Joy Reserve/Flaking",
     Scamming = "Scamming",
     ItemIssue = "Incorrect/Damaged Item",
     Troll = "Troll/False reports",
-    ContentIssue = "Post Content Issue",
+    PostContentIssue = "Post Content Issue",
     InvalidVouch = "Intentional Invalid Vouch",
     Other = "Other"
 }

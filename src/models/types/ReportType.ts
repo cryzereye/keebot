@@ -1,12 +1,12 @@
 import { Snowflake } from "discord.js"
-import { ReportType } from "../../functions/enums/ReportType.js"
+import { ReportCategory } from "../enums/ReportCategory.js"
 
-export type Report = {
+export type ReportType = {
     authorID: Snowflake,
     authorName: string,
     targetID: Snowflake,
     targetName: string,
-    type: ReportType,
+    type: ReportCategory,
     summary: string,
     date: string,
     verified: false
