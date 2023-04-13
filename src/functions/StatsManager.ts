@@ -1,10 +1,10 @@
 import { BaseInteraction, ChatInputCommandInteraction, EmbedAuthorData, EmbedBuilder, Guild, GuildMember, Role, Snowflake, User } from "discord.js";
-import * as Manager from "./Manager.js";
-import * as UserDates from "./types/UserDates.js";
+import { Manager } from "./Manager.js";
+import { UserDates } from "./types/UserDates.js";
 
 import { channelsID, relevant_roles } from '../../json/config.json';
 
-export class StatsManager extends Manager.Manager {
+export class StatsManager extends Manager {
 	constructor() {
 		super();
 	}
@@ -33,7 +33,7 @@ export class StatsManager extends Manager.Manager {
 			}
 
 			const roles = this.rolesToString(guildmember);
-			const userDates: UserDates.UserDates = this.getUserDates(guildmember);
+			const userDates: UserDates = this.getUserDates(guildmember);
 
 			const feedbackCount = (isServiceProvider ? await this.countFeedbackForUser(guild, target.id) : "0");
 
@@ -45,33 +45,27 @@ export class StatsManager extends Manager.Manager {
 		}
 	}
 
-	generateStats(gm: GuildMember, roles: string, authorDetails: EmbedAuthorData, reports: string, userDates: UserDates.UserDates, isServiceProvider: boolean, feedbackCount: string): EmbedBuilder {
-		let record;
-		//= scores[gm.user.id];
+	generateStats(gm: GuildMember, roles: string, authorDetails: EmbedAuthorData, reports: string, userDates: UserDates, isServiceProvider: boolean, feedbackCount: string): EmbedBuilder {
+		const record = SCOREMNGR.repo.find(gm.id)
 		let transStr = "";
 
-		if (record == null) {
-			record = {}
-			record["points"] = "ZERO";
+		if (record == undefined) {
 			transStr = "NO TRANSACTIONS YET!";
 		}
 		else {
-			const sortedTrans = [];
-			for (const t in record.transactions) {
-				sortedTrans.push([t, record.transactions[t]]);
-			}
+			const trans = record.transactions;
 
-			sortedTrans.sort(function (a, b) {
-				return b[1] - a[1];
+			trans.sort(function (a, b) {
+				return b.count - a.count;
 			});
 
-			for (let i = 0; i < sortedTrans.length && i < 10; i++)
-				transStr += `${sortedTrans[i][0]} : ${sortedTrans[i][1]}\n`;
+			for (let i = 0; i < trans.length && i < 10; i++)
+				transStr += `${trans[i].userName} : ${trans[i].count}\n`;
 		}
 
 		return this.generateScoreCard(
 			authorDetails,
-			record.points,
+			(record ? record.points.toString() : "ZERO"),
 			roles,
 			transStr,
 			reports,
@@ -81,7 +75,7 @@ export class StatsManager extends Manager.Manager {
 		);
 	}
 
-	generateScoreCard(authorDetails: EmbedAuthorData, points: string, roles: string, transStr: string, reports: string, userDates: UserDates.UserDates, isServiceProvider: boolean, feedbackCount: string) {
+	generateScoreCard(authorDetails: EmbedAuthorData, points: string, roles: string, transStr: string, reports: string, userDates: UserDates, isServiceProvider: boolean, feedbackCount: string) {
 		const embedBuilder = new EmbedBuilder()
 			.setColor("DarkAqua")
 			.setTitle(`${points} Points`)
@@ -117,8 +111,8 @@ export class StatsManager extends Manager.Manager {
 		return "0";
 	}
 
-	getUserDates(gm: GuildMember): UserDates.UserDates {
-		const userDates: UserDates.UserDates = {
+	getUserDates(gm: GuildMember): UserDates {
+		const userDates: UserDates = {
 			creaStr: gm.user.createdAt.toString(),
 			creaDur: UTIL.getTimeDiff(gm.user.createdAt).join(' '),
 			joinStr: (gm.joinedAt ? gm.joinedAt.toString() : "NOT IN THE SERVER"),
