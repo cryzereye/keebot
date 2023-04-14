@@ -7,7 +7,7 @@ import { ModalData } from "../types/ModalData.js";
 import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
 
-import { channelsID } from '../../../json/config.json';
+import { channelsID } from '../../../json/config.json' assert { type: "json" };
 
 export class SoldPostManager extends BasePostManager {
     constructor(repo: PostRepository) {

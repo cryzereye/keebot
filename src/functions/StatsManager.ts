@@ -2,7 +2,7 @@ import { BaseInteraction, ChatInputCommandInteraction, EmbedAuthorData, EmbedBui
 import { Manager } from "./Manager.js";
 import { UserDates } from "./types/UserDates.js";
 
-import { channelsID, relevant_roles } from '../../json/config.json';
+import { channelsID, relevant_roles } from '../../json/config.json' assert { type: "json" };
 
 export class StatsManager extends Manager {
 	constructor() {

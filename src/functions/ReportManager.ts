@@ -6,8 +6,8 @@ import { PostResult } from "../processor/types/PostResult.js";
 import { ReportRepository } from '../repository/ReportRepository.js';
 import { Manager } from "./Manager.js";
 
-import { channelsID, reportTypes } from '../../json/config.json';
-import { constants } from '../globals/constants.json';
+import { channelsID, reportTypes } from '../../json/config.json' assert { type: "json" };
+import { constants } from '../globals/constants.json' assert { type: "json" };
 
 export class ReportManager extends Manager {
 	repo: ReportRepository;

@@ -1,21 +1,15 @@
-import fs from 'fs';
-import { state } from '../../json/state.json';
-const osFile = './json/state.json';
+import { StateType } from "./types/StateType.js";
 
-export function saveStateToFile(): void {
-    const dataStr = { "state": state };
-    try {
-        fs.writeFile(osFile, JSON.stringify(dataStr), (err) => {
-            if (err)
-                return console.log(err);
-        });
-    }
-    catch (err) {
-        console.log(err);
-    }
-}
+export class State implements StateType {
+    name: string;
+    value: string | number | Date;
 
-export function next_backup_timedate(value: string): void {
-    state.next_backup_timedate = value;
-    saveStateToFile();
+    constructor(name: string, value: string | number | Date) {
+        this.name = name;
+        this.value = value;
+    }
+
+    update(value: string | number | Date) {
+        this.value = value;
+    }
 }

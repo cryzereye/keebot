@@ -1,6 +1,6 @@
 import { BaseInteraction, Client, CommandInteraction, Emoji, FetchMessagesOptions, Guild, GuildMember, Message, ModalBuilder, ModalSubmitInteraction, Role, Snowflake, TextChannel, User } from "discord.js";
 
-import { adminRole, channelsID, modRole, serviceProviderRole } from '../../json/config.json';
+import { adminRole, channelsID, modRole, serviceProviderRole } from '../../json/config.json' assert { type: "json" };
 
 export class DiscordUtilities {
 	private client: Client;

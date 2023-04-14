@@ -2,7 +2,7 @@ import { APIRole, ActionRowBuilder, Role, TextInputBuilder } from 'discord.js';
 import { TransactionType } from '../../models/enums/TransactionType.js';
 import * as BasePostModal from './BasePostModal.js';
 
-import { relevant_roles } from '../../../json/config.json';
+import { relevant_roles } from '../../../json/config.json' assert { type: "json" };
 
 export class NewPostModal extends BasePostModal.BasePostModal {
     constructor(type: TransactionType, itemrole: Role | APIRole | null) {

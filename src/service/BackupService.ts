@@ -1,15 +1,16 @@
-import * as Service from "./Service.js";
+import { StateRepository } from "../repository/StateRepository.js";
+import { Service } from "./Service.js";
 
-import { state } from '../../json/state.json';
-import * as State from '../models/State.js';
+export class BackupService extends Service {
+    repo: StateRepository;
 
-export class BackupService extends Service.Service {
     constructor() {
         super();
+        this.repo = new StateRepository();
         this.startService();
     }
 
-    override async startService() {
+    async startService() {
         while (true) {
             if (this.isTime()) this.doBackup();
             this.saveNextBackup();
@@ -24,7 +25,8 @@ export class BackupService extends Service.Service {
      * @returns {boolean}
      */
     isTime() {
-        return (new Date() >= new Date(state.next_backup_timedate));
+        const time = this.repo.find("next_backup_timedate");
+        return (new Date() >= (time ? <Date>time.value : new Date()));
     }
 
     doBackup() {
@@ -37,7 +39,8 @@ export class BackupService extends Service.Service {
     }
 
     saveNextBackup() {
-        const next = UTIL.addHours(new Date(state.next_backup_timedate), 6);
-        State.next_backup_timedate(next.toString());
+        const time = this.repo.find("next_backup_timedate");
+        const next = UTIL.addHours((time ? <Date>time.value : new Date()), 6);
+        this.repo.update("next_backup_timedate", next);
     }
 }

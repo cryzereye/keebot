@@ -1,7 +1,7 @@
 import { BaseInteraction, ChatInputCommandInteraction, Collection, FetchMessagesOptions, Guild, InteractionReplyOptions, Message, Snowflake, TextChannel } from "discord.js";
 import * as Manager from "./Manager.js";
 
-import { channelsID } from '../../json/config.json';
+import { channelsID } from '../../json/config.json' assert { type: "json" };
 
 export class ExtractManager extends Manager.Manager {
     constructor() {

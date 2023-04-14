@@ -5,7 +5,7 @@ import { PostResult } from "../../processor/types/PostResult.js";
 import { PostRepository } from "../../repository/PostRepository.js";
 import { ProcessResult } from "../types/ProcessResult.js";
 
-import { channelsID, me_id } from '../../../json/config.json';
+import { channelsID, me_id } from '../../../json/config.json' assert { type: "json" };
 
 export class BasePostManager {
 	repo: PostRepository;

@@ -2,7 +2,7 @@ import { Snowflake } from "discord.js";
 import { TransactionType } from "./enums/TransactionType.js";
 import { PostType } from "./types/PostType.js";
 
-import { channelsID } from '../../json/config.json';
+import { channelsID } from '../../json/config.json' assert { type: "json" };
 
 export class Post implements PostType {
     postID: Snowflake;

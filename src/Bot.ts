@@ -16,10 +16,10 @@ import { PostFactory } from './functions/post/PostFactory.js';
 import { BackupService } from './service/BackupService.js';
 import { BumpService } from './service/BumpService.js';
 import { DiscordUtilities } from './util/DiscordUtilities.js';
-
-import { channelsID, discord_id, discord_token } from '../json/config.json';
-import { commands } from './globals/commands.json';
 import { Utilities } from './util/Utilities.js';
+
+import { channelsID, discord_id, discord_token } from '../json/config.json' assert { type: "json" };
+import { commands } from './globals/commands.json' assert { type: "json" };
 
 export default class Bot {
 	private client: Client;

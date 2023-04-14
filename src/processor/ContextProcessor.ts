@@ -2,7 +2,7 @@ import { MessageContextMenuCommandInteraction } from "discord.js";
 import * as BaseProcessor from "./BaseProcessor.js";
 import * as PostResult from "./types/PostResult.js";
 
-import { commands } from '../globals/commands.json';
+import { commands } from '../globals/commands.json' assert { type: "json" };
 
 export class ContextProcessor extends BaseProcessor.BaseProcessor {
   constructor() {

@@ -6,7 +6,7 @@ import { NewPostModal } from '../modal/NewPostModal.js';
 import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
 
-import { channelsID } from '../../../json/config.json';
+import { channelsID } from '../../../json/config.json' assert { type: "json" };
 import { ModalData } from "../types/ModalData.js";
 
 export class NewPostManager extends BasePostManager {

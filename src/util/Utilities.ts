@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { TimeDiff } from "./types/TimeDiff.js";
 
-import { dev } from '../../json/config.json';
+import { dev } from '../../json/config.json' assert { type: "json" };
 
 export class Utilities {
 	constructor() {

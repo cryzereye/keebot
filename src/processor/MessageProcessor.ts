@@ -1,7 +1,7 @@
 import { Message, MessageType, Snowflake } from "discord.js";
 import * as BaseProcessor from "./BaseProcessor.js";
 
-import { channelsID, command_sign, dev, discord_id, me_id } from '../../json/config.json';
+import { channelsID, command_sign, dev, discord_id, me_id } from '../../json/config.json' assert { type: "json" };
 
 export class MessageProcessor extends BaseProcessor.BaseProcessor {
   constructor() {

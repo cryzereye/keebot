@@ -5,7 +5,7 @@ import { DeletePostModal } from '../modal/DeletePostModal.js';
 import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
 
-import { channelsID } from '../../../json/config.json';
+import { channelsID } from '../../../json/config.json' assert { type: "json" };
 import { Post } from "../../models/Post.js";
 import { ModalData } from "../types/ModalData.js";
 

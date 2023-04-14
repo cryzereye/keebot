@@ -2,9 +2,9 @@ import { ChatInputCommandInteraction } from "discord.js";
 import * as BaseProcessor from "./BaseProcessor.js";
 
 import { EmbedBuilder } from 'discord.js';
-import { channelsID } from '../../json/config.json';
-import { commands } from '../globals/commands.json';
-import { constants } from '../globals/constants.json';
+import { channelsID } from '../../json/config.json' assert { type: "json" };
+import { commands } from '../globals/commands.json' assert { type: "json" };
+import { constants } from '../globals/constants.json' assert { type: "json" };
 
 export class CommandProcessor extends BaseProcessor.BaseProcessor {
 	constructor() {

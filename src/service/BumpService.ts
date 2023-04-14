@@ -2,7 +2,7 @@ import { EmbedAuthorData, EmbedBuilder, Guild, Message, Snowflake, User } from '
 import { Post } from '../models/Post.js';
 import { Service } from "./Service.js";
 
-import { channelsID, dev } from '../../json/config.json';
+import { channelsID, dev } from '../../json/config.json' assert { type: "json" };
 
 export class BumpService extends Service {
 	private queue: Array<Post>;

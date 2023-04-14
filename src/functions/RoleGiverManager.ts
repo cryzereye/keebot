@@ -1,7 +1,7 @@
 import { Guild, Role, User } from "discord.js";
 import * as Manager from "./Manager.js";
 
-import { roles } from '../../json/config.json';
+import { roles } from '../../json/config.json' assert { type: "json" };
 
 export class RoleGiverManager extends Manager.Manager {
 	constructor() {
