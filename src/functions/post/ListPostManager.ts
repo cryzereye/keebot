@@ -37,7 +37,7 @@ export class ListPostManager extends BasePostManager {
 
         records.map((x: Post) => {
             channel = Post.getChannelFromType(x.type);
-            const newContent = `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${Post.generateURL(channel, x.postID)}\nExpires ${x.expiryDate}\n\n`;
+            const newContent = `<#${channel}>\nHAVE: ${x.have}\nWANT: ${x.want}\n${x.URL}\nExpires ${x.expiryDate}\n\n`;
             if (content.length + newContent.length <= 2000)
                 content += newContent;
         });

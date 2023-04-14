@@ -3,6 +3,7 @@ import { Post } from "../../models/Post.js";
 import { PostResult } from "../../processor/types/PostResult.js";
 import { PostRepository } from "../../repository/PostRepository.js";
 import { SoldPostModal } from '../modal/SoldPostModal.js';
+import { ModalData } from "../types/ModalData.js";
 import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
 
@@ -29,9 +30,17 @@ export class SoldPostManager extends BasePostManager {
         else return this.invalidPost();
     }
 
-    async doProcess(guild: Guild, data: any): Promise<ProcessResult> {
-        const record = this.repo.find(data.postID);
+    async doProcess(guild: Guild, data: ModalData): Promise<ProcessResult> {
         const newListingsCh = channelsID.newListings;
+
+        if (!data.postID) return {
+            processed: false,
+            url: "",
+            newListingURL: "",
+            errorContent: "Invalid post"
+        };
+
+        const record = this.repo.find(data.postID);
 
         if (record) {
             const channelID = Post.getChannelFromType(record.type);
@@ -57,7 +66,6 @@ export class SoldPostManager extends BasePostManager {
                     errorContent: "Unable to mark post as sold"
                 };
             }
-            const msgURL = Post.generateURL(message.channel.id, message.id);
 
             record.sold();
 
@@ -67,7 +75,7 @@ export class SoldPostManager extends BasePostManager {
 
             return {
                 processed: true,
-                url: msgURL,
+                url: record.URL,
                 newListingURL: "",
                 errorContent: ""
             };
@@ -88,9 +96,13 @@ export class SoldPostManager extends BasePostManager {
 
         const fields = interaction.fields.fields;
         const postID = fields.keys().next().value;
-        let data = {
+        let data: ModalData = {
             postID: (postID && postID != "have" ? postID : undefined),
-            deleteDate: new Date(interaction.createdAt).toString()
+            roleID: undefined,
+            have: undefined,
+            want: undefined,
+            imgur: undefined,
+            details: undefined
         };
         let soldResult;
 

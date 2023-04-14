@@ -55,14 +55,13 @@ export class PostRepository extends BaseRepository {
 		this.save(this.cache.toString());
 	}
 
-	edit(postID: Snowflake, have: string, want: string, editDate: Date, newListingID: Snowflake) {
+	edit(postID: Snowflake, have: string, want: string, newListingID: Snowflake) {
 		const record = this.find(postID);
 		if (record) {
 			const index = this.cache.indexOf(record);
 			this.cache[index].edit(
 				have,
 				want,
-				editDate,
 				newListingID
 			);
 		}

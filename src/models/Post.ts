@@ -23,7 +23,7 @@ export class Post implements PostType {
     isExpired: boolean;
     URL: string;
 
-    constructor(postID: Snowflake, newListID: Snowflake, authorID: Snowflake, type: TransactionType, itemrole: Snowflake, have: string, want: string, postDate: Date, bumpDate: Date, expireDate: Date) {
+    constructor(postID: Snowflake, newListID: Snowflake, authorID: Snowflake, type: TransactionType, itemrole: Snowflake, have: string, want: string) {
         this.postID = postID;
         this.newListID = new Array<Snowflake>();
         this.authorID = authorID;
@@ -31,9 +31,9 @@ export class Post implements PostType {
         this.itemrole = itemrole;
         this.have = have;
         this.want = want;
-        this.postDate = postDate;
-        this.bumpDate = bumpDate;
-        this.expiryDate = expireDate;
+        this.postDate = new Date();
+        this.bumpDate = UTIL.addHours(this.postDate, 8 + Math.floor(Math.random() * 4));
+        this.expiryDate = UTIL.addHours(this.postDate, 24 * 60);
         this.isSold = false;
         this.isDeleted = false;
         this.isExpired = false;
@@ -42,15 +42,15 @@ export class Post implements PostType {
         this.newListID.push(newListID);
     }
 
-    edit(have: string, want: string, editDate: Date, newListingID: Snowflake): void {
+    edit(have: string, want: string, newListingID: Snowflake): void {
         this.have = have;
         this.want = want;
-        this.editDate = editDate;
+        this.editDate = new Date();
         this.newListID.push(newListingID);
     }
 
-    bumped(newDate: Date): void {
-        this.bumpDate = newDate;
+    bumped(): void {
+        this.bumpDate = UTIL.addHours(this.bumpDate, 8 + Math.floor(Math.random() * 4));
     }
 
     delete(): void {

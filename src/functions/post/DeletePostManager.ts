@@ -7,6 +7,7 @@ import { BasePostManager } from './BasePostManager.js';
 
 import { channelsID } from '../../../json/config.json';
 import { Post } from "../../models/Post.js";
+import { ModalData } from "../types/ModalData.js";
 
 export class DeletePostManager extends BasePostManager {
     constructor(repo: PostRepository) {
@@ -29,7 +30,14 @@ export class DeletePostManager extends BasePostManager {
         else return this.invalidPost();
     }
 
-    async doProcess(guild: Guild, data: any): Promise<ProcessResult> {
+    async doProcess(guild: Guild, data: ModalData): Promise<ProcessResult> {
+        if (!data.postID) return {
+            processed: false,
+            url: "",
+            newListingURL: "",
+            errorContent: "Invalid post"
+        };
+
         const newListingsCh = channelsID.newListings;
         const record = this.repo.find(data.postID);
 
@@ -96,10 +104,15 @@ export class DeletePostManager extends BasePostManager {
 
         const fields = interaction.fields.fields;
         const postID = fields.keys().next().value;
-        let data = {
+        let data: ModalData = {
             postID: (postID && postID != "have" ? postID : undefined),
-            deleteDate: new Date(interaction.createdAt).toString()
+            roleID: undefined,
+            have: undefined,
+            want: undefined,
+            imgur: undefined,
+            details: undefined
         };
+
         let deleteResult;
 
         data = this.cleanUserEntries(data);

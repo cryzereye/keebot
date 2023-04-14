@@ -7,6 +7,7 @@ import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
 
 import { channelsID } from '../../../json/config.json';
+import { ModalData } from "../types/ModalData.js";
 
 export class EditPostManager extends BasePostManager {
     constructor(repo: PostRepository) {
@@ -29,7 +30,14 @@ export class EditPostManager extends BasePostManager {
         else return this.invalidPost();
     }
 
-    async doProcess(guild: Guild, authorID: Snowflake, data: any): Promise<ProcessResult> {
+    async doProcess(guild: Guild, authorID: Snowflake, data: ModalData): Promise<ProcessResult> {
+        if (!data.postID) return {
+            processed: false,
+            url: "",
+            newListingURL: "",
+            errorContent: "Invalid post"
+        };
+
         const record = this.repo.find(data.postID);
 
         if (record) {
@@ -45,7 +53,11 @@ export class EditPostManager extends BasePostManager {
                 };
             }
 
-            const errors = this.haveWantValidation(record.type, data.have, data.want);
+            const errors = this.haveWantValidation(
+                record.type,
+                (data.have ? data.have : ""),
+                (data.want ? data.want : "")
+            );
             if (errors) return errors;
 
             const content = postMsg.content.split('\n');
@@ -72,7 +84,6 @@ export class EditPostManager extends BasePostManager {
                     errorContent: ""
                 };
             }
-            const msgURL = Post.generateURL(message.channel.id, message.id);
 
             if (record.authorID !== authorID)
                 newListContent += `**UPDATED <#${channelID}> post by Mod <@!${authorID}> in behalf of <@${record.authorID}>**\n`;
@@ -81,7 +92,7 @@ export class EditPostManager extends BasePostManager {
 
             newListContent += "HAVE: " + (haveEdited ? `~~${record.have}~~` : "") + ` ${data.have}\n`;
             newListContent += "WANT: " + (wantEdited ? `~~${record.want}~~` : "") + ` ${data.want}\n`;
-            newListContent += `${msgURL}`;
+            newListContent += `${record.URL}`;
 
             const ch = channelsID.newListings;
             const newListMsg = await DUTIL.sendMessageToChannel(guild.id, ch, newListContent).catch(console.error);
@@ -89,18 +100,16 @@ export class EditPostManager extends BasePostManager {
             if (newListMsg) {
                 this.repo.edit(
                     data.postID,
-                    data.have,
-                    data.want,
-                    data.editDate,
+                    (data.have ? data.have : ""),
+                    (data.want ? data.want : ""),
                     newListMsg.id
                 );
             }
             else {
                 this.repo.edit(
                     data.postID,
-                    data.have,
-                    data.want,
-                    data.editDate,
+                    (data.have ? data.have : ""),
+                    (data.want ? data.want : ""),
                     ""
                 );
             }
@@ -108,7 +117,7 @@ export class EditPostManager extends BasePostManager {
 
             return {
                 processed: true,
-                url: msgURL,
+                url: record.URL,
                 newListingURL: Post.generateURL(ch, (newListMsg ? newListMsg.id : "")),
                 errorContent: ""
             };
@@ -135,11 +144,13 @@ export class EditPostManager extends BasePostManager {
         const have = extracted.get("have");
         const want = extracted.get("want");
 
-        let data = {
+        let data: ModalData = {
             postID: (postID && postID != "have" ? postID : ""),
+            roleID: undefined,
             have: (have ? have.value : ""),
             want: (want ? want.value : ""),
-            editDate: new Date(interaction.createdAt).toString()
+            imgur: undefined,
+            details: undefined
         };
         let editResult;
 

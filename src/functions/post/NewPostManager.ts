@@ -6,7 +6,8 @@ import { NewPostModal } from '../modal/NewPostModal.js';
 import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
 
-import { channelsID, dev } from '../../../json/config.json';
+import { channelsID } from '../../../json/config.json';
+import { ModalData } from "../types/ModalData.js";
 
 export class NewPostManager extends BasePostManager {
     constructor(repo: PostRepository) {
@@ -30,13 +31,16 @@ export class NewPostManager extends BasePostManager {
         }
     }
 
-    async doProcess(guild: Guild, type: TransactionType, authorID: Snowflake, postDate: Date, data: any): Promise<ProcessResult> {
+    async doProcess(guild: Guild, type: TransactionType, authorID: Snowflake, data: ModalData): Promise<ProcessResult> {
         const channelID = Post.getChannelFromType(type);
         let content = "";
         let newListContent = "";
         let msgURL = "";
 
-        const errors = this.haveWantValidation(type, data.have, data.want);
+        const errors = this.haveWantValidation(
+            type,
+            (data.have ? data.have : ""),
+            (data.want ? data.want : ""));
         if (errors) return errors;
 
         // goes into buy/sell/trade channel
@@ -73,30 +77,15 @@ export class NewPostManager extends BasePostManager {
         const ch = channelsID.newListings;
         const newListMsg = await DUTIL.sendMessageToChannel(guild.id, ch, newListContent);
 
-        let bumpDate: Date;
-        let expiryDate: Date;
-
-        if (dev) {
-            bumpDate = UTIL.addHours(postDate, Math.floor(Math.random() * 4)); // randoms 0-4 minutes
-            expiryDate = UTIL.addHours(postDate, 10); // 10 minutes post expiry
-        }
-        else {
-            bumpDate = UTIL.addHours(postDate, 8 + Math.floor(Math.random() * 4)); // randoms 8-12 hours
-            expiryDate = UTIL.addHours(postDate, 24 * 60); // 60 days post expiry
-        }
-
         this.repo.new(
             new Post(
                 message.id,
                 (newListMsg ? newListMsg.id : ""),
                 authorID,
                 type,
-                data.roleID,
-                data.have,
-                data.want,
-                postDate,
-                bumpDate,
-                expiryDate
+                (data.roleID ? data.roleID : ""),
+                (data.have ? data.have : ""),
+                (data.want ? data.want : ""),
             )
         );
 
@@ -116,7 +105,6 @@ export class NewPostManager extends BasePostManager {
         const extracted = fields.fields;
         if (extracted.size <= 0) return;
 
-        const postDate = new Date(interaction.createdAt);
         const inputType: string = customId.replace("PostModal", "");
         const type = Post.getTransactionType(inputType);
         const roleID = extracted.keys().next().value;
@@ -125,20 +113,20 @@ export class NewPostManager extends BasePostManager {
         const imgur = extracted.get("imgur");
         const details = extracted.get("details");
 
-        let data = {
-            "roleID": (roleID && roleID != "have" ? roleID : null),
-            "have": (have ? have.value : ""),
-            "want": (want ? want.value : ""),
-            "imgur": (imgur ? imgur.value : ""),
-            "details": (details ? details.value : ""),
-            "editDate": new Date(interaction.createdAt).toString()
+        let data: ModalData = {
+            postID: undefined,
+            roleID: (roleID && roleID != "have" ? roleID : null),
+            have: (have ? have.value : ""),
+            want: (want ? want.value : ""),
+            imgur: (imgur ? imgur.value : ""),
+            details: (details ? details.value : "")
         };
         let postResult;
 
         data = this.cleanUserEntries(data);
 
         const { processed, url, newListingURL, errorContent } = await this.doProcess(
-            guild, type, authorID, postDate, data
+            guild, type, authorID, data
         );
 
         if (processed)

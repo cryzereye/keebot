@@ -39,8 +39,6 @@ export class BumpService extends Service {
 
 				// if the original post message as fetched
 				if (origPost) {
-					const url = Post.generateURL(channel, currPost.postID);
-
 					if (await this.checkExpiry(currPost, origPost, currDate, guild)) break;
 					const mentioned = origPost.mentions.users.at(0);
 					if (!mentioned) {
@@ -50,18 +48,14 @@ export class BumpService extends Service {
 
 					// the actual bump process
 					const message = await origPost.reply({
-						content: `Bumping this post\n\n${url}`,
+						content: `Bumping this post\n\n${currPost.URL}`,
 						embeds: [this.getEmbed(mentioned, currPost)]
 					}).catch(console.error);
 
 					// updates to the post records or retries fails
 					if (message) {
-						let newBumpDate = UTIL.addHours(new Date(), 8 + (Math.random() * 4)); // randoms 8-12 hours
-						if (dev)
-							newBumpDate = UTIL.addHours(new Date(), Math.floor(Math.random() * 4)); // randoms 0-4 minutes
-
-						currPost.bumped(newBumpDate);
-						this.notifyLastBumpBeforeExpiry(newBumpDate, currPost.expiryDate, currPost.authorID, url);
+						currPost.bumped();
+						this.notifyLastBumpBeforeExpiry(currPost.bumpDate, currPost.expiryDate, currPost.authorID, currPost.URL);
 
 						continue;
 					}

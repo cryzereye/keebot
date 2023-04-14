@@ -8,7 +8,6 @@ import { ProcessResult } from "../types/ProcessResult.js";
 import { channelsID, me_id } from '../../../json/config.json';
 
 export class BasePostManager {
-
 	repo: PostRepository;
 	constructor(repo: PostRepository) {
 		this.repo = repo;
