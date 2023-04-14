@@ -1,14 +1,14 @@
-import { Client } from "discord.js";
-import * as DiscordUtilities from "../util/DiscordUtilities.js";
-import * as ProcessorInterface from "./interface/ProcessorInterface.js";
+import { CommandsImporter } from "../globals/CommandsImporter.js";
+import { ConstantsImporter } from "../globals/ConstantsImporter.js";
+import { ProcessorInterface } from "./interface/ProcessorInterface.js";
 
-export class BaseProcessor implements ProcessorInterface.ProcessorInterface {
-    protected client: Client;
-    protected dUtil: DiscordUtilities.DiscordUtilities;
+export class BaseProcessor implements ProcessorInterface {
+    commands: CommandsImporter;
+    constants: ConstantsImporter;
 
     constructor() {
-        this.client = CLIENT;
-        this.dUtil = DUTIL;
+        this.commands = new CommandsImporter();
+        this.constants = new ConstantsImporter();
     }
 
     process(): void {

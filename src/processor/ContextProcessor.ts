@@ -1,10 +1,8 @@
 import { MessageContextMenuCommandInteraction } from "discord.js";
-import * as BaseProcessor from "./BaseProcessor.js";
-import * as PostResult from "./types/PostResult.js";
+import { BaseProcessor } from "./BaseProcessor.js";
+import { PostResult } from "./types/PostResult.js";
 
-import { commands } from '../globals/commands.json' assert { type: "json" };
-
-export class ContextProcessor extends BaseProcessor.BaseProcessor {
+export class ContextProcessor extends BaseProcessor {
   constructor() {
     super();
   }
@@ -12,20 +10,15 @@ export class ContextProcessor extends BaseProcessor.BaseProcessor {
   async processContext(interaction: MessageContextMenuCommandInteraction) {
     const { commandName } = interaction;
     switch (commandName) {
-      case commands[5].name:
-      case commands[6].name:
-      case commands[7].name: this.processResults(interaction, await POSTFACTORY.processContext(interaction)); break;
-      case commands[8].name: this.processResults(interaction, await REPORTMNGR.reportPost(interaction)); break;
+      case this.commands.data[5].name:
+      case this.commands.data[6].name:
+      case this.commands.data[7].name: this.processResults(interaction, await POSTFACTORY.processContext(interaction)); break;
+      case this.commands.data[8].name: this.processResults(interaction, await REPORTMNGR.reportPost(interaction)); break;
     }
   }
 
-  /**
- * does the results processing for all modal functions
- * @param {discord.js.Interaction} interaction 
- * @param {Object} data 
- */
-  processResults(interaction: MessageContextMenuCommandInteraction, data: PostResult.PostResult) {
+  processResults(interaction: MessageContextMenuCommandInteraction, data: PostResult) {
     const { success, content, isModal, modal } = data;
-    this.dUtil.postProcess(interaction, success, content, isModal, modal);
+    DUTIL.postProcess(interaction, success, content, isModal, modal);
   }
 }

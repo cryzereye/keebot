@@ -1,9 +1,9 @@
 import { Message, MessageType, Snowflake } from "discord.js";
-import * as BaseProcessor from "./BaseProcessor.js";
+import { BaseProcessor } from "./BaseProcessor.js";
 
 import { channelsID, command_sign, dev, discord_id, me_id } from '../../json/config.json' assert { type: "json" };
 
-export class MessageProcessor extends BaseProcessor.BaseProcessor {
+export class MessageProcessor extends BaseProcessor {
   constructor() {
     super();
   }
@@ -11,7 +11,7 @@ export class MessageProcessor extends BaseProcessor.BaseProcessor {
   async processMessage(message: Message): Promise<void> {
     if (!(message && message.guild)) return;
     const authorID = message.author.id.toString();
-    const botUser = this.client.user;
+    const botUser = CLIENT.user;
     if (botUser && authorID == botUser.id) return; // if bot sent the message, ignore
 
     const authorName = message.author.username + '#' + message.author.discriminator;
