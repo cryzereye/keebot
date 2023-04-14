@@ -10,7 +10,7 @@ export class ExtractManager extends Manager.Manager {
 
     override async doProcess(interaction: BaseInteraction): Promise<void> {
         const { user, guild } = interaction;
-        if (!(user && guild && this.dUtil.isAdmin(guild, user.id))) return;
+        if (!(user && guild && DUTIL.isAdmin(guild, user.id))) return;
 
         if (interaction instanceof ChatInputCommandInteraction) {
             await interaction.deferReply().catch(console.error);
@@ -20,7 +20,7 @@ export class ExtractManager extends Manager.Manager {
     }
 
     async doExtract(guild: Guild): Promise<InteractionReplyOptions> {
-        const vouchChannel = this.dUtil.getTextChannelFromID(guild, channelsID.verify);
+        const vouchChannel = DUTIL.getTextChannelFromID(guild, channelsID.verify);
         if (!(vouchChannel instanceof TextChannel)) return {
             content: "Error in extracting vouches. See logs",
             ephemeral: true

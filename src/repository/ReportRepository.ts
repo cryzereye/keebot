@@ -1,61 +1,50 @@
-import { Snowflake } from "discord.js";
-import { ReportCategory } from "../models/enums/ReportCategory.js";
 
-import fs from 'fs';
-import reports from '../../json/reports.json';
-const osFile = './json/reports.json';
+import { Snowflake } from 'discord.js';
+import { Report } from '../models/Report.js';
+import { BaseRepository } from './BaseRepository.js';
+import { ReportVerifyResult } from './types/ReportVerifyResult.js';
 
-export function saveReportToFile(): void {
-  const dataStr = { "reports": reports };
-  try {
-    fs.writeFile(osFile, JSON.stringify(dataStr), (err) => {
-      if (err)
-        return console.log(err);
-    });
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
+export class ReportRepository extends BaseRepository {
+	cache: Array<Report>;
+	constructor() {
+		super(`json/reports.json`);
+		this.cache = <Array<Report>>this.load();
+	}
 
-export function fileNewReport(authorID: Snowflake, authorName: string, targetID: Snowflake, targetName: string, category: ReportCategory, summary: string, date: string): number {
-  const reportID = getReportCountFromFile() + 1;
-  reports[reportID] = {
-    authorID: authorID,
-    authorName: authorName,
-    targetID: targetID,
-    targetName: targetName,
-    category: category,
-    summary: summary,
-    date: date,
-    verified: false
-  };
-  saveReportToFile();
-  return reportID;
-}
+	new(report: Report): number {
+		this.cache.push(report);
+		this.save(this.cache.toString());
+		return report.id;
+	}
 
-export function verifyReportFromFile(id: number, verified: boolean, verifier: string, verifyDate: string): { verified: boolean, report: string } {
-  if (reports[id].verified)
-    return { verified: false, report: reports[id] };
-  else {
-    reports[id].verified = verified;
-    reports[id].verifier = verifier;
-    reports[id].verifyDate = verifyDate;
-    saveReportToFile();
-    return { verified: true, report: reports[id] };
-  }
-}
+	find(id: number): Report | undefined {
+		return this.cache.find(report => report.id === id);
+	}
 
-export function getReportCountFromFile(): number {
-  return Object.keys(reports).length;
-}
+	verify(id: number, verifier: string): ReportVerifyResult {
+		const report = this.find(id);
+		if (!report)
+			return {
+				report: undefined,
+				gotVerified: false
+			}
 
-export function getVerifiedReportsForUser(targetid: Snowflake): any[] {
-  const verifiedReports: any = [];
-  Object.keys(reports).forEach((key: string) => {
-    if (reports[key].targetID === targetid && reports[key].verified) {
-      verifiedReports.push(reports[key]);
-    }
-  });
-  return verifiedReports;
+		if (report.verified)
+			return {
+				report: report,
+				gotVerified: false
+			}
+
+		report.verify(verifier);
+		this.save(this.cache.toString());
+
+		return {
+			report: report,
+			gotVerified: true
+		};
+	}
+
+	getVerifiedReportsForUser(targetID: Snowflake): Report[] {
+		return this.cache.filter(report => report.targetID === targetID && report.verified);
+	}
 }

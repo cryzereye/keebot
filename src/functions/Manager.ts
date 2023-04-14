@@ -1,14 +1,9 @@
-import { BaseInteraction, Client } from "discord.js";
-import * as DiscordUtilities from "../util/DiscordUtilities.js";
-import * as ManagerInterface from "./interface/ManagerInterface.js";
+import { BaseInteraction } from "discord.js";
+import { ManagerInterface } from "./interface/ManagerInterface.js";
 
-export class Manager implements ManagerInterface.ManagerInterface {
-    protected client: Client
-    protected dUtil: DiscordUtilities.DiscordUtilities;
-
+export class Manager implements ManagerInterface {
     constructor() {
-        this.client = CLIENT;
-        this.dUtil = DUTIL;
+        return;
     }
 
     async doProcess(interaction: BaseInteraction): Promise<void> {

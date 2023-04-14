@@ -12,7 +12,7 @@ export class RoleGiverManager extends Manager.Manager {
 		const len = roles.length;
 		for (let i = 0; i < len; i++) {
 			if (userScore >= roles[i].filter) {
-				await this.dUtil.addRoleToUser(author, guild, this.getRoleInst(guild, roles[i].role)).catch(console.error);
+				await DUTIL.addRoleToUser(author, guild, this.getRoleInst(guild, roles[i].role)).catch(console.error);
 			}
 		}
 	}

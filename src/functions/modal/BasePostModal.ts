@@ -1,5 +1,6 @@
 import { APIRole, ActionRowBuilder, ModalBuilder, Role, Snowflake, TextInputBuilder, TextInputStyle } from 'discord.js';
 import * as TransactionType from '../../models/enums/TransactionType.js';
+import { ModalTitle } from '../types/ModalTitle.js';
 
 export class BasePostModal extends ModalBuilder {
 	constructor() {
@@ -101,12 +102,14 @@ export class BasePostModal extends ModalBuilder {
 		return postId;
 	}
 
-	getIdTitleFromType(type: TransactionType.TransactionType): any {
+	getIdTitleFromType(type: TransactionType.TransactionType): ModalTitle {
 		switch (type) {
 			case "buy": return { id: "buyPostModal", title: "Buy" };
 			case "sell": return { id: "sellPostModal", title: "Sell" };
 			case "trade": return { id: "tradePostModal", title: "Trade" };
 		}
+
+		return { id: "tradePostModal", title: "Trade" };
 	}
 
 }

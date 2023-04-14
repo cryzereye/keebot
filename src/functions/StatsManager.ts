@@ -19,9 +19,9 @@ export class StatsManager extends Manager {
 			const { user, guild } = interaction;
 			const argUser = interaction.options.getUser('user');
 			const target: User = (argUser ? argUser : user);
-			const isServiceProvider = await this.dUtil.isServiceProvider(guild, target.id);
+			const isServiceProvider = await DUTIL.isServiceProvider(guild, target.id);
 
-			const guildmember = await this.dUtil.getGuildMemberFromID(target.id, guild).catch(console.error);
+			const guildmember = await DUTIL.getGuildMemberFromID(target.id, guild).catch(console.error);
 			if (!guildmember) return;
 
 			let reports = REPORTMNGR.getVerifiedReportsMatrix(target.id.toString());
@@ -105,7 +105,7 @@ export class StatsManager extends Manager {
 	}
 
 	async countFeedbackForUser(guild: Guild, userID: Snowflake): Promise<string> {
-		const feedback = await this.dUtil.fetchAllMessagesMentionsUser(guild, userID, channelsID.serviceFeedback);
+		const feedback = await DUTIL.fetchAllMessagesMentionsUser(guild, userID, channelsID.serviceFeedback);
 		if (feedback)
 			return feedback.length.toString();
 		return "0";

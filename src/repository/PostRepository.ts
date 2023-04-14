@@ -43,6 +43,7 @@ export class PostRepository extends BaseRepository {
 
 	new(post: Post): void {
 		this.cache.push(post);
+		this.save(this.cache.toString());
 	}
 
 	delete(id: Snowflake): void {
@@ -51,6 +52,7 @@ export class PostRepository extends BaseRepository {
 			const index = this.cache.indexOf(record);
 			this.cache[index].delete();
 		}
+		this.save(this.cache.toString());
 	}
 
 	edit(postID: Snowflake, have: string, want: string, editDate: Date, newListingID: Snowflake) {
@@ -64,5 +66,6 @@ export class PostRepository extends BaseRepository {
 				newListingID
 			);
 		}
+		this.save(this.cache.toString());
 	}
 }
