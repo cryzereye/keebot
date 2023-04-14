@@ -1,7 +1,5 @@
 import { BaseInteraction, Client, CommandInteraction, Emoji, FetchMessagesOptions, Guild, GuildMember, Message, ModalBuilder, ModalSubmitInteraction, Role, Snowflake, TextChannel, User } from "discord.js";
 
-import { adminRole, channelsID, modRole, serviceProviderRole } from '../../json/config.json' assert { type: "json" };
-
 export class DiscordUtilities {
 	private client: Client;
 
@@ -81,21 +79,21 @@ export class DiscordUtilities {
 	public async isMod(guild: Guild, userID: Snowflake): Promise<boolean> {
 		const gm = await this.getGuildMemberFromID(userID, guild).catch(console.error);
 		if (!gm) return false;
-		const result = this.guildMemberHasRole(gm, modRole.id);
+		const result = this.guildMemberHasRole(gm, CONFIG.data.modRole.id);
 		return result;
 	}
 
 	public async isServiceProvider(guild: Guild, userID: Snowflake): Promise<boolean> {
 		const gm = await this.getGuildMemberFromID(userID, guild).catch(console.error);
 		if (!gm) return false;
-		const result = this.guildMemberHasRole(gm, serviceProviderRole.id);
+		const result = this.guildMemberHasRole(gm, CONFIG.data.serviceProviderRole.id);
 		return result;
 	}
 
 	public async isAdmin(guild: Guild, userID: Snowflake): Promise<boolean> {
 		const gm = await this.getGuildMemberFromID(userID, guild).catch(console.error);
 		if (!gm) return false;
-		const result = this.guildMemberHasRole(gm, adminRole.id);
+		const result = this.guildMemberHasRole(gm, CONFIG.data.adminRole.id);
 		return result;
 	}
 
@@ -132,7 +130,7 @@ export class DiscordUtilities {
 
 	public async postProcess(interaction: BaseInteraction, success: boolean, content: string, isModal: boolean, modal: ModalBuilder | null): Promise<void> {
 		if (!success && interaction.guild)
-			await this.sendMessageToChannel(interaction.guild.id, channelsID.keebotlogs, `<@${interaction.user.id}>\n${content}`);
+			await this.sendMessageToChannel(interaction.guild.id, CONFIG.data.channelsID.keebotlogs, `<@${interaction.user.id}>\n${content}`);
 
 		if (interaction instanceof CommandInteraction && isModal && modal) {
 			await interaction.showModal(modal).catch(console.error);

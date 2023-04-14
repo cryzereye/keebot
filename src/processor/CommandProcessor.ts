@@ -1,8 +1,6 @@
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
 import { BaseProcessor } from "./BaseProcessor.js";
 
-import { EmbedBuilder } from 'discord.js';
-import { channelsID } from '../../json/config.json' assert { type: "json" };
 
 export class CommandProcessor extends BaseProcessor {
 	constructor() {
@@ -16,8 +14,8 @@ export class CommandProcessor extends BaseProcessor {
 		const fullName = `${user.username}#${user.discriminator}`;
 		const interactionCHID = channel.id;
 
-		if (interactionCHID != channelsID.bot && !(await DUTIL.isMod(guild, user.id))) {
-			await interaction.reply(`Use commands in <#${channelsID.bot}>`);
+		if (interactionCHID != CONFIG.data.channelsID.bot && !(await DUTIL.isMod(guild, user.id))) {
+			await interaction.reply(`Use commands in <#${CONFIG.data.channelsID.bot}>`);
 			return;
 		}
 

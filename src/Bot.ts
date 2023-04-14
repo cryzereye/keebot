@@ -18,8 +18,9 @@ import { BumpService } from './service/BumpService.js';
 import { DiscordUtilities } from './util/DiscordUtilities.js';
 import { Utilities } from './util/Utilities.js';
 
-import { channelsID, discord_id, discord_token } from '../json/config.json' assert { type: "json" };
-import { commands } from './globals/commands.json' assert { type: "json" };
+import { CommandsImporter } from './globals/CommandsImporter.js';
+import { ConfigImporter } from './globals/ConfigImporter.js';
+import { ConstantsImporter } from './globals/ConstantsImporter.js';
 
 export default class Bot {
 	private client: Client;
@@ -33,8 +34,6 @@ export default class Bot {
 	private msgProc: MessageProcessor;
 	private contextProc: ContextProcessor;
 	private postFactory: PostFactory;
-	private dUtil: DiscordUtilities;
-	private util: Utilities;
 
 	constructor() {
 		console.log(`[${new Date().toLocaleString()}] Starting up...`);
@@ -47,9 +46,6 @@ export default class Bot {
 			],
 			partials: [Partials.Channel]
 		});
-
-		this.dUtil = new DiscordUtilities(this.client);
-		this.util = new Utilities();
 
 		this.assignMainGlobals();
 
@@ -71,7 +67,7 @@ export default class Bot {
 		this.declareListeners();
 
 		console.log(`[${new Date().toLocaleString()}] Logging in ...`);
-		this.client.login(discord_token);
+		this.client.login(CONFIG.data.server.discord_token);
 		console.log(`[${new Date().toLocaleString()}] Logged in ...`);
 	}
 
@@ -102,9 +98,9 @@ export default class Bot {
 	}
 
 	async buildSlashCommands() {
-		const rest = new REST({ version: '10' }).setToken(discord_token);
+		const rest = new REST({ version: '10' }).setToken(CONFIG.data.server.discord_token);
 
-		const success = await rest.put(Routes.applicationGuildCommands(discord_id, channelsID.server), { body: commands }).catch(console.error);
+		const success = await rest.put(Routes.applicationGuildCommands(CONFIG.data.server.discord_token, CONFIG.data.channelsID.server), { body: COMMANDS.data.commands }).catch(console.error);
 
 		if (success) {
 			console.log(`[${new Date().toLocaleString()}] Successfully registered application commands.`);
@@ -126,8 +122,11 @@ export default class Bot {
 
 	assignMainGlobals() {
 		globalThis.CLIENT = this.client;
-		globalThis.DUTIL = this.dUtil;
-		globalThis.UTIL = this.util;
+		globalThis.DUTIL = new DiscordUtilities(this.client);
+		globalThis.UTIL = new Utilities();
+		globalThis.CONFIG = new ConfigImporter();
+		globalThis.COMMANDS = new CommandsImporter();
+		globalThis.CONSTANTS = new ConstantsImporter();
 	}
 
 	assignManagerGlobals() {

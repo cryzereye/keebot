@@ -3,11 +3,9 @@ import { Post } from "../../models/Post.js";
 import { PostResult } from "../../processor/types/PostResult.js";
 import { PostRepository } from "../../repository/PostRepository.js";
 import { EditPostModal } from '../modal/EditPostModal.js';
+import { ModalData } from "../types/ModalData.js";
 import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
-
-import { channelsID } from '../../../json/config.json' assert { type: "json" };
-import { ModalData } from "../types/ModalData.js";
 
 export class EditPostManager extends BasePostManager {
     constructor(repo: PostRepository) {
@@ -94,7 +92,7 @@ export class EditPostManager extends BasePostManager {
             newListContent += "WANT: " + (wantEdited ? `~~${record.want}~~` : "") + ` ${data.want}\n`;
             newListContent += `${record.URL}`;
 
-            const ch = channelsID.newListings;
+            const ch = CONFIG.data.channelsID.newListings;
             const newListMsg = await DUTIL.sendMessageToChannel(guild.id, ch, newListContent).catch(console.error);
 
             if (newListMsg) {

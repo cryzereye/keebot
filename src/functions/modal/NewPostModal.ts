@@ -1,10 +1,8 @@
 import { APIRole, ActionRowBuilder, Role, TextInputBuilder } from 'discord.js';
 import { TransactionType } from '../../models/enums/TransactionType.js';
-import * as BasePostModal from './BasePostModal.js';
+import { BasePostModal } from './BasePostModal.js';
 
-import { relevant_roles } from '../../../json/config.json' assert { type: "json" };
-
-export class NewPostModal extends BasePostModal.BasePostModal {
+export class NewPostModal extends BasePostModal {
     constructor(type: TransactionType, itemrole: Role | APIRole | null) {
         super();
         const components: Array<ActionRowBuilder<TextInputBuilder>> = this.buildBaseComponents(type, "", "");
@@ -15,7 +13,7 @@ export class NewPostModal extends BasePostModal.BasePostModal {
         this.setCustomId(id).setTitle(`${title} an item!`);
 
         if (itemrole) {
-            if (relevant_roles.includes(itemrole.name))
+            if (CONFIG.data.relevant_roles.includes(itemrole.name))
                 return;
             this.addComponents(new ActionRowBuilder<TextInputBuilder>().addComponents(this.buildRoleField(itemrole)));
         }

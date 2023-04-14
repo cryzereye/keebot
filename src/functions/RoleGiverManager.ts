@@ -1,18 +1,16 @@
 import { Guild, Role, User } from "discord.js";
-import * as Manager from "./Manager.js";
+import { Manager } from "./Manager.js";
 
-import { roles } from '../../json/config.json' assert { type: "json" };
-
-export class RoleGiverManager extends Manager.Manager {
+export class RoleGiverManager extends Manager {
 	constructor() {
 		super();
 	}
 
 	async roleCheck(userScore: number, author: User, guild: Guild) {
-		const len = roles.length;
+		const len = CONFIG.data.roles.length;
 		for (let i = 0; i < len; i++) {
-			if (userScore >= roles[i].filter) {
-				await DUTIL.addRoleToUser(author, guild, this.getRoleInst(guild, roles[i].role)).catch(console.error);
+			if (userScore >= CONFIG.data.roles[i].filter) {
+				await DUTIL.addRoleToUser(author, guild, this.getRoleInst(guild, CONFIG.data.roles[i].role)).catch(console.error);
 			}
 		}
 	}

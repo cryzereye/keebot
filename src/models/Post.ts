@@ -2,8 +2,6 @@ import { Snowflake } from "discord.js";
 import { TransactionType } from "./enums/TransactionType.js";
 import { PostType } from "./types/PostType.js";
 
-import { channelsID } from '../../json/config.json' assert { type: "json" };
-
 export class Post implements PostType {
     postID: Snowflake;
     newListID: Array<Snowflake>;
@@ -68,16 +66,15 @@ export class Post implements PostType {
     }
 
     static generateURL(chid: Snowflake | undefined, msgid: Snowflake): string {
-        return `https://discord.com/channels/${channelsID.server}/${chid}/${msgid}`;
+        return `https://discord.com/channels/${CONFIG.data.channelsID.server}/${chid}/${msgid}`;
     }
 
     static getChannelFromType(type: TransactionType): Snowflake {
         switch (type) {
-            case TransactionType.buy: return channelsID.buying;
-            case TransactionType.sell: return channelsID.selling;
-            case TransactionType.trade: return channelsID.trading;
+            case TransactionType.buy: return CONFIG.data.channelsID.buying;
+            case TransactionType.sell: return CONFIG.data.channelsID.selling;
+            case TransactionType.trade: return CONFIG.data.channelsID.trading;
         }
-        return channelsID.buying;
     }
 
     static getTransactionType(type: string | null): TransactionType {

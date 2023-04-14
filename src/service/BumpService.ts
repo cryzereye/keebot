@@ -2,8 +2,6 @@ import { EmbedAuthorData, EmbedBuilder, Guild, Message, Snowflake, User } from '
 import { Post } from '../models/Post.js';
 import { Service } from "./Service.js";
 
-import { channelsID, dev } from '../../json/config.json' assert { type: "json" };
-
 export class BumpService extends Service {
 	private queue: Array<Post>;
 
@@ -14,7 +12,7 @@ export class BumpService extends Service {
 
 	async startService() {
 		console.log(`[${new Date().toLocaleString()}] Bump service started...`);
-		const guild = await DUTIL.getGuildFromID(channelsID.server);
+		const guild = await DUTIL.getGuildFromID(CONFIG.data.channelsID.server);
 		if (!guild) return;
 
 		// loop for check intervals
@@ -94,7 +92,7 @@ export class BumpService extends Service {
 	async spoilExpiredPost(origPost: Message, currPost: Post, guild: Guild) {
 		await origPost.edit(`||${origPost.content}||`).catch(console.error);
 
-		const ch = channelsID.newListings;
+		const ch = CONFIG.data.channelsID.newListings;
 
 		currPost.newListID.map(async (x) => {
 			const guildId: Snowflake = guild.id;
@@ -130,7 +128,7 @@ export class BumpService extends Service {
 	}
 
 	async sleep() {
-		if (dev)
+		if (CONFIG.data.dev)
 			await new Promise(resolve => setTimeout(resolve, UTIL.getMinutes(1)));
 		else
 			await new Promise(resolve => setTimeout(resolve, UTIL.getMinutes(5)));

@@ -1,13 +1,11 @@
 import { BaseInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
+import { Post } from "../../models/Post.js";
 import { PostResult } from "../../processor/types/PostResult.js";
 import { PostRepository } from "../../repository/PostRepository.js";
 import { DeletePostModal } from '../modal/DeletePostModal.js';
+import { ModalData } from "../types/ModalData.js";
 import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
-
-import { channelsID } from '../../../json/config.json' assert { type: "json" };
-import { Post } from "../../models/Post.js";
-import { ModalData } from "../types/ModalData.js";
 
 export class DeletePostManager extends BasePostManager {
     constructor(repo: PostRepository) {
@@ -38,7 +36,7 @@ export class DeletePostManager extends BasePostManager {
             errorContent: "Invalid post"
         };
 
-        const newListingsCh = channelsID.newListings;
+        const newListingsCh = CONFIG.data.channelsID.newListings;
         const record = this.repo.find(data.postID);
 
         if (record) {
@@ -54,7 +52,7 @@ export class DeletePostManager extends BasePostManager {
                 };
             }
 
-            const deletedPostMsg = await DUTIL.sendMessageToChannel(guild.id, channelsID.deletedPost, `<@${record.authorID}> deleted ${record.postID}\n\n${postMsg.content}`);
+            const deletedPostMsg = await DUTIL.sendMessageToChannel(guild.id, CONFIG.data.channelsID.deletedPost, `<@${record.authorID}> deleted ${record.postID}\n\n${postMsg.content}`);
             if (!deletedPostMsg) {
                 return {
                     processed: false,

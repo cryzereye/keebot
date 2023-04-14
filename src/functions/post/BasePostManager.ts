@@ -5,8 +5,6 @@ import { PostResult } from "../../processor/types/PostResult.js";
 import { PostRepository } from "../../repository/PostRepository.js";
 import { ProcessResult } from "../types/ProcessResult.js";
 
-import { channelsID, me_id } from '../../../json/config.json' assert { type: "json" };
-
 export class BasePostManager {
 	repo: PostRepository;
 	constructor(repo: PostRepository) {
@@ -14,7 +12,7 @@ export class BasePostManager {
 	}
 
 	async getValidPostRecord(msgID: Snowflake, channelID: Snowflake, guild: Guild): Promise<Post | undefined> {
-		if (channelID == channelsID.newListings)
+		if (channelID == CONFIG.data.channelsID.newListings)
 			return this.repo.getPostFromNewListID(msgID);
 		else {
 			let record = this.repo.find(msgID);
@@ -44,7 +42,7 @@ export class BasePostManager {
 		};
 
 		if (!validEditor) {
-			result.content = `Invalid! Make sure you are editing your own post. Pinging <@!${me_id}>`;
+			result.content = `Invalid! Make sure you are editing your own post. Pinging <@!${CONFIG.data.me_id}>`;
 			return result;
 		}
 
@@ -106,7 +104,7 @@ export class BasePostManager {
 	failModal() {
 		return {
 			success: false,
-			content: `Error in post modal generation. Pinging <@!${me_id}>`,
+			content: `Error in post modal generation. Pinging <@!${CONFIG.data.me_id}>`,
 			isModal: false,
 			modal: null
 		}

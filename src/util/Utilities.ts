@@ -2,8 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import { TimeDiff } from "./types/TimeDiff.js";
 
-import { dev } from '../../json/config.json' assert { type: "json" };
-
 export class Utilities {
 	constructor() {
 		return;
@@ -36,7 +34,7 @@ export class Utilities {
 	}
 
 	public addHours(start: Date, hours: number): Date {
-		if (dev)
+		if (CONFIG.data.dev)
 			start.setTime(start.getTime() + hours * 60 * 1000); // x mins for test purposes
 		else
 			start.setTime(start.getTime() + hours * 60 * 60 * 1000); // hours * 1 hour

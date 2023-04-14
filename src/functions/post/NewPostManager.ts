@@ -3,11 +3,9 @@ import { Post } from "../../models/Post.js";
 import { TransactionType } from "../../models/enums/TransactionType.js";
 import { PostRepository } from "../../repository/PostRepository.js";
 import { NewPostModal } from '../modal/NewPostModal.js';
+import { ModalData } from "../types/ModalData.js";
 import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
-
-import { channelsID } from '../../../json/config.json' assert { type: "json" };
-import { ModalData } from "../types/ModalData.js";
 
 export class NewPostManager extends BasePostManager {
     constructor(repo: PostRepository) {
@@ -74,7 +72,7 @@ export class NewPostManager extends BasePostManager {
         msgURL = Post.generateURL(channelID, message.id);
         newListContent += `${msgURL}`;
 
-        const ch = channelsID.newListings;
+        const ch = CONFIG.data.channelsID.newListings;
         const newListMsg = await DUTIL.sendMessageToChannel(guild.id, ch, newListContent);
 
         this.repo.new(

@@ -7,8 +7,6 @@ import { ModalData } from "../types/ModalData.js";
 import { ProcessResult } from "../types/ProcessResult.js";
 import { BasePostManager } from './BasePostManager.js';
 
-import { channelsID } from '../../../json/config.json' assert { type: "json" };
-
 export class SoldPostManager extends BasePostManager {
     constructor(repo: PostRepository) {
         super(repo);
@@ -31,7 +29,7 @@ export class SoldPostManager extends BasePostManager {
     }
 
     async doProcess(guild: Guild, data: ModalData): Promise<ProcessResult> {
-        const newListingsCh = channelsID.newListings;
+        const newListingsCh = CONFIG.data.channelsID.newListings;
 
         if (!data.postID) return {
             processed: false,

@@ -1,8 +1,6 @@
 import { Message, MessageType, Snowflake } from "discord.js";
 import { BaseProcessor } from "./BaseProcessor.js";
 
-import { channelsID, command_sign, dev, discord_id, me_id } from '../../json/config.json' assert { type: "json" };
-
 export class MessageProcessor extends BaseProcessor {
   constructor() {
     super();
@@ -16,16 +14,16 @@ export class MessageProcessor extends BaseProcessor {
 
     const authorName = message.author.username + '#' + message.author.discriminator;
     const messageCHID = message.channel.id;
-    const currentlyTesting = (messageCHID == channelsID.test && dev);
-    if (this.isMarketChannel(messageCHID) && authorID !== discord_id) {
+    const currentlyTesting = (messageCHID == CONFIG.data.channelsID.test && CONFIG.data.dev);
+    if (this.isMarketChannel(messageCHID) && authorID !== CONFIG.data.discord_id) {
       await message.delete()
         .then(() => console.log(`[${new Date().toLocaleString()}] Deleted message from ${authorID}`))
         .catch(console.error);
     }
-    else if (message.content.startsWith(command_sign)) {
+    else if (message.content.startsWith(CONFIG.data.command_sign)) {
       await message.reply("```Slash commands are now implemented! Please use /help for more details```");
     }
-    else if (messageCHID == channelsID.verify && !dev || currentlyTesting) { // only for vouch channel
+    else if (messageCHID == CONFIG.data.channelsID.verify && !CONFIG.data.dev || currentlyTesting) { // only for vouch channel
       console.log(`[${new Date().toLocaleString()}] Processing vouch msg from ${authorName}`);
       // process all verifications
       // id1 sender, id2 mentioned
@@ -38,24 +36,24 @@ export class MessageProcessor extends BaseProcessor {
         if (!repliedUser) return;
 
         const replyto = repliedUser.username + '#' + repliedUser.discriminator;
-        if (authorName == replyto) message.reply(`**DO NOT CONFIRM FOR YOURSELF!** pinging <@${me_id}>`);
+        if (authorName == replyto) message.reply(`**DO NOT CONFIRM FOR YOURSELF!** pinging <@${CONFIG.data.me_id}>`);
         else SCOREMNGR.addPoint(authorID, authorName, replyto);
       }
       else {
         // initial send
         message.mentions.users.map(x => {
           const mentioned = x.username + '#' + x.discriminator;
-          if (authorName == mentioned) message.reply(`**DO NOT VOUCH YOURSELF!** pinging <@${me_id}>`);
+          if (authorName == mentioned) message.reply(`**DO NOT VOUCH YOURSELF!** pinging <@${CONFIG.data.me_id}>`);
           else SCOREMNGR.addPoint(authorID, authorName, mentioned);
         });
       }
-      if (!dev)
+      if (!CONFIG.data.dev)
         ROLEGIVERMNGR.roleCheck(SCOREMNGR.getScore(authorID), message.author, message.guild);
     }
   }
 
   isMarketChannel(channelID: Snowflake): boolean {
-    const marketChannels = [channelsID.selling, channelsID.buying, channelsID.trading];
+    const marketChannels = [CONFIG.data.channelsID.selling, CONFIG.data.channelsID.buying, CONFIG.data.channelsID.trading];
     return (marketChannels.includes(channelID));
   }
 }

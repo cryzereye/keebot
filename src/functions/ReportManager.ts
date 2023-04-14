@@ -6,9 +6,6 @@ import { PostResult } from "../processor/types/PostResult.js";
 import { ReportRepository } from '../repository/ReportRepository.js';
 import { Manager } from "./Manager.js";
 
-import { channelsID, reportTypes } from '../../json/config.json' assert { type: "json" };
-import { constants } from '../globals/constants.json' assert { type: "json" };
-
 export class ReportManager extends Manager {
 	repo: ReportRepository;
 
@@ -45,7 +42,7 @@ export class ReportManager extends Manager {
 				);
 				const reportContent = `Reporter: ${authorName}\nTarget: ${reportedName}\nCategory: ${category}\nSummary: ${summary}`;
 				const finalReport = "**REPORT ID: #" + reportID + "**```" + reportContent + "```";
-				await DUTIL.sendMessageToChannel(guild.id, channelsID.reports, finalReport);
+				await DUTIL.sendMessageToChannel(guild.id, CONFIG.data.channelsID.reports, finalReport);
 				return `**REPORT FILED** ID: ${reportID}`;
 			}
 			case "verify": {
@@ -73,7 +70,7 @@ export class ReportManager extends Manager {
 					}
 
 				}
-				await DUTIL.sendMessageToChannel(guild.id, channelsID.reports, reply);
+				await DUTIL.sendMessageToChannel(guild.id, CONFIG.data.channelsID.reports, reply);
 				return reply;
 			}
 		}
@@ -81,7 +78,7 @@ export class ReportManager extends Manager {
 
 	async reportPost(interaction: MessageContextMenuCommandInteraction): Promise<PostResult> {
 		const { targetId, guild } = interaction;
-		if (!guild) return constants.postReport_fail;
+		if (!guild) return CONSTANTS.data.postReport_fail;
 
 		const authorID = interaction.user.id;
 		const authorName = interaction.user.username + "#" + interaction.user.discriminator;
@@ -107,10 +104,10 @@ export class ReportManager extends Manager {
 						content: `**Why are you reporting yourself?**`,
 						ephemeral: true
 					});
-					if (replied) return constants.selfReport_success;
+					if (replied) return CONSTANTS.data.selfReport_success;
 				}
 				catch (e) {
-					return constants.selfReport_fail;
+					return CONSTANTS.data.selfReport_fail;
 				}
 			}
 
@@ -121,7 +118,7 @@ export class ReportManager extends Manager {
 					authorName,
 					reportedID,
 					reportedName,
-					Report.getCategoryFromString(reportTypes[4]),
+					Report.getCategoryFromString(CONFIG.data.reportTypes[4]),
 					"Something incorrect in the post"
 				)
 			);
@@ -129,7 +126,7 @@ export class ReportManager extends Manager {
 			console.log(`[${new Date().toLocaleString()}] Report for ${reportedName} saved`);
 
 			const content = `ID: ${reportID}\nReporter: <@${authorID}>\nTarget: <@${reportedID}>\n${Post.generateURL(channelID, targetId)}`;
-			const filedReport = await DUTIL.sendMessageToChannel(guild.id, channelsID.reports, content);
+			const filedReport = await DUTIL.sendMessageToChannel(guild.id, CONFIG.data.channelsID.reports, content);
 
 			if (filedReport) {
 				try {
@@ -137,20 +134,20 @@ export class ReportManager extends Manager {
 						content: `Report filed ID ${reportID}`,
 						ephemeral: true
 					});
-					if (replied) return constants.postReport_success;
+					if (replied) return CONSTANTS.data.postReport_success;
 				}
 				catch (e) {
-					return constants.postReport_fail;
+					return CONSTANTS.data.postReport_fail;
 				}
 			}
 		}
-		return constants.postReport_fail
+		return CONSTANTS.data.postReport_fail
 	}
 
 	getVerifiedReportsMatrix(id: Snowflake) {
 		const reports = this.repo.getVerifiedReportsForUser(id);
 		let reportStats = "";
-		reportTypes.forEach((category) => {
+		CONFIG.data.reportTypes.forEach((category: any) => {
 			const fetched = reports.filter((entry: ReportType) => entry.category === category);
 			if (fetched.length > 0)
 				reportStats += `${category}: ${fetched.length}\n`;

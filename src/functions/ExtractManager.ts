@@ -1,9 +1,7 @@
 import { BaseInteraction, ChatInputCommandInteraction, Collection, FetchMessagesOptions, Guild, InteractionReplyOptions, Message, Snowflake, TextChannel } from "discord.js";
-import * as Manager from "./Manager.js";
+import { Manager } from "./Manager.js";
 
-import { channelsID } from '../../json/config.json' assert { type: "json" };
-
-export class ExtractManager extends Manager.Manager {
+export class ExtractManager extends Manager {
     constructor() {
         super();
     }
@@ -20,7 +18,7 @@ export class ExtractManager extends Manager.Manager {
     }
 
     async doExtract(guild: Guild): Promise<InteractionReplyOptions> {
-        const vouchChannel = DUTIL.getTextChannelFromID(guild, channelsID.verify);
+        const vouchChannel = DUTIL.getTextChannelFromID(guild, CONFIG.data.channelsID.verify);
         if (!(vouchChannel instanceof TextChannel)) return {
             content: "Error in extracting vouches. See logs",
             ephemeral: true

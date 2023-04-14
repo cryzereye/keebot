@@ -2,8 +2,6 @@ import { BaseInteraction, ChatInputCommandInteraction, EmbedAuthorData, EmbedBui
 import { Manager } from "./Manager.js";
 import { UserDates } from "./types/UserDates.js";
 
-import { channelsID, relevant_roles } from '../../json/config.json' assert { type: "json" };
-
 export class StatsManager extends Manager {
 	constructor() {
 		super();
@@ -97,7 +95,7 @@ export class StatsManager extends Manager {
 	rolesToString(gm: GuildMember): string {
 		let roles = "";
 		gm.roles.cache.map((r: Role) => {
-			if (relevant_roles.includes(r.name))
+			if (CONFIG.data.relevant_roles.includes(r.name))
 				roles += `<@&${r.id}> `;
 		});
 		if (roles == "") roles = "**NO ROLES**";
@@ -105,7 +103,7 @@ export class StatsManager extends Manager {
 	}
 
 	async countFeedbackForUser(guild: Guild, userID: Snowflake): Promise<string> {
-		const feedback = await DUTIL.fetchAllMessagesMentionsUser(guild, userID, channelsID.serviceFeedback);
+		const feedback = await DUTIL.fetchAllMessagesMentionsUser(guild, userID, CONFIG.data.channelsID.serviceFeedback);
 		if (feedback)
 			return feedback.length.toString();
 		return "0";
