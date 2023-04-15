@@ -1,9 +1,9 @@
-import { FileImporter } from "../util/FileImporter.js";
+import { FileImporter } from "./FileImporter.js";
 
 export class ConfigImporter extends FileImporter {
     data: any;
     constructor() {
-        super(`../../json/config.json`);
+        super('json/config.json');
         this.data = this.load();
     }
 }

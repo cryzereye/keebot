@@ -1,5 +1,5 @@
-import { CommandsImporter } from "../globals/CommandsImporter.js";
-import { ConstantsImporter } from "../globals/ConstantsImporter.js";
+import { CommandsImporter } from "../importer/CommandsImporter.js";
+import { ConstantsImporter } from "../importer/ConstantsImporter.js";
 import { ProcessorInterface } from "./interface/ProcessorInterface.js";
 
 export class BaseProcessor implements ProcessorInterface {

@@ -5,7 +5,7 @@ import { BaseRepository } from "./BaseRepository.js";
 export class ScoreRepository extends BaseRepository {
     cache: Array<Score>;
     constructor() {
-        super(`json/score.json`);
+        super(`json/scores.json`);
         this.cache = <Array<Score>>this.load();
     }
 

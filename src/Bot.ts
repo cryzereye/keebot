@@ -18,9 +18,9 @@ import { BumpService } from './service/BumpService.js';
 import { DiscordUtilities } from './util/DiscordUtilities.js';
 import { Utilities } from './util/Utilities.js';
 
-import { CommandsImporter } from './globals/CommandsImporter.js';
-import { ConfigImporter } from './globals/ConfigImporter.js';
-import { ConstantsImporter } from './globals/ConstantsImporter.js';
+import { CommandsImporter } from './importer/CommandsImporter.js';
+import { ConfigImporter } from './importer/ConfigImporter.js';
+import { ConstantsImporter } from './importer/ConstantsImporter.js';
 
 export default class Bot {
 	private client: Client;
@@ -67,7 +67,7 @@ export default class Bot {
 		this.declareListeners();
 
 		console.log(`[${new Date().toLocaleString()}] Logging in ...`);
-		this.client.login(CONFIG.data.server.discord_token);
+		this.client.login(CONFIG.data.discord_token);
 		console.log(`[${new Date().toLocaleString()}] Logged in ...`);
 	}
 
@@ -98,13 +98,23 @@ export default class Bot {
 	}
 
 	async buildSlashCommands() {
-		const rest = new REST({ version: '10' }).setToken(CONFIG.data.server.discord_token);
+		const rest = new REST({ version: '10' }).setToken(CONFIG.data.discord_token);
+		let count = 0;
+		while (true) {
+			try {
+				const success = await rest.put(Routes.applicationGuildCommands(CONFIG.data.discord_id, CONFIG.data.channelsID.server), { body: COMMANDS.data.commands }).catch(console.error);
 
-		const success = await rest.put(Routes.applicationGuildCommands(CONFIG.data.server.discord_token, CONFIG.data.channelsID.server), { body: COMMANDS.data.commands }).catch(console.error);
-
-		if (success) {
-			console.log(`[${new Date().toLocaleString()}] Successfully registered application commands.`);
+				if (success) {
+					console.log(`[${new Date().toLocaleString()}] Successfully registered application commands.`);
+					break;
+				}
+			}
+			catch (e) {
+				count++;
+				console.log(`Retried slash command build try no.${count}`);
+			}
 		}
+
 	}
 
 	updateBotPresence(): void {

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { FileImporterInterface } from './interface/FileImporterInterface.js';
+import { FileImporterInterface } from '../util/interface/FileImporterInterface.js';
 
 export class FileImporter implements FileImporterInterface {
     file: string;

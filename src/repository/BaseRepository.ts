@@ -1,4 +1,4 @@
-import { FileImporter } from "../util/FileImporter.js";
+import { FileImporter } from "../importer/FileImporter.js";
 
 export class BaseRepository extends FileImporter {
     constructor(file: string) {

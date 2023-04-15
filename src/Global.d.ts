@@ -5,9 +5,9 @@ import { RoleGiverManager } from "./functions/RoleGiverManager.js";
 import { ScoreManager } from "./functions/ScoreManager.js";
 import { StatsManager } from "./functions/StatsManager.js";
 import { PostFactory } from "./functions/post/PostFactory.js";
-import { CommandsImporter } from "./globals/CommandsImporter.ts";
-import { ConfigImporter } from "./globals/ConfigImporter.ts";
-import { ConstantsImporter } from "./globals/ConstantsImporter.ts";
+import { CommandsImporter } from "./importer/CommandsImporter.ts";
+import { ConfigImporter } from "./importer/ConfigImporter.ts";
+import { ConstantsImporter } from "./importer/ConstantsImporter.ts";
 import { DiscordUtilities } from "./util/DiscordUtilities.js";
 import { Utilities } from "./util/Utilities.js";
 

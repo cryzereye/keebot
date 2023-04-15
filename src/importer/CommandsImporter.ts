@@ -1,9 +1,9 @@
-import { FileImporter } from "../util/FileImporter.js";
+import { FileImporter } from "./FileImporter.js";
 
 export class CommandsImporter extends FileImporter {
     data: any;
     constructor() {
-        super('commands.json');
+        super('src/globals/commands.json');
         this.data = this.load();
     }
 }

@@ -113,5 +113,3 @@ export class BasePostModal extends ModalBuilder {
 	}
 
 }
-
-module.exports = { BasePostModal, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle }
