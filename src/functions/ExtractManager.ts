@@ -11,8 +11,7 @@ export class ExtractManager extends Manager {
         if (!(user && guild && DUTIL.isAdmin(guild, user.id))) return;
 
         if (interaction instanceof ChatInputCommandInteraction) {
-            await interaction.deferReply().catch(console.error);
-            await interaction.editReply(await this.doExtract(guild)).catch(console.error);
+            await interaction.followUp(await this.doExtract(guild)).catch(console.error);
         }
 
     }

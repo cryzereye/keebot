@@ -8,6 +8,7 @@ export class CommandProcessor extends BaseProcessor {
 	}
 
 	async processCommand(interaction: ChatInputCommandInteraction): Promise<void> {
+		await interaction.deferReply().catch(console.error);
 		const { commandName, user, guild, channel } = interaction;
 		if (!(commandName && user && guild && channel)) return;
 
@@ -20,11 +21,11 @@ export class CommandProcessor extends BaseProcessor {
 		}
 
 		switch (commandName) {
-			case COMMANDS.data[0].name: return this.doStats(interaction);
-			case COMMANDS.data[1].name: return EXTRACTMNGR.doProcess(interaction);
-			case COMMANDS.data[2].name: await interaction.reply({ embeds: [this.generateHelp(fullName)] }).catch(console.error); break;
-			case COMMANDS.data[3].name: await interaction.reply({ content: await this.processReport(interaction), ephemeral: true }); break;
-			case COMMANDS.data[4].name: return POSTFACTORY.processCommand(interaction);
+			case COMMANDS[0].name: return this.doStats(interaction);
+			case COMMANDS[1].name: return EXTRACTMNGR.doProcess(interaction);
+			case COMMANDS[2].name: await interaction.followUp({ embeds: [this.generateHelp(fullName)] }).catch(console.error); break;
+			case COMMANDS[3].name: await interaction.followUp({ content: await this.processReport(interaction), ephemeral: true }); break;
+			case COMMANDS[4].name: return POSTFACTORY.processCommand(interaction);
 		}
 	}
 
@@ -33,7 +34,7 @@ export class CommandProcessor extends BaseProcessor {
 			.setColor("Default")
 			.setTitle(`Help | ${username}`);
 
-		CONSTANTS.data.helpinfo.forEach((info: any) => {
+		CONSTANTS.helpinfo.forEach((info: any) => {
 			embedBuilder.addFields(info);
 		})
 

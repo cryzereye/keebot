@@ -12,15 +12,17 @@ import { ReportManager } from './functions/ReportManager.js';
 import { RoleGiverManager } from './functions/RoleGiverManager.js';
 import { ScoreManager } from './functions/ScoreManager.js';
 import { StatsManager } from './functions/StatsManager.js';
+
 import { PostFactory } from './functions/post/PostFactory.js';
 import { BackupService } from './service/BackupService.js';
 import { BumpService } from './service/BumpService.js';
 import { DiscordUtilities } from './util/DiscordUtilities.js';
 import { Utilities } from './util/Utilities.js';
 
-import { CommandsImporter } from './importer/CommandsImporter.js';
 import { ConfigImporter } from './importer/ConfigImporter.js';
-import { ConstantsImporter } from './importer/ConstantsImporter.js';
+
+import * as commands from './globals/commands.json' assert { type: "json" };
+import * as constants from './globals/constants.json' assert { type: "json" };
 
 export default class Bot {
 	private client: Client;
@@ -102,7 +104,7 @@ export default class Bot {
 		let count = 0;
 		while (true) {
 			try {
-				const success = await rest.put(Routes.applicationGuildCommands(CONFIG.data.discord_id, CONFIG.data.channelsID.server), { body: COMMANDS.data.commands }).catch(console.error);
+				const success = await rest.put(Routes.applicationGuildCommands(CONFIG.data.discord_id, CONFIG.data.channelsID.server), { body: COMMANDS }).catch(console.error);
 
 				if (success) {
 					console.log(`[${new Date().toLocaleString()}] Successfully registered application commands.`);
@@ -135,8 +137,8 @@ export default class Bot {
 		globalThis.DUTIL = new DiscordUtilities(this.client);
 		globalThis.UTIL = new Utilities();
 		globalThis.CONFIG = new ConfigImporter();
-		globalThis.COMMANDS = new CommandsImporter();
-		globalThis.CONSTANTS = new ConstantsImporter();
+		globalThis.COMMANDS = commands.default.commands;
+		globalThis.CONSTANTS = constants.default.constants;
 	}
 
 	assignManagerGlobals() {

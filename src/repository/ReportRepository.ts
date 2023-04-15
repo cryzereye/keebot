@@ -8,7 +8,7 @@ export class ReportRepository extends BaseRepository {
 	cache: Array<Report>;
 	constructor() {
 		super(`json/reports.json`);
-		this.cache = <Array<Report>>this.load();
+		this.cache = <Array<Report>>this.load().reports;
 	}
 
 	new(report: Report): number {
