@@ -20,11 +20,11 @@ export class CommandProcessor extends BaseProcessor {
 		}
 
 		switch (commandName) {
-			case this.commands.data[0].name: return this.doStats(interaction);
-			case this.commands.data[1].name: return EXTRACTMNGR.doProcess(interaction);
-			case this.commands.data[2].name: await interaction.reply({ embeds: [this.generateHelp(fullName)] }).catch(console.error); break;
-			case this.commands.data[3].name: await interaction.reply({ content: await this.processReport(interaction), ephemeral: true }); break;
-			case this.commands.data[4].name: return POSTFACTORY.processCommand(interaction);
+			case COMMANDS.data[0].name: return this.doStats(interaction);
+			case COMMANDS.data[1].name: return EXTRACTMNGR.doProcess(interaction);
+			case COMMANDS.data[2].name: await interaction.reply({ embeds: [this.generateHelp(fullName)] }).catch(console.error); break;
+			case COMMANDS.data[3].name: await interaction.reply({ content: await this.processReport(interaction), ephemeral: true }); break;
+			case COMMANDS.data[4].name: return POSTFACTORY.processCommand(interaction);
 		}
 	}
 
@@ -33,7 +33,7 @@ export class CommandProcessor extends BaseProcessor {
 			.setColor("Default")
 			.setTitle(`Help | ${username}`);
 
-		this.constants.data.helpinfo.forEach((info: any) => {
+		CONSTANTS.data.helpinfo.forEach((info: any) => {
 			embedBuilder.addFields(info);
 		})
 
