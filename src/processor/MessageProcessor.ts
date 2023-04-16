@@ -14,7 +14,7 @@ export class MessageProcessor extends BaseProcessor {
 
     const authorName = message.author.username + '#' + message.author.discriminator;
     const messageCHID = message.channel.id;
-    const currentlyTesting = (messageCHID == CONFIG.data.channelsID.test && CONFIG.data.dev);
+
     if (this.isMarketChannel(messageCHID) && authorID !== CONFIG.data.discord_id) {
       await message.delete()
         .then(() => console.log(`[${new Date().toLocaleString()}] Deleted message from ${authorID}`))
@@ -23,7 +23,7 @@ export class MessageProcessor extends BaseProcessor {
     else if (message.content.startsWith(CONFIG.data.command_sign)) {
       await message.reply("```Slash commands are now implemented! Please use /help for more details```");
     }
-    else if (messageCHID == CONFIG.data.channelsID.verify && !CONFIG.data.dev || currentlyTesting) { // only for vouch channel
+    else if (messageCHID == CONFIG.data.channelsID.verify) { // only for vouch channel
       console.log(`[${new Date().toLocaleString()}] Processing vouch msg from ${authorName}`);
       // process all verifications
       // id1 sender, id2 mentioned
