@@ -35,13 +35,6 @@ Admin/mod override for post updates for post cleanup.
 ## **Back-end Features**:
 - Regular data back-up
 
-*Footnotes:*
-
-[^1]: Right click > Apps
-
-[^2]: Valid amount validation based on post type
-
----
 ## **Full Typescript Migration On-going**
 Development tracking board available here: [Notion kanban board](https://cryzereye.notion.site/b9e4fe70387a4f1a993e5b6d84d04516?v=a54cfda2f01f48a4a854cf9688d0f05e)
 
@@ -58,3 +51,9 @@ Some future features are:
 9. Bot settings dashboard (Svelte/Next.js)
 
 More are coming. We never run out of ideas ;)
+
+*Footnotes:*
+
+[^1]: Right click > Apps
+
+[^2]: Valid amount validation based on post type
