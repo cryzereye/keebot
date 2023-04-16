@@ -9,6 +9,7 @@ export class StatsManager extends Manager {
 
 	async doProcess(interaction: BaseInteraction): Promise<void> {
 		if (interaction instanceof ChatInputCommandInteraction) {
+			await interaction.deferReply().catch(console.error);
 			await interaction.followUp({
 				content: "Processing stats...",
 				ephemeral: true

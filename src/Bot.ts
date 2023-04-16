@@ -147,5 +147,6 @@ export default class Bot {
 		globalThis.STATSMNGR = this.statsMngr;
 		globalThis.EXTRACTMNGR = this.extractMngr;
 		globalThis.REPORTMNGR = this.reportMngr;
+		globalThis.POSTFACTORY = this.postFactory;
 	}
 }

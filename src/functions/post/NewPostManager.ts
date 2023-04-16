@@ -20,12 +20,7 @@ export class NewPostManager extends BasePostManager {
         if (modal)
             return this.successModal(modal);
         else {
-            return {
-                success: false,
-                content: "**INVALID ITEM ROLE**",
-                isModal: false,
-                modal: null
-            }
+            return this.failModal();
         }
     }
 
@@ -93,6 +88,18 @@ export class NewPostManager extends BasePostManager {
             newListingURL: Post.generateURL(ch, (newListMsg ? newListMsg.id : "")),
             errorContent: ""
         };
+    }
+
+    async processModal(interaction: ChatInputCommandInteraction) {
+        const { success, content, modal } = this.doModal(interaction);
+        if (success && modal)
+            await interaction.showModal(modal).catch(console.error);
+        else
+            await interaction.reply({
+                content: content,
+                ephemeral: true
+            }).catch(console.error);
+
     }
 
     async doModalDataProcess(interaction: ModalSubmitInteraction) {

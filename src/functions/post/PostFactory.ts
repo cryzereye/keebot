@@ -27,7 +27,10 @@ export class PostFactory {
     async processCommand(interaction: ChatInputCommandInteraction) {
         const postType = interaction.options.getSubcommand(false);
         switch (postType) {
-            case "new": this.processResults(interaction, await this.newPostManager.doModal(interaction)); break;
+            case "new": {
+                await this.newPostManager.processModal(interaction);
+                break;
+            }
             case "list": this.processResults(interaction, await this.listPostManager.doProcess(interaction));
         }
     }

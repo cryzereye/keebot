@@ -9,6 +9,7 @@ export class ListPostManager extends BasePostManager {
     }
 
     async doProcess(interaction: ChatInputCommandInteraction) {
+        await interaction.deferReply().catch(console.error);
         const author = interaction.options.getUser("user");
         const itemrole = interaction.options.getRole("listitemrole");
         const inputType = interaction.options.getString("type");
