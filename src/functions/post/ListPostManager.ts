@@ -9,7 +9,6 @@ export class ListPostManager extends BasePostManager {
     }
 
     async doProcess(interaction: ChatInputCommandInteraction) {
-        await interaction.deferReply().catch(console.error);
         const author = interaction.options.getUser("user");
         const itemrole = interaction.options.getRole("listitemrole");
         const inputType = interaction.options.getString("type");
@@ -31,7 +30,6 @@ export class ListPostManager extends BasePostManager {
             return {
                 success: false,
                 content: "No posts found related to either user or item role.",
-                isModal: false,
                 modal: null
             }
         }
@@ -46,8 +44,28 @@ export class ListPostManager extends BasePostManager {
         return {
             success: true,
             content: content,
-            isModal: false,
             modal: null
         }
+    }
+
+    async processResults(interaction: ChatInputCommandInteraction) {
+        await interaction.deferReply().catch(console.error);
+        const { guild, user } = interaction;
+        if (!(guild && user)) {
+            await interaction.followUp({
+                content: "Error in command. Contant @gego",
+                ephemeral: true
+            }).catch(console.error);
+            return;
+        }
+
+        const { success, content } = await this.doProcess(interaction);
+        if (!success)
+            await DUTIL.sendMessageToChannel(guild.id, CONFIG.data.channelsID.keebotlogs, `<@${user.id}>\n${content}`);
+
+        await interaction.followUp({
+            content: content,
+            ephemeral: true
+        }).catch(console.error);
     }
 }

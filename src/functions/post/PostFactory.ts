@@ -31,7 +31,7 @@ export class PostFactory {
                 await this.newPostManager.processModal(interaction);
                 break;
             }
-            case "list": this.processResults(interaction, await this.listPostManager.doProcess(interaction));
+            case "list": await this.listPostManager.processResults(interaction);
         }
     }
 
