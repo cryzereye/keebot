@@ -7,7 +7,7 @@ export class PostRepository extends BaseRepository {
 	cache: Array<Post>;
 	constructor() {
 		super(`json/post.json`);
-		this.cache = <Array<Post>>this.load();
+		this.cache = <Array<Post>>this.load().post;
 	}
 
 	getAllNeedsBump(): Array<Post> {
@@ -43,7 +43,7 @@ export class PostRepository extends BaseRepository {
 
 	new(post: Post): void {
 		this.cache.push(post);
-		this.save(this.cache.toString());
+		this.save({ "post": this.cache });
 	}
 
 	delete(id: Snowflake): void {
@@ -52,7 +52,7 @@ export class PostRepository extends BaseRepository {
 			const index = this.cache.indexOf(record);
 			this.cache[index].delete();
 		}
-		this.save(this.cache.toString());
+		this.save({ "post": this.cache });
 	}
 
 	edit(postID: Snowflake, have: string, want: string, newListingID: Snowflake) {
@@ -65,6 +65,6 @@ export class PostRepository extends BaseRepository {
 				newListingID
 			);
 		}
-		this.save(this.cache.toString());
+		this.save({ "post": this.cache });
 	}
 }

@@ -13,7 +13,7 @@ export class ReportRepository extends BaseRepository {
 
 	new(report: Report): number {
 		this.cache.push(report);
-		this.save(this.cache.toString());
+		this.save({ "reports": this.cache });
 		return report.id;
 	}
 
@@ -36,7 +36,7 @@ export class ReportRepository extends BaseRepository {
 			}
 
 		report.verify(verifier);
-		this.save(this.cache.toString());
+		this.save({ "reports": this.cache });
 
 		return {
 			report: report,

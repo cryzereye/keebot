@@ -8,7 +8,7 @@ export class FileImporter implements FileImporterInterface {
         this.file = file;
     }
 
-    save(data: string): void {
+    save(data: any): void {
         const jsonData = JSON.stringify(data);
         fs.writeFileSync(this.file, jsonData, 'utf-8');
     }

@@ -17,7 +17,7 @@ export class ExtractManager extends Manager {
     }
 
     async doExtract(guild: Guild): Promise<InteractionReplyOptions> {
-        const vouchChannel = DUTIL.getTextChannelFromID(guild, CONFIG.data.channelsID.verify);
+        const vouchChannel = await DUTIL.getTextChannelFromID(guild, CONFIG.data.channelsID.verify);
         if (!(vouchChannel instanceof TextChannel)) return {
             content: "Error in extracting vouches. See logs",
             ephemeral: true
@@ -32,7 +32,7 @@ export class ExtractManager extends Manager {
         while (hasMoreMessages) {
             // from https://stackoverflow.com/questions/55153125/fetch-more-than-100-messages
             const options: FetchMessagesOptions = { limit: 100 };
-            if (lastMessageID == "") options.before = lastMessageID;
+            if (lastMessageID !== "") options.before = lastMessageID;
 
             await vouchChannel.messages.fetch(options).then((msglist: Collection<Snowflake, Message>) => {
                 const { countReturn, lastMessageIDReturn } = this.traverseMessageList(msglist, count, lastMessageID, guild);
