@@ -37,14 +37,14 @@ export class MessageProcessor extends BaseProcessor {
 
         const replyto = repliedUser.username + '#' + repliedUser.discriminator;
         if (authorName == replyto) message.reply(`**DO NOT CONFIRM FOR YOURSELF!** pinging <@${CONFIG.data.me_id}>`);
-        else SCOREMNGR.addPoint(authorID, authorName, replyto);
+        else SCOREMNGR.addPoint(authorID, authorName, repliedUser.id, replyto);
       }
       else {
         // initial send
         message.mentions.users.map(x => {
-          const mentioned = x.username + '#' + x.discriminator;
-          if (authorName == mentioned) message.reply(`**DO NOT VOUCH YOURSELF!** pinging <@${CONFIG.data.me_id}>`);
-          else SCOREMNGR.addPoint(authorID, authorName, mentioned);
+          const mentionedUsername = x.username + '#' + x.discriminator;
+          if (authorName == mentionedUsername) message.reply(`**DO NOT VOUCH YOURSELF!** pinging <@${CONFIG.data.me_id}>`);
+          else SCOREMNGR.addPoint(authorID, authorName, x.id, mentionedUsername);
         });
       }
       if (!CONFIG.data.dev)

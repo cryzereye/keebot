@@ -9,10 +9,10 @@ export class ScoreRepository extends BaseRepository {
         this.cache = <Array<Score>>this.load().scores;
     }
 
-    updateScore(userID: Snowflake, targetID: Snowflake, targetName: string): void {
+    updateScore(userID: Snowflake, userName: string, targetID: Snowflake, targetName: string): void {
         const record = this.cache.find(record => record.userID === userID);
         if (record) record.addPoint(targetID, targetName);
-        else this.cache.push(new Score(userID, targetID, targetName));
+        else this.cache.push(new Score(userID, userName, targetID, targetName));
 
         this.save({ "scores": this.cache });
     }

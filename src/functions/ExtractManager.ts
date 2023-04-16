@@ -66,7 +66,7 @@ export class ExtractManager extends Manager {
         try {
             const mentions = msg.mentions.users; // mentioned by initial vouch
             mentions.map(x => {
-                SCOREMNGR.addPoint(msg.author.id.toString(), owner, x.username + '#' + x.discriminator);
+                SCOREMNGR.addPoint(msg.author.id.toString(), owner, x.id, x.username + '#' + x.discriminator);
                 ROLEGIVERMNGR.roleCheck(SCOREMNGR.getScore(msg.author.id.toString()), msg.author, guild);
             });
         }

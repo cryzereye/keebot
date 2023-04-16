@@ -11,8 +11,8 @@ export class ScoreManager extends Manager {
         this.repo = new ScoreRepository();
     }
 
-    addPoint(userID: Snowflake, targetID: Snowflake, targetName: string): void {
-        this.repo.updateScore(userID, targetID, targetName);
+    addPoint(userID: Snowflake, userName: string, targetID: Snowflake, targetName: string): void {
+        this.repo.updateScore(userID, userName, targetID, targetName);
     }
 
     clearScores(): void {
