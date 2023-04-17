@@ -1,4 +1,4 @@
-import { BaseInteraction, ChatInputCommandInteraction, MessageContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
+import { ChatInputCommandInteraction, MessageContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
 import { PostResult } from "../../processor/types/PostResult.js";
 import { PostRepository } from "../../repository/PostRepository.js";
 import { DeletePostManager } from './DeletePostManager.js';
@@ -61,11 +61,5 @@ export class PostFactory {
             isModal: false,
             modal: new ModalBuilder
         };
-    }
-
-
-    async processResults(interaction: BaseInteraction, data: PostResult) {
-        const { success, content, isModal, modal } = data;
-        DUTIL.postProcess(interaction, success, content, isModal, modal);
     }
 }
