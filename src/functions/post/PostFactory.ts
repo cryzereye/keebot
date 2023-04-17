@@ -1,5 +1,4 @@
-import { ChatInputCommandInteraction, MessageContextMenuCommandInteraction, ModalBuilder, ModalSubmitInteraction } from "discord.js";
-import { PostResult } from "../../processor/types/PostResult.js";
+import { ChatInputCommandInteraction, MessageContextMenuCommandInteraction, ModalSubmitInteraction } from "discord.js";
 import { PostRepository } from "../../repository/PostRepository.js";
 import { DeletePostManager } from './DeletePostManager.js';
 import { EditPostManager } from './EditPostManager.js';
@@ -46,20 +45,13 @@ export class PostFactory {
         }
     }
 
-    async processContext(interaction: MessageContextMenuCommandInteraction): Promise<PostResult> {
+    async processContext(interaction: MessageContextMenuCommandInteraction) {
         const { commandName, targetId } = interaction;
 
         switch (commandName) {
-            case "edit": this.editPostManager.processModal(interaction, targetId); break;
-            case "sold": this.soldPostManager.processModal(interaction, targetId); break;
-            case "delete": this.deletePostManager.processModal(interaction, targetId); break;
+            case "Edit Post": await this.editPostManager.processModal(interaction, targetId); break;
+            case "Mark as sold": await this.soldPostManager.processModal(interaction, targetId); break;
+            case "Delete Post": await this.deletePostManager.processModal(interaction, targetId); break;
         }
-
-        return {
-            success: false,
-            content: "",
-            isModal: false,
-            modal: new ModalBuilder
-        };
     }
 }

@@ -167,7 +167,6 @@ export class EditPostManager extends BasePostManager {
     }
 
     async processModal(interaction: MessageContextMenuCommandInteraction, targetId: Snowflake) {
-        await interaction.deferReply().catch(console.error);
         const { guild, user } = interaction;
         if (!(guild && user)) {
             await interaction.followUp({
@@ -183,7 +182,7 @@ export class EditPostManager extends BasePostManager {
         }
         else {
             await DUTIL.sendMessageToChannel(guild.id, CONFIG.data.channelsID.keebotlogs, `<@${user.id}>\n${content}`);
-            await interaction.followUp({
+            await interaction.reply({
                 content: content,
                 ephemeral: true
             }).catch(console.error);
