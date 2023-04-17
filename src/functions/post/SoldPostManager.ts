@@ -1,4 +1,4 @@
-import { BaseInteraction, Guild, ModalSubmitInteraction, Snowflake } from "discord.js";
+import { BaseInteraction, Guild, MessageContextMenuCommandInteraction, ModalSubmitInteraction, Snowflake } from "discord.js";
 import { Post } from "../../models/Post.js";
 import { PostResult } from "../../processor/types/PostResult.js";
 import { PostRepository } from "../../repository/PostRepository.js";
@@ -119,5 +119,29 @@ export class SoldPostManager extends BasePostManager {
             soldResult = errorContent;
 
         DUTIL.postProcess(interaction, processed, soldResult, false, null);
+    }
+
+    async processModal(interaction: MessageContextMenuCommandInteraction, targetId: Snowflake) {
+        await interaction.deferReply().catch(console.error);
+        const { guild, user } = interaction;
+        if (!(guild && user)) {
+            await interaction.followUp({
+                content: "Error in command. Contant @gego",
+                ephemeral: true
+            }).catch(console.error);
+            return;
+        }
+
+        const { success, content, modal } = await this.doModal(interaction, targetId);
+        if (success && modal) {
+            await interaction.showModal(modal).catch(console.error);
+        }
+        else {
+            await DUTIL.sendMessageToChannel(guild.id, CONFIG.data.channelsID.keebotlogs, `<@${user.id}>\n${content}`);
+            await interaction.followUp({
+                content: content,
+                ephemeral: true
+            }).catch(console.error);
+        }
     }
 }

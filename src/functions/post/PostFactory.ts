@@ -51,7 +51,7 @@ export class PostFactory {
 
         switch (commandName) {
             case "edit": this.editPostManager.processModal(interaction, targetId); break;
-            case "sold": this.processResults(interaction, await this.soldPostManager.doModal(interaction, targetId)); break;
+            case "sold": this.soldPostManager.processModal(interaction, targetId); break;
             case "delete": this.deletePostManager.processModal(interaction, targetId); break;
         }
 
