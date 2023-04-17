@@ -139,6 +139,6 @@ export class NewPostManager extends BasePostManager {
         else
             postResult = errorContent;
 
-        await DUTIL.postProcess(interaction, processed, postResult, false, null);
+        DUTIL.modalDataPostProcess(interaction, processed, postResult);
     }
 }

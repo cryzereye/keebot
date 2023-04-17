@@ -1,4 +1,4 @@
-import { BaseInteraction, Client, CommandInteraction, Emoji, FetchMessagesOptions, Guild, GuildMember, Message, ModalBuilder, ModalSubmitInteraction, Role, Snowflake, TextChannel, User } from "discord.js";
+import { Client, Emoji, FetchMessagesOptions, Guild, GuildMember, Message, ModalSubmitInteraction, Role, Snowflake, TextChannel, User } from "discord.js";
 
 export class DiscordUtilities {
 	private client: Client;
@@ -128,20 +128,14 @@ export class DiscordUtilities {
 		}
 	}
 
-	public async postProcess(interaction: BaseInteraction, success: boolean, content: string, isModal: boolean, modal: ModalBuilder | null): Promise<void> {
+	public async modalDataPostProcess(interaction: ModalSubmitInteraction, success: boolean, content: string): Promise<void> {
 		if (!success && interaction.guild)
 			await this.sendMessageToChannel(interaction.guild.id, CONFIG.data.channelsID.keebotlogs, `<@${interaction.user.id}>\n${content}`);
 
-		if (interaction instanceof CommandInteraction && isModal && modal) {
-			await interaction.showModal(modal).catch(console.error);
-		}
-		else if (interaction instanceof ModalSubmitInteraction || interaction instanceof CommandInteraction) {
-			await interaction.reply({
-				content: content,
-				ephemeral: true
-			});
-
-		}
+		await interaction.reply({
+			content: content,
+			ephemeral: true
+		});
 	}
 
 	public async makeMessageSpoiler(guildID: Snowflake, chid: Snowflake, msgid: Snowflake): Promise<boolean> {

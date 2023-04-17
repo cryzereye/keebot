@@ -127,7 +127,7 @@ export class DeletePostManager extends BasePostManager {
         else
             deleteResult = errorContent;
 
-        DUTIL.postProcess(interaction, processed, deleteResult, false, null);
+        DUTIL.modalDataPostProcess(interaction, processed, deleteResult);
     }
 
     async processModal(interaction: MessageContextMenuCommandInteraction, targetId: Snowflake) {

@@ -118,7 +118,7 @@ export class SoldPostManager extends BasePostManager {
         else
             soldResult = errorContent;
 
-        DUTIL.postProcess(interaction, processed, soldResult, false, null);
+        DUTIL.modalDataPostProcess(interaction, processed, soldResult);
     }
 
     async processModal(interaction: MessageContextMenuCommandInteraction, targetId: Snowflake) {

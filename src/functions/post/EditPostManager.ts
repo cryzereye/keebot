@@ -163,7 +163,7 @@ export class EditPostManager extends BasePostManager {
         else
             editResult = errorContent;
 
-        DUTIL.postProcess(interaction, processed, editResult, false, null);
+        DUTIL.modalDataPostProcess(interaction, processed, editResult);
     }
 
     async processModal(interaction: MessageContextMenuCommandInteraction, targetId: Snowflake) {
