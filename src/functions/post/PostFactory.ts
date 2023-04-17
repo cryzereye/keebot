@@ -50,7 +50,7 @@ export class PostFactory {
         const { commandName, targetId } = interaction;
 
         switch (commandName) {
-            case "edit": this.processResults(interaction, await this.editPostManager.doModal(interaction, targetId)); break;
+            case "edit": this.editPostManager.processModal(interaction, targetId); break;
             case "sold": this.processResults(interaction, await this.soldPostManager.doModal(interaction, targetId)); break;
             case "delete": this.deletePostManager.processModal(interaction, targetId); break;
         }
