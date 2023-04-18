@@ -46,25 +46,35 @@ export class PostRepository extends BaseRepository {
 		this.save({ "post": this.cache });
 	}
 
-	delete(id: Snowflake): void {
-		const record = this.find(id);
-		if (record) {
-			const index = this.cache.indexOf(record);
-			this.cache[index].delete();
+	sold(id: Snowflake): void {
+		const index = this.findPostIndex(id);
+		if (index > -1) {
+			this.cache[index].sold();
+			this.save({ "post": this.cache });
 		}
-		this.save({ "post": this.cache });
+	}
+
+	delete(id: Snowflake): void {
+		const index = this.findPostIndex(id);
+		if (index > -1) {
+			this.cache[index].delete();
+			this.save({ "post": this.cache });
+		}
 	}
 
 	edit(postID: Snowflake, have: string, want: string, newListingID: Snowflake) {
-		const record = this.find(postID);
-		if (record) {
-			const index = this.cache.indexOf(record);
+		const index = this.findPostIndex(postID);
+		if (index > -1) {
 			this.cache[index].edit(
 				have,
 				want,
 				newListingID
 			);
+			this.save({ "post": this.cache });
 		}
-		this.save({ "post": this.cache });
+	}
+
+	findPostIndex(id: Snowflake): number {
+		return this.cache.map((post: Post) => post.postID).indexOf(id);
 	}
 }

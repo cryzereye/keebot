@@ -73,7 +73,7 @@ export class DeletePostManager extends BasePostManager {
             }
             const msgURL = Post.generateURL(message.channel.id, message.id);
 
-            this.repo.delete(data.postID);
+            this.repo.delete(record.postID);
 
             record.newListID.map(async (x: Snowflake) => {
                 await DUTIL.makeMessageSpoiler(guild.id, newListingsCh, x);
@@ -145,8 +145,9 @@ export class DeletePostManager extends BasePostManager {
             await interaction.showModal(modal).catch(console.error);
         }
         else {
+            await interaction.deferReply({ ephemeral: true }).catch(console.error);
             await DUTIL.sendMessageToChannel(guild.id, CONFIG.data.channelsID.keebotlogs, `<@${user.id}>\n${content}`);
-            await interaction.reply({
+            await interaction.followUp({
                 content: content,
                 ephemeral: true
             }).catch(console.error);

@@ -129,10 +129,11 @@ export class DiscordUtilities {
 	}
 
 	public async modalDataPostProcess(interaction: ModalSubmitInteraction, success: boolean, content: string): Promise<void> {
+		await interaction.deferReply({ ephemeral: true }).catch(console.error);
 		if (!success && interaction.guild)
 			await this.sendMessageToChannel(interaction.guild.id, CONFIG.data.channelsID.keebotlogs, `<@${interaction.user.id}>\n${content}`);
 
-		await interaction.reply({
+		await interaction.followUp({
 			content: content,
 			ephemeral: true
 		});

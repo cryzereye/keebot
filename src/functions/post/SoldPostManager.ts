@@ -65,7 +65,7 @@ export class SoldPostManager extends BasePostManager {
                 };
             }
 
-            record.sold();
+            this.repo.sold(record.postID);
 
             record.newListID.map(async (x: Snowflake) => {
                 await DUTIL.makeMessageSpoiler(guild.id, newListingsCh, x);
@@ -136,8 +136,9 @@ export class SoldPostManager extends BasePostManager {
             await interaction.showModal(modal).catch(console.error);
         }
         else {
+            await interaction.deferReply({ ephemeral: true }).catch(console.error);
             await DUTIL.sendMessageToChannel(guild.id, CONFIG.data.channelsID.keebotlogs, `<@${user.id}>\n${content}`);
-            await interaction.reply({
+            await interaction.followUp({
                 content: content,
                 ephemeral: true
             }).catch(console.error);

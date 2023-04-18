@@ -65,9 +65,9 @@ export class EditPostManager extends BasePostManager {
             const wantEdited = (record.want !== data.want);
 
             content.map((line: string) => {
-                if (line.startsWith("HAVE: ") && !haveEdited)
+                if (line.startsWith("HAVE: ") && haveEdited)
                     newContent += `HAVE: ${data.have}\n`;
-                else if (line.startsWith("WANT: ") && !wantEdited)
+                else if (line.startsWith("WANT: ") && wantEdited)
                     newContent += `WANT: ${data.want}\n`;
                 else
                     newContent += line + "\n"
@@ -181,8 +181,9 @@ export class EditPostManager extends BasePostManager {
             await interaction.showModal(modal).catch(console.error);
         }
         else {
+            await interaction.deferReply({ ephemeral: true }).catch(console.error);
             await DUTIL.sendMessageToChannel(guild.id, CONFIG.data.channelsID.keebotlogs, `<@${user.id}>\n${content}`);
-            await interaction.reply({
+            await interaction.followUp({
                 content: content,
                 ephemeral: true
             }).catch(console.error);

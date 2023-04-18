@@ -44,7 +44,8 @@ export class Post implements PostType {
         this.have = have;
         this.want = want;
         this.editDate = new Date();
-        this.newListID.push(newListingID);
+        if (newListingID)
+            this.newListID.push(newListingID);
     }
 
     bumped(): void {
