@@ -97,6 +97,13 @@ export class DiscordUtilities {
 		return result;
 	}
 
+	public async isDonator(guild: Guild, userID: Snowflake): Promise<boolean> {
+		const gm = await this.getGuildMemberFromID(userID, guild).catch(console.error);
+		if (!gm) return false;
+		const result = this.guildMemberHasRole(gm, CONFIG.data.donatorRole.id);
+		return result;
+	}
+
 	public async addRoleToUser(user: User, guild: Guild, role: Role | void): Promise<void> {
 		if (!(guild && role)) return;
 		const gm = await this.getGuildMemberFromID(user.id, guild).catch(console.error);
