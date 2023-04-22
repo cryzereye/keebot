@@ -6,6 +6,7 @@ import { ScoreManager } from "./functions/ScoreManager.js";
 import { StatsManager } from "./functions/StatsManager.js";
 import { PostFactory } from "./functions/post/PostFactory.js";
 import { ConfigImporter } from "./importer/ConfigImporter.ts";
+import { NotificationRepository } from "./repository/NotificationRepository.ts";
 import { DiscordUtilities } from "./util/DiscordUtilities.js";
 import { Utilities } from "./util/Utilities.js";
 
@@ -24,4 +25,5 @@ declare global {
     var CONFIG: ConfigImporter;
     var COMMANDS: Array<any>;
     var CONSTANTS: any;
+    var NOTIF_REPO: NotificationRepository;
 }

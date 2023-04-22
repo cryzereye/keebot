@@ -190,25 +190,17 @@
                 {
                     "name": "new",
                     "type": 1,
-                    "description": "New keyword set"
+                    "description": "New keywords set"
                 },
                 {
                     "name": "edit",
                     "type": 1,
-                    "description": "Edit keyword set",
-                    "options": [
-                        {
-                            "name": "id",
-                            "description": "ID of keyword set to be edited",
-                            "type": 1,
-                            "required": true
-                        }
-                    ]
+                    "description": "Edit your keywords"
                 },
                 {
                     "name": "delete",
                     "type": 1,
-                    "description": "Delete keyword set",
+                    "description": "Delete keywords set",
                     "options": [
                         {
                             "name": "id",
